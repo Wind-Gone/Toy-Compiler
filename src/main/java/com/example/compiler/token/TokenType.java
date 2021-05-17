@@ -7,6 +7,16 @@ public enum TokenType {
     COMMENTS,
 
     /**
+     * 特殊数字先判断
+     */
+    REALNUMBER,
+    EXPONENT,
+    FRACTION,
+
+
+
+
+    /**
      * keywords
      */
     INT,
@@ -51,9 +61,8 @@ public enum TokenType {
      */
     DIGIT,
     INTNUMBER,
-    EXPONENT,
-    FRACTION,
-    REALNUMBER,
+
+
 
     /**
      * 空格 TAB 回车
