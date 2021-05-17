@@ -4,6 +4,7 @@ public class Token {
     private int beginIndex;
     private int endIndex;
     private int row;
+    private int column;
     private TokenType tokenType;
     private String tokenString;
 
@@ -18,6 +19,15 @@ public class Token {
         this.beginIndex = beginIndex;
         this.endIndex = endIndex;
         this.row = row;
+        this.tokenType = tokenType;
+        this.tokenString = tokenString;
+    }
+
+    public Token(int beginIndex, int endIndex, int row, int column, TokenType tokenType, String tokenString) {
+        this.beginIndex = beginIndex;
+        this.endIndex = endIndex;
+        this.row = row;
+        this.column = column;
         this.tokenType = tokenType;
         this.tokenString = tokenString;
     }
@@ -62,12 +72,21 @@ public class Token {
         this.row = row;
     }
 
+    public int getColumn() {
+        return column;
+    }
+
+    public void setColumn(int column) {
+        this.column = column;
+    }
+
     @Override
     public String toString() {
         return "Token{" +
                 "beginIndex=" + beginIndex +
                 ", endIndex=" + endIndex +
                 ", row=" + row +
+                ", column=" + column +
                 ", tokenType=" + tokenType +
                 ", tokenString='" + tokenString + '\'' +
                 '}';

@@ -17,6 +17,7 @@ public class Lexer {
     private final List<Token> result;
     private int colNumber;
     private int row=1;
+    private int column=1;
 
     public Lexer() {
         regEx = new LinkedHashMap<>();
@@ -60,11 +61,16 @@ public class Lexer {
             if (m.matches()) {
                 String lexema = m.group(1);
                 System.out.println("---------matched-----------");
+                //找到空格更新行和列
                 if(tokenType==TokenType.ENTER || tokenType==TokenType.COMMENTS){
                     row++;
-                    return new Token(fromIndex, fromIndex + lexema.length(),row-1, tokenType, lexema);
+                    int t=column;
+                    column=1;
+                    return new Token(fromIndex, fromIndex + lexema.length(),row-1,t, tokenType, lexema);
                 }
-                return new Token(fromIndex, fromIndex + lexema.length(),row, tokenType, lexema);
+                int t=column;
+                column+=lexema.length();
+                return new Token(fromIndex, fromIndex + lexema.length(),row,t, tokenType, lexema);
             }
         }
         return null;
