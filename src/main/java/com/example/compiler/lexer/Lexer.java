@@ -57,6 +57,7 @@ public class Lexer {
             Matcher m = p.matcher(source);
             if (m.matches()) {
                 String lexema = m.group(1);
+                System.out.println("---------matched-----------");
                 return new Token(fromIndex, fromIndex + lexema.length(), tokenType, lexema);
             }
         }
@@ -138,8 +139,9 @@ public class Lexer {
         regEx.put(TokenType.DIGIT, "\\b(\\d{1})\\b.*");
         regEx.put(TokenType.INTNUMBER, "\\b(\\d{1,9})\\b.*");
         regEx.put(TokenType.EXPONENT, "\\b([Ee]([\\+\\-]?)(\\d{1,9}))\\b.*");
-        regEx.put(TokenType.FRACTION, "\\b(\\.\\d+)\\b.*");
-        regEx.put(TokenType.REALNUMBER, "\\b( (\\d+([Ee]([\\+\\-]?)(\\d+))) | (\\d+(\\.\\d+)([Ee]([\\+\\-]?)(\\d+))?) )\\b.*");
+        regEx.put(TokenType.FRACTION, "(\\.\\d+).*");
+        regEx.put(TokenType.REALNUMBER, "((\\d+([Ee]([\\+\\-]?)(\\d+)))|(\\d+(\\.\\d+)([Ee]([\\+\\-]?)(\\d+))?)).*");
+        //
 
         /**
          * 空格 回车 tab
