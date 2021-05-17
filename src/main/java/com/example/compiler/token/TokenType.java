@@ -19,8 +19,6 @@ public enum TokenType {
     /**
      * keywords
      */
-    INT,
-    REAL,
     IF,
     THEN,
     ELSE,

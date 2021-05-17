@@ -92,8 +92,6 @@ public class Lexer {
         /**
          * keywords
          */
-        regEx.put(TokenType.INT,"\\b(int)\\b.*");
-        regEx.put(TokenType.REAL,"\\b(real)\\b.*");
         regEx.put(TokenType.IF,"\\b(if)\\b.*");
         regEx.put(TokenType.THEN,"\\b(then)\\b.*");
         regEx.put(TokenType.ELSE,"\\b(else)\\b.*");
