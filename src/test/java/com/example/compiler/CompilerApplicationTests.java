@@ -5,12 +5,14 @@ import com.example.compiler.token.Token;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 @SpringBootTest
 class CompilerApplicationTests {
 	@Test
-	void contextLoads() {
+	void contextLoads() throws IOException {
 		Lexer lexer = new Lexer();
 		String input = lexer.ReadFile("src/2.txt");
 		lexer.tokenize(input);
@@ -20,6 +22,6 @@ class CompilerApplicationTests {
 			res.append(token);
 			res.append("\n");
 		}
-		System.out.println(res);
+		System.out.println(res.toString());
 	}
 }
