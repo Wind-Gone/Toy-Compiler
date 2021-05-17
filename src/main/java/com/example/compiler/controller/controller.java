@@ -14,18 +14,18 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:1212")
 public class controller {
     @PostMapping("/lexer")
-    public String getLexer(@RequestBody Text text) throws UnsupportedEncodingException {
-        String input =text.getSource();
+    public String getLexer(@RequestBody Text text) {
+        String input = text.getSource();
         System.out.println(input);
 //        input = URLDecoder.decode(input,"UTF-8");
 //        System.out.println(input);
-        Lexer lexer=new Lexer();
+        Lexer lexer = new Lexer();
         lexer.tokenize(input);
-        List<Token> tokens= lexer.getFilteredTokens();
-        String res="";
-        for(int i=0;i<tokens.size();i++){
-            res+=tokens.get(i);
-            res+="\n";
+        List<Token> tokens = lexer.getFilteredTokens();
+        StringBuilder res = new StringBuilder();
+        for (Token token : tokens) {
+            res.append(token);
+            res.append("\n");
         }
         return res.toString();
     }
