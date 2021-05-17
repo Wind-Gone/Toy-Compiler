@@ -1,11 +1,11 @@
 package com.example.compiler.lexer;
 
 import com.example.compiler.token.*;
+import javafx.util.Pair;
 
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -15,14 +15,15 @@ import java.util.regex.Pattern;
 public class Lexer {
     private final LinkedHashMap<TokenType, String> regEx;
     private final List<Token> result;
-    private int colNumber;
-    private int row=1;
-    private int column=1;
+    private final LinkedHashMap<Pair<Integer, Integer>, String> wrongList;
+    private int row = 1;
+    private int column = 1;
 
     public Lexer() {
         regEx = new LinkedHashMap<>();
         launchRegex();
         result = new ArrayList<>();
+        wrongList = new LinkedHashMap<>();
     }
 
     /**
@@ -39,7 +40,12 @@ public class Lexer {
                 position = token.getEndIndex();
                 result.add(token);
             }
-        } while (token != null && position != source.length());
+//            if (token == null) {
+//                int position_row = token.getRow();
+//                int position_col = token.getColumn();
+//                wrongList.put(new Pair<>(position_row,position_col),token.getTokenString());
+//            }
+        } while (position != source.length());
     }
 
     /**
@@ -60,17 +66,17 @@ public class Lexer {
             Matcher m = p.matcher(source);
             if (m.matches()) {
                 String lexema = m.group(1);
-                System.out.println("---------matched-----------");
+//                System.out.println("---------matched-----------");
                 //找到空格更新行和列
-                if(tokenType==TokenType.ENTER || tokenType==TokenType.COMMENTS){
+                if (tokenType == TokenType.ENTER || tokenType == TokenType.COMMENTS) {
                     row++;
-                    int t=column;
-                    column=1;
-                    return new Token(fromIndex, fromIndex + lexema.length(),row-1,t, tokenType, lexema);
+                    int t = column;
+                    column = 1;
+                    return new Token(fromIndex, fromIndex + lexema.length(), row - 1, t, tokenType, lexema);
                 }
-                int t=column;
-                column+=lexema.length();
-                return new Token(fromIndex, fromIndex + lexema.length(),row,t, tokenType, lexema);
+                int t = column;
+                column += lexema.length();
+                return new Token(fromIndex, fromIndex + lexema.length(), row, t, tokenType, lexema);
             }
         }
         return null;
@@ -177,7 +183,6 @@ public class Lexer {
         String str = new String(bytes, StandardCharsets.UTF_8);
         return str;
     }
-
 
 
 }
