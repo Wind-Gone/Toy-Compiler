@@ -3,12 +3,21 @@ package com.example.compiler.token;
 public class Token {
     private int beginIndex;
     private int endIndex;
+    private int role;
     private TokenType tokenType;
     private String tokenString;
 
     public Token(int beginIndex, int endIndex, TokenType tokenType, String tokenString) {
         this.beginIndex = beginIndex;
         this.endIndex = endIndex;
+        this.tokenType = tokenType;
+        this.tokenString = tokenString;
+    }
+
+    public Token(int beginIndex, int endIndex, int role, TokenType tokenType, String tokenString) {
+        this.beginIndex = beginIndex;
+        this.endIndex = endIndex;
+        this.role = role;
         this.tokenType = tokenType;
         this.tokenString = tokenString;
     }
@@ -45,11 +54,20 @@ public class Token {
         this.tokenString = tokenString;
     }
 
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "Token{" +
                 "beginIndex=" + beginIndex +
                 ", endIndex=" + endIndex +
+                ", role=" + role +
                 ", tokenType=" + tokenType +
                 ", tokenString='" + tokenString + '\'' +
                 '}';

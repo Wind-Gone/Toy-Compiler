@@ -27,6 +27,7 @@ public class controller {
             res.append(token);
             res.append("\n");
         }
+        System.out.println(res.toString());
         return res.toString();
     }
 }

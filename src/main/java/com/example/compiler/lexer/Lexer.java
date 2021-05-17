@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 public class Lexer {
     private LinkedHashMap<TokenType, String> regEx;
     private List<Token> result;
+    private int role=1;
 
     public Lexer() {
         regEx = new LinkedHashMap<TokenType, String>();
@@ -58,7 +59,11 @@ public class Lexer {
             if (m.matches()) {
                 String lexema = m.group(1);
                 System.out.println("---------matched-----------");
-                return new Token(fromIndex, fromIndex + lexema.length(), tokenType, lexema);
+                if(tokenType==TokenType.ENTER || tokenType==TokenType.COMMENTS){
+                    role++;
+                    return new Token(fromIndex, fromIndex + lexema.length(),role-1, tokenType, lexema);
+                }
+                return new Token(fromIndex, fromIndex + lexema.length(),role, tokenType, lexema);
             }
         }
         return null;
