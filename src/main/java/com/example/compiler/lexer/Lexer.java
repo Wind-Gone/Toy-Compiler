@@ -131,11 +131,13 @@ public class Lexer {
          * numbers
          */
         regEx.put(TokenType.DIGIT,"\\b(\\d{1})\\b.*");
-        regEx.put(TokenType.INTNUMBER,"\\b(\\d{1,9})\\b.*");
+        regEx.put(TokenType.INTNUMBER,"\\b(\\d+)\\b.*");
         /**
          * 小数，指数还没写
          */
-        regEx.put(TokenType.EXPONENT,"\\b([Ee]([\\+\\-]?)(\\d{1,9}))\\b.*");
+        regEx.put(TokenType.EXPONENT,"\\b([Ee]([\\+\\-]?)(\\d+))\\b.*");
+        regEx.put(TokenType.FRACTION,"\\b(\\.\\d+)\\b.*");
+        regEx.put(TokenType.REALNUMBER,"\\b( (\\d+([Ee]([\\+\\-]?)(\\d+))) | (\\d+(\\.\\d+)([Ee]([\\+\\-]?)(\\d+))?) )\\b.*");
 
         /**
          * 空格 回车 tab
