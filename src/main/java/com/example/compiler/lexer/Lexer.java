@@ -13,14 +13,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Lexer {
-    private LinkedHashMap<TokenType, String> regEx;
-    private List<Token> result;
-    private int role=1;
+    private final LinkedHashMap<TokenType, String> regEx;
+    private final List<Token> result;
+    private int colNumber;
+    private int row=1;
 
     public Lexer() {
-        regEx = new LinkedHashMap<TokenType, String>();
+        regEx = new LinkedHashMap<>();
         launchRegex();
-        result = new ArrayList<Token>();
+        result = new ArrayList<>();
     }
 
     /**
@@ -52,7 +53,7 @@ public class Lexer {
             throw new IllegalArgumentException("Illegal index in the input stream!");
         }
         for (TokenType tokenType : TokenType.values()) {
-            System.out.println(tokenType);
+//            System.out.println(tokenType);
             Pattern p = Pattern.compile(".{" + fromIndex + "}" + regEx.get(tokenType),
                     Pattern.DOTALL);
             Matcher m = p.matcher(source);
@@ -60,10 +61,10 @@ public class Lexer {
                 String lexema = m.group(1);
                 System.out.println("---------matched-----------");
                 if(tokenType==TokenType.ENTER || tokenType==TokenType.COMMENTS){
-                    role++;
-                    return new Token(fromIndex, fromIndex + lexema.length(),role-1, tokenType, lexema);
+                    row++;
+                    return new Token(fromIndex, fromIndex + lexema.length(),row-1, tokenType, lexema);
                 }
-                return new Token(fromIndex, fromIndex + lexema.length(),role, tokenType, lexema);
+                return new Token(fromIndex, fromIndex + lexema.length(),row, tokenType, lexema);
             }
         }
         return null;
@@ -170,6 +171,7 @@ public class Lexer {
         String str = new String(bytes, StandardCharsets.UTF_8);
         return str;
     }
+
 
 
 }
