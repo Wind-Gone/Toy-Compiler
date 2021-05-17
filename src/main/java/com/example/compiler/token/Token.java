@@ -3,7 +3,7 @@ package com.example.compiler.token;
 public class Token {
     private int beginIndex;
     private int endIndex;
-    private int role;
+    private int row;
     private TokenType tokenType;
     private String tokenString;
 
@@ -14,10 +14,10 @@ public class Token {
         this.tokenString = tokenString;
     }
 
-    public Token(int beginIndex, int endIndex, int role, TokenType tokenType, String tokenString) {
+    public Token(int beginIndex, int endIndex, int row, TokenType tokenType, String tokenString) {
         this.beginIndex = beginIndex;
         this.endIndex = endIndex;
-        this.role = role;
+        this.row = row;
         this.tokenType = tokenType;
         this.tokenString = tokenString;
     }
@@ -54,12 +54,12 @@ public class Token {
         this.tokenString = tokenString;
     }
 
-    public int getRole() {
-        return role;
+    public int getRow() {
+        return row;
     }
 
-    public void setRole(int role) {
-        this.role = role;
+    public void setRow(int row) {
+        this.row = row;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class Token {
         return "Token{" +
                 "beginIndex=" + beginIndex +
                 ", endIndex=" + endIndex +
-                ", role=" + role +
+                ", row=" + row +
                 ", tokenType=" + tokenType +
                 ", tokenString='" + tokenString + '\'' +
                 '}';
