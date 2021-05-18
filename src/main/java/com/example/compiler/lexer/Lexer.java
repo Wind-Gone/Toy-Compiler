@@ -40,11 +40,9 @@ public class Lexer {
                 position = token.getEndIndex();
                 result.add(token);
             }
-//            if (token == null) {
-//                int position_row = token.getRow();
-//                int position_col = token.getColumn();
-//                wrongList.put(new Pair<>(position_row,position_col),token.getTokenString());
-//            }
+            if (token == null) {
+                position++;
+            }
         } while (position != source.length());
     }
 
@@ -161,8 +159,8 @@ public class Lexer {
         regEx.put(TokenType.DIGIT, "\\b(\\d{1})\\b.*");
         regEx.put(TokenType.INTNUMBER, "\\b(\\d{1,9})\\b.*");
         regEx.put(TokenType.EXPONENT, "\\b([Ee]([\\+\\-]?)(\\d{1,9}))\\b.*");
-        regEx.put(TokenType.FRACTION, "(\\.\\d+).*");
-        regEx.put(TokenType.REALNUMBER, "((\\d+([Ee]([\\+\\-]?)(\\d+)))|(\\d+(\\.\\d+)([Ee]([\\+\\-]?)(\\d+))?)).*");
+        regEx.put(TokenType.FRACTION, "\\b(\\.\\d+)\\b.*");
+        regEx.put(TokenType.REALNUMBER, "\\b((\\d+([Ee]([\\+\\-]?)(\\d+)))|(\\d+(\\.\\d+)([Ee]([\\+\\-]?)(\\d+))?))\\b.*");
         //
 
         /**
