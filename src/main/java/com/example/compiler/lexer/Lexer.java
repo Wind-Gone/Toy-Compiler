@@ -1,5 +1,7 @@
 package com.example.compiler.lexer;
 
+import com.example.compiler.entity.ErrorCode;
+import com.example.compiler.entity.WrongMessage;
 import com.example.compiler.token.*;
 import javafx.util.Pair;
 
@@ -7,6 +9,8 @@ import javafx.util.Pair;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -16,11 +20,12 @@ import java.util.regex.Pattern;
 public class Lexer {
     private final LinkedHashMap<TokenType, String> regEx;
     private final List<Token> result;
-    private final LinkedHashMap<Pair<Integer, Integer>, String> wrongList;
+    private final LinkedHashMap<Pair<Integer, Integer>, WrongMessage> wrongList;
+    private WrongMessage wrongMessage;
     private int row = 1;
     private int column = 1;
 
-    public LinkedHashMap<Pair<Integer, Integer>, String> getWrongList() {
+    public LinkedHashMap<Pair<Integer, Integer>, WrongMessage> getWrongList() {
         return wrongList;
     }
 
@@ -60,21 +65,28 @@ public class Lexer {
                                 digitNumber += tokenContent.charAt(i);
                             }
                         }
-                        if (Integer.parseInt(digitNumber) > 128) {
+                        BigInteger a = new BigInteger(digitNumber);
+                        BigInteger b = new BigInteger("128");
+                        if (a.compareTo(b) == 1) {
                             expFlag = false;
-                            wrongList.put(new Pair<>(token.getRow(), token.getColumn()), token.getTokenString());
+                            wrongMessage = new WrongMessage(token.getTokenString(), ErrorCode.EXPONENT_GREATER_LIMIT);
+                            wrongList.put(new Pair<>(token.getRow(), token.getColumn()), wrongMessage);
                         }
                     }
                 } else if (token.getTokenType() == TokenType.INTNUMBER) {
+                    System.out.println("666    "+token.getTokenString());
                     String tokenContent = token.getTokenString();
                     for (int i = 0; i < tokenContent.length(); i++) {
                         if (Character.isDigit(tokenContent.charAt(i))) {
                             digitNumber += tokenContent.charAt(i);
                         }
                     }
-                    if (Integer.parseInt(digitNumber) > Math.pow(2, 31)) {
+                    BigInteger a = new BigInteger(digitNumber);
+                    BigInteger b = BigDecimal.valueOf(Math.pow(2,31)).toBigInteger();
+                    if (a.compareTo(b) == 1) {
                         intFlag = false;
-                        wrongList.put(new Pair<>(token.getRow(), token.getColumn()), token.getTokenString());
+                        wrongMessage = new WrongMessage(token.getTokenString(), ErrorCode.INT_GREATER_LIMIT);
+                        wrongList.put(new Pair<>(token.getRow(), token.getColumn()), wrongMessage);
                     }
                 }
                 position = token.getEndIndex();
@@ -117,10 +129,10 @@ public class Lexer {
                 return new Token(fromIndex, fromIndex + lexema.length(), row, t, tokenType, lexema);
             }
         }
-
         int position_row = row;
         int position_col = column + 1;
-        wrongList.put(new Pair<>(position_row, position_col), String.valueOf(source.charAt(fromIndex)));
+        wrongMessage = new WrongMessage(String.valueOf(source.charAt(fromIndex)), ErrorCode.NOT_MATCH);
+        wrongList.put(new Pair<>(position_row, position_col), wrongMessage);
         return null;
     }
 
@@ -197,8 +209,8 @@ public class Lexer {
          * numbers
          */
         regEx.put(TokenType.DIGIT, "\\b(\\d{1})\\b.*");
-        regEx.put(TokenType.INTNUMBER, "\\b(\\d{1,9})\\b.*");
-        regEx.put(TokenType.EXPONENT, "\\b([Ee]([\\+\\-]?)(\\d{1,9}))\\b.*");
+        regEx.put(TokenType.INTNUMBER, "\\b(\\d+)\\b.*");
+        regEx.put(TokenType.EXPONENT, "\\b([Ee]([\\+\\-]?)(\\d+))\\b.*");
         regEx.put(TokenType.FRACTION, "\\b(\\.\\d+)\\b.*");
         regEx.put(TokenType.REALNUMBER, "\\b((\\d+([Ee]([\\+\\-]?)(\\d+)))|(\\d+(\\.\\d+)([Ee]([\\+\\-]?)(\\d+))?))\\b.*");
         //

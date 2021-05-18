@@ -1,5 +1,6 @@
 package com.example.compiler;
 
+import com.example.compiler.entity.WrongMessage;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.token.Token;
 import javafx.util.Pair;
@@ -24,12 +25,13 @@ class CompilerApplicationTests {
             res.append(token);
             res.append("\n");
         }
-		System.out.println(res.toString());
-        for (Map.Entry<Pair<Integer, Integer>, String> entry : lexer.getWrongList().entrySet()) {
+        System.out.println(res.toString());
+        for (Map.Entry<Pair<Integer, Integer>, WrongMessage> entry : lexer.getWrongList().entrySet()) {
             Pair<Integer, Integer> resultPair = entry.getKey();
             int row = resultPair.getKey();
             int col = resultPair.getValue();
-            System.out.println("行：" + row + "， 列：" + col + "，此处的字符串\"" + entry.getValue() + "\"附近或许存在错误，请您检测您此处的程序是否有误");
+            System.out.println("行：" + row + "， 列：" + col + "，此处的字符串\"" + entry.getValue().getTokenContent() + "\"附近或许存在错误，提示：" +
+                    entry.getValue().getErrorCode().getMessage());
         }
     }
 }

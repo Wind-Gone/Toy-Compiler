@@ -16,5 +16,5 @@ if(caizhenghai < yangsunan){
 else if (caizhenghai > yushuyi){
     caizhenghai = yushuyi;
     yushuyi = yangsunan;
-    yangsunan = -111111111111111111111111111;
+    yangsunan = 11122222222;
 }
