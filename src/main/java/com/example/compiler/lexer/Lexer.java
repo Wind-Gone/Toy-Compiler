@@ -211,7 +211,7 @@ public class Lexer {
         regEx.put(TokenType.DIGIT, "\\b(\\d{1})\\b.*");
         regEx.put(TokenType.INTNUMBER, "\\b(\\d+)\\b.*");
         regEx.put(TokenType.EXPONENT, "\\b([Ee]([\\+\\-]?)(\\d+))\\b.*");
-        regEx.put(TokenType.FRACTION, "\\b(\\.\\d+)\\b.*");
+        regEx.put(TokenType.FRACTION, "\\b(\\.\\d+)\\s.*");
         regEx.put(TokenType.REALNUMBER, "\\b((\\d+([Ee]([\\+\\-]?)(\\d+)))|(\\d+(\\.\\d+)([Ee]([\\+\\-]?)(\\d+))?))\\b.*");
         //
 
