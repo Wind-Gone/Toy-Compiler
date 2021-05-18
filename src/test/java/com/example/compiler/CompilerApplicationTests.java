@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
+@SuppressWarnings("all")
 class CompilerApplicationTests {
     @Test
     void contextLoads() throws IOException {
