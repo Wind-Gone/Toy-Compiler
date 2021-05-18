@@ -6,9 +6,15 @@ if(caizhenghai < yangsunan){
         pantiantian = 10E128;
         pantiantian5 = E129;
         pantiantian6 = ./E129;
+        yangsunanaicaizhenghai =
         huzirui = 1.56784;
         huzirui2 = -0.00100;
         pantiantian2 = 10E+55;
         pantiantian3 = -1E-55;
     }
+}
+else if (caizhenghai > yushuyi){
+    caizhenghai = yushuyi;
+    yushuyi = yangsunan;
+    yangsunan = -111111111111111111111111111;
 }

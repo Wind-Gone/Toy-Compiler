@@ -24,12 +24,12 @@ class CompilerApplicationTests {
             res.append(token);
             res.append("\n");
         }
-//		System.out.println(res.toString());
+		System.out.println(res.toString());
         for (Map.Entry<Pair<Integer, Integer>, String> entry : lexer.getWrongList().entrySet()) {
             Pair<Integer, Integer> resultPair = entry.getKey();
             int row = resultPair.getKey();
             int col = resultPair.getValue();
-            System.out.println("行：" + row + "， 列：" + col + "我们无法识别此处的字符串\"" + entry.getValue() + "\"，请您检测您此处的程序是否有误");
+            System.out.println("行：" + row + "， 列：" + col + "，此处的字符串\"" + entry.getValue() + "\"附近或许存在错误，请您检测您此处的程序是否有误");
         }
     }
 }

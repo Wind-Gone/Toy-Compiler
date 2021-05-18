@@ -39,8 +39,9 @@ public class Lexer {
     public void tokenize(String source) {
         int position = 0;
         Token token = null;
-        boolean expFlag = true;
         do {
+            boolean expFlag = true;
+            boolean intFlag = true;
             token = separateToken(source, position);
             if (token != null) {
                 String digitNumber = "";
@@ -56,7 +57,7 @@ public class Lexer {
                         tokenContent = tokenContent.substring(index);
                         for (int i = 0; i < tokenContent.length(); i++) {
                             if (Character.isDigit(tokenContent.charAt(i))) {
-                                digitNumber+=tokenContent.charAt(i);
+                                digitNumber += tokenContent.charAt(i);
                             }
                         }
                         if (Integer.parseInt(digitNumber) > 128) {
@@ -64,14 +65,24 @@ public class Lexer {
                             wrongList.put(new Pair<>(token.getRow(), token.getColumn()), token.getTokenString());
                         }
                     }
+                } else if (token.getTokenType() == TokenType.INTNUMBER) {
+                    String tokenContent = token.getTokenString();
+                    for (int i = 0; i < tokenContent.length(); i++) {
+                        if (Character.isDigit(tokenContent.charAt(i))) {
+                            digitNumber += tokenContent.charAt(i);
+                        }
+                    }
+                    if (Integer.parseInt(digitNumber) > Math.pow(2, 31)) {
+                        intFlag = false;
+                        wrongList.put(new Pair<>(token.getRow(), token.getColumn()), token.getTokenString());
+                    }
                 }
                 position = token.getEndIndex();
-                if (expFlag)
+                if (expFlag && intFlag)
                     result.add(token);
             }
-            if (token == null) {
+            if (token == null)
                 position++;
-            }
         } while (position != source.length());
     }
 
