@@ -43,22 +43,23 @@ public class Lexer {
         do {
             token = separateToken(source, position);
             if (token != null) {
-                int digitNumber = 0;
+                String digitNumber = "";
                 if (token.getTokenType() == TokenType.EXPONENT || token.getTokenType() == TokenType.REALNUMBER) {
                     String tokenContent = token.getTokenString();
                     Pattern pattern = Pattern.compile("(\\d+)?([Ee]([\\+\\-]?)(\\d+))"); // 匹配形如10e+100 或e-100这种字符串
                     Matcher matcher = pattern.matcher(tokenContent);
                     if (matcher.matches()) {
+                        System.out.println(token.getTokenString());
                         int index = tokenContent.indexOf('e');
                         if (index == -1)        // 没查到小e
                             index = tokenContent.indexOf('E');
                         tokenContent = tokenContent.substring(index);
                         for (int i = 0; i < tokenContent.length(); i++) {
                             if (Character.isDigit(tokenContent.charAt(i))) {
-                                digitNumber++;
+                                digitNumber+=tokenContent.charAt(i);
                             }
                         }
-                        if (digitNumber > 128) {
+                        if (Integer.parseInt(digitNumber) > 128) {
                             expFlag = false;
                             wrongList.put(new Pair<>(token.getRow(), token.getColumn()), token.getTokenString());
                         }
