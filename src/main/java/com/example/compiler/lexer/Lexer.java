@@ -19,6 +19,10 @@ public class Lexer {
     private int row = 1;
     private int column = 1;
 
+    public LinkedHashMap<Pair<Integer, Integer>, String> getWrongList() {
+        return wrongList;
+    }
+
     public Lexer() {
         regEx = new LinkedHashMap<>();
         launchRegex();
@@ -80,14 +84,14 @@ public class Lexer {
 
         int position_row = row;
         int position_col = column + 1;
-        wrongList.put(new Pair<>(position_row, position_col), String.valueOf(source.charAt(fromIndex + 1)));
+        wrongList.put(new Pair<>(position_row, position_col), String.valueOf(source.charAt(fromIndex)));
         return null;
     }
 
     /**
      * 获取token列表
      *
-     * @return
+     * @return List<Token>
      */
     public List<Token> getTokens() {
         return result;
@@ -96,7 +100,7 @@ public class Lexer {
     /**
      * 获取除空格tab回车之外的token列表
      *
-     * @return
+     * @return List<Token>
      */
     public List<Token> getFilteredTokens() {
         List<Token> filteredResult = new ArrayList<Token>();
@@ -110,12 +114,12 @@ public class Lexer {
 
 
     private void launchRegex() {
-        /**
+        /*
          * 注释
          */
         regEx.put(TokenType.COMMENTS, "(//(.*?)(\\r)?\\n).*");
 
-        /**
+        /*
          * keywords
          */
         regEx.put(TokenType.IF, "\\b(if)\\b.*");
@@ -123,12 +127,12 @@ public class Lexer {
         regEx.put(TokenType.ELSE, "\\b(else)\\b.*");
         regEx.put(TokenType.WHILE, "\\b(while)\\b.*");
 
-        /**
+        /*
          * IDENTIFIERS
          */
         regEx.put(TokenType.IDENTIFIERS, "\\b([a-zA-Z]{1}[0-9a-zA-Z]{0,63})\\b.*");
 
-        /**
+        /*
          * operator
          */
         regEx.put(TokenType.PLUS, "(\\+{1}).*");
@@ -143,7 +147,7 @@ public class Lexer {
         regEx.put(TokenType.GREATEREQUAL, "(>=).*");
         regEx.put(TokenType.NOTEQUAL, "(\\!=).*");
 
-        /**
+        /*
          * delimiters
          */
         regEx.put(TokenType.OPENBRACE, "(\\().*");
@@ -153,7 +157,7 @@ public class Lexer {
         regEx.put(TokenType.SEMICOLON, "(\\;).*");
         regEx.put(TokenType.COMMA, "(\\,).*");
 
-        /**
+        /*
          * numbers
          */
         regEx.put(TokenType.DIGIT, "\\b(\\d{1})\\b.*");
@@ -163,7 +167,7 @@ public class Lexer {
         regEx.put(TokenType.REALNUMBER, "\\b((\\d+([Ee]([\\+\\-]?)(\\d+)))|(\\d+(\\.\\d+)([Ee]([\\+\\-]?)(\\d+))?))\\b.*");
         //
 
-        /**
+        /*
          * 空格 回车 tab
          */
         regEx.put(TokenType.WHITESPACE, "( ).*");
@@ -180,10 +184,9 @@ public class Lexer {
         FileInputStream inputStream = new FileInputStream(file);
         int length = inputStream.available();
         byte[] bytes = new byte[length];
-        inputStream.read(bytes);
+        int ResultCode = inputStream.read(bytes);
         inputStream.close();
-        String str = new String(bytes, StandardCharsets.UTF_8);
-        return str;
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
 
