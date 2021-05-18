@@ -79,6 +79,10 @@ public class Lexer {
                 return new Token(fromIndex, fromIndex + lexema.length(), row, t, tokenType, lexema);
             }
         }
+
+        int position_row = row;
+        int position_col = column + 1;
+        wrongList.put(new Pair<>(position_row, position_col), String.valueOf(source.charAt(fromIndex + 1)));
         return null;
     }
 

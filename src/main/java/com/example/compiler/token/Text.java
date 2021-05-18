@@ -1,7 +1,7 @@
 package com.example.compiler.token;
 
 public class Text {
-    String source;
+    private String source;
 
     public String getSource() {
         return source;

@@ -8,6 +8,7 @@ public class Token {
     private TokenType tokenType;
     private String tokenString;
 
+    @Deprecated
     public Token(int beginIndex, int endIndex, TokenType tokenType, String tokenString) {
         this.beginIndex = beginIndex;
         this.endIndex = endIndex;
