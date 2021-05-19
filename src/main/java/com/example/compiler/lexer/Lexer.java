@@ -18,14 +18,15 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("all")
 public class Lexer {
+
     private final LinkedHashMap<TokenType, String> regEx;
     private final List<Token> result;
-    private final LinkedHashMap<Pair<Integer, Integer>, WrongMessage> wrongList;
+    private final IdentityHashMap<Pair<Integer, Integer>, WrongMessage> wrongList;
     private WrongMessage wrongMessage;
     private int row = 1;
     private int column = 1;
 
-    public LinkedHashMap<Pair<Integer, Integer>, WrongMessage> getWrongList() {
+    public IdentityHashMap<Pair<Integer, Integer>, WrongMessage> getWrongList() {
         return wrongList;
     }
 
@@ -33,7 +34,7 @@ public class Lexer {
         regEx = new LinkedHashMap<>();
         launchRegex();
         result = new ArrayList<>();
-        wrongList = new LinkedHashMap<>();
+        wrongList = new IdentityHashMap<>();
     }
 
     /**
@@ -55,7 +56,7 @@ public class Lexer {
                     Pattern pattern = Pattern.compile("(\\d+)?([Ee]([\\+\\-]?)(\\d+))"); // 匹配形如10e+100 或e-100这种字符串
                     Matcher matcher = pattern.matcher(tokenContent);
                     if (matcher.matches()) {
-                        System.out.println(token.getTokenString());
+                        //System.out.println(token.getTokenString());
                         int index = tokenContent.indexOf('e');
                         if (index == -1)        // 没查到小e
                             index = tokenContent.indexOf('E');
@@ -71,6 +72,7 @@ public class Lexer {
                             expFlag = false;
                             wrongMessage = new WrongMessage(token.getTokenString(), ErrorCode.EXPONENT_GREATER_LIMIT);
                             wrongList.put(new Pair<>(token.getRow(), token.getColumn()), wrongMessage);
+                            System.out.println(wrongList+"\n");
                         }
                     }
                 } else if (token.getTokenType() == TokenType.INTNUMBER) {
@@ -126,13 +128,16 @@ public class Lexer {
                 }
                 int t = column;
                 column += lexema.length();
+                //System.out.println(lexema+" "+String.valueOf(source.charAt(fromIndex)));
                 return new Token(fromIndex, fromIndex + lexema.length(), row, t, tokenType, lexema);
             }
         }
         int position_row = row;
-        int position_col = column + 1;
+        int position_col = column+1;
+       // System.out.println(column);
         wrongMessage = new WrongMessage(String.valueOf(source.charAt(fromIndex)), ErrorCode.NOT_MATCH);
         wrongList.put(new Pair<>(position_row, position_col), wrongMessage);
+        System.out.println(wrongList+"\n");
         return null;
     }
 

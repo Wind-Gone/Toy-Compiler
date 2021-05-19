@@ -17,7 +17,7 @@ class CompilerApplicationTests {
     @Test
     void contextLoads() throws IOException {
         Lexer lexer = new Lexer();
-        String input = lexer.ReadFile("src/2.txt");
+        String input = lexer.ReadFile("src/3.txt");
         lexer.tokenize(input);
         List<Token> tokens = lexer.getFilteredTokens();
         StringBuilder res = new StringBuilder();
@@ -26,6 +26,7 @@ class CompilerApplicationTests {
             res.append("\n");
         }
         System.out.println(res.toString());
+
         for (Map.Entry<Pair<Integer, Integer>, WrongMessage> entry : lexer.getWrongList().entrySet()) {
             Pair<Integer, Integer> resultPair = entry.getKey();
             int row = resultPair.getKey();
@@ -33,5 +34,6 @@ class CompilerApplicationTests {
             System.out.println("行：" + row + "， 列：" + col + "，此处的字符串\"" + entry.getValue().getTokenContent() + "\"附近或许存在错误，提示：" +
                     entry.getValue().getErrorCode().getMessage());
         }
+
     }
 }
