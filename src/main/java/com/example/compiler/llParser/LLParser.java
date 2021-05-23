@@ -68,6 +68,7 @@ public class LLParser {
                 break;
             }else{
 //                System.out.println("-----跳入4---------a 为：" + a);
+                System.out.print("当前栈："+X+"  action:  ");
                 Production production = grammer.get(parsingTable.get((NonTerminalType) X,a));
                 System.out.println(production);
                 production.setId(id);

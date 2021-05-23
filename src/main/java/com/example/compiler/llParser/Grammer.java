@@ -52,7 +52,7 @@ public class Grammer {
             add(NonTerminalType.STMT);
             add(NonTerminalType.STMTS);
         }}));
-        productions.put(8,new Production(NonTerminalType.STMT, new ArrayList<Object>(){{
+        productions.put(8,new Production(NonTerminalType.STMTS, new ArrayList<Object>(){{
             add(TokenType.EPSILON);
         }}));
         productions.put(9,new Production(NonTerminalType.IFSTMT, new ArrayList<Object>(){{
@@ -97,7 +97,7 @@ public class Grammer {
         }}));
         productions.put(18,new Production(NonTerminalType.ARITHEXPR, new ArrayList<Object>(){{
             add(NonTerminalType.MULTEXPR);
-            add(NonTerminalType.MULTEXPRPRIME);
+            add(NonTerminalType.ARITHEXPRPRIME);
         }}));
         productions.put(19,new Production(NonTerminalType.ARITHEXPRPRIME, new ArrayList<Object>(){{
             add(TokenType.PLUS);
