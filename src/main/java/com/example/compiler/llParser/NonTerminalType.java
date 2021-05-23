@@ -3,7 +3,7 @@ package com.example.compiler.llParser;
 /**
  * 非终结符
  */
-public enum  NonTerminalType {
+public enum NonTerminalType {
     PROGRAM,
     STMT,
     COMPOUNDSTMT,
@@ -18,6 +18,4 @@ public enum  NonTerminalType {
     MULTEXPR,
     MULTEXPRPRIME,
     SIMPLEEXPR,
-
-
 }

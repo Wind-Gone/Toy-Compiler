@@ -5,9 +5,9 @@ if(caizhenghai < yangsunan){
         // caizhenghai increase by 1;
         pantiantian = 10E128;
         pantiantian5 = E+129;
-        pantiantian6 = ./E129;
-        yangsunanaicaizhenghai =
-        huzirui = 1.56784.6666;
+pantiantian6 = ./E129;
+yangsunanaicaizhenghai =
+huzirui = 1.56784.6666;
         huzirui4 = 1.56784;
         huzirui2 = -1.0+ 2.0;
         huzirui3 = +1.0a111;

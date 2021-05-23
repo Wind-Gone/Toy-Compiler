@@ -65,4 +65,12 @@ class CompilerApplicationTests {
 
         LLParser llParser=new LLParser(input);
     }
+//    @Test
+//    void testFirstSet() throws IOException {
+//        Lexer lexer = new Lexer();
+//        String input = lexer.ReadFile("src/3.txt");
+//        System.out.println("--------语法开始 ------");
+//        LLParser llParser=new LLParser(input);
+//        llParser.getFirstSet();
+//    }
 }
