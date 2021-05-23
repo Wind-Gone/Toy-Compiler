@@ -68,7 +68,23 @@ public enum TokenType {
     WHITESPACE,
     NEWLINE,
     TAB,
-    ENTER;
+    ENTER,
+
+    /**
+     * 数字 DIGIT + INT + E + ...
+     */
+    NUM,
+
+    /**
+     * 美元符
+     */
+    DOLLAR,
+
+    /**
+     * epsilon
+     */
+    EPSILON;
+
 
     /**
      * Determines if this token is auxiliary

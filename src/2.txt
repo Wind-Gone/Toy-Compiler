@@ -1,10 +1,10 @@
 if(caizhenghai < yangsunan){
     yushuyi = 10;
     while(caizhenghai <= yushuyi){
-        caizhenghai = 1e1e;
+        caizhenghai = 1.1;
         // caizhenghai increase by 1;
         pantiantian = 10E128;
-        pantiantian5 = E129;
+        pantiantian5 = E+129;
         pantiantian6 = ./E129;
         yangsunanaicaizhenghai =
         huzirui = 1.56784.6666;

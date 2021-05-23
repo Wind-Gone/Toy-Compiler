@@ -112,6 +112,10 @@ public class Lexer {
             throw new IllegalArgumentException("Illegal index in the input stream!");
         }
         for (TokenType tokenType : TokenType.values()) {
+
+            // NUM EPSILON DOLLAR 不识别
+            if(tokenType == TokenType.NUM || tokenType== TokenType.EPSILON || tokenType == TokenType.DOLLAR)
+                continue;
 //            System.out.println(tokenType);
             Pattern p = Pattern.compile(".{" + fromIndex + "}" + regEx.get(tokenType),
                     Pattern.DOTALL);
@@ -119,7 +123,7 @@ public class Lexer {
             if (m.matches()) {
                 String lexema = m.group(1);
 //                System.out.println("---------matched-----------");
-                //找到空格更新行和列
+                //找到回车，评论更新行和列
                 if (tokenType == TokenType.ENTER || tokenType == TokenType.COMMENTS) {
                     row++;
                     int t = column;
@@ -133,8 +137,9 @@ public class Lexer {
             }
         }
         int position_row = row;
-        int position_col = column+1;
-       // System.out.println(column);
+
+        int position_col = column + 1;
+        column++;
         wrongMessage = new WrongMessage(String.valueOf(source.charAt(fromIndex)), ErrorCode.NOT_MATCH);
         wrongList.put(new Pair<>(position_row, position_col), wrongMessage);
         System.out.println(wrongList+"\n");
@@ -152,7 +157,6 @@ public class Lexer {
 
     /**
      * 获取除空格tab回车之外的token列表
-     *
      * @return List<Token>
      */
     public List<Token> getFilteredTokens() {
