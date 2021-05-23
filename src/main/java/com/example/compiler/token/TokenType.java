@@ -95,4 +95,8 @@ public enum TokenType {
         return  this == NEWLINE || this == TAB || this == WHITESPACE || this == ENTER;
     }
 
+
+
+
+
 }

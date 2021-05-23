@@ -1,5 +1,7 @@
 package com.example.compiler.llParser;
 
+import com.example.compiler.token.TokenType;
+
 import java.util.List;
 
 /**
@@ -8,6 +10,8 @@ import java.util.List;
 public class Production {
     private NonTerminalType leftExpression;
     private List<Object> rightExpression;
+    boolean used;
+    int id;
     /**
      *
      * @param leftExpression 产生式左侧为一个非终结符
@@ -16,14 +20,20 @@ public class Production {
     public Production(NonTerminalType leftExpression, List<Object> rightExpression) {
         this.leftExpression = leftExpression;
         this.rightExpression = rightExpression;
+        this.used = false;
+        this.id = -1;
     }
-
+    public NonTerminalType getLeftExpression() {return leftExpression;}
     public List<Object> getRightExpression() {
         return rightExpression;
     }
+    public boolean getUsed() {return used;}
+    public void setUsed() {this.used = true;}
+    public void setId(int id) {this.id = id;}
 
     @Override
     public String toString() {
         return " " + leftExpression + " -> " + rightExpression;
     }
+
 }

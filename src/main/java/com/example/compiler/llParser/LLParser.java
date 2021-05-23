@@ -4,20 +4,21 @@ import com.example.compiler.lexer.Lexer;
 import com.example.compiler.token.Token;
 import com.example.compiler.token.TokenType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class LLParser {
     private Grammer grammer;
     private ParsingTable parsingTable;
     private List<TokenType> w;
     private Stack<Object> stk;
+    private List<Production> productions;
+    private int id = 0;
 
 
     public LLParser(String input) {
         grammer=new Grammer();
         parsingTable = new ParsingTable();
+        productions = new ArrayList<>();
         stk_init();
         w_init(input);
         lmDerivation();
@@ -69,6 +70,9 @@ public class LLParser {
 //                System.out.println("-----跳入4---------a 为：" + a);
                 Production production = grammer.get(parsingTable.get((NonTerminalType) X,a));
                 System.out.println(production);
+                production.setId(id);
+                productions.add(production);
+                id++;
                 stk.pop();
                 List<Object> rightExpression = production.getRightExpression();
                 for(int i=rightExpression.size()-1 ;i>=0;i-- ){
@@ -82,6 +86,8 @@ public class LLParser {
             X=stk.peek();
         }
 
+        printParsingTree(productions);
+
     }
 
     /**
@@ -91,5 +97,39 @@ public class LLParser {
         System.out.println(X);
     }
 
+    private void printParsingTree(List<Production> productions){
+        Production p =productions.get(0);
+        recurseProduction(p);
+        }
+
+
+
+    public void recurseProduction(Production p){
+        List<Object> rightExpression = p.getRightExpression();
+        ListIterator iterator = rightExpression.listIterator();
+        while(iterator.hasNext()){
+            Object s = iterator.next();
+            if(s instanceof  TokenType)
+            {
+                System.out.println(s);
+                if(!iterator.hasNext())
+                return ;
+            }
+            else if(s  instanceof NonTerminalType)
+            {
+                System.out.println(s);
+                for(Production productionInfer:productions){
+                    if(productionInfer.getLeftExpression() == s && productionInfer.getUsed() ){
+                        productionInfer.setUsed();
+                        recurseProduction(productionInfer);
+                        break;
+                    }
+                }
+            }
+
+        }
+
+
+    }
 
 }
