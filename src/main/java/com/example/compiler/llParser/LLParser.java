@@ -119,7 +119,7 @@ public class LLParser {
             {
                 System.out.println(s);
                 for(Production productionInfer:productions){
-                    if(productionInfer.getLeftExpression() == s && productionInfer.getUsed() ){
+                    if(productionInfer.getLeftExpression() == s && productionInfer.getUsed() == false ){
                         productionInfer.setUsed();
                         recurseProduction(productionInfer);
                         break;
