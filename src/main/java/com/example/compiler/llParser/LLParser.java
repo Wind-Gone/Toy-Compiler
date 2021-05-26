@@ -6,6 +6,7 @@ import com.example.compiler.token.TokenType;
 
 import java.util.*;
 
+@SuppressWarnings("all")
 public class LLParser {
     private final Grammer grammer;
     private final ParsingTable parsingTable;
@@ -27,7 +28,8 @@ public class LLParser {
         stk_init();
         w_init(input);
         lmDerivation();
-        VnSet.addAll(Collections.singletonList(Arrays.toString(NonTerminalType.values())));
+        Arrays.asList(NonTerminalType.values())
+                .forEach(item -> VnSet.add(item.getValue()));
     }
 
     private void stk_init() {
@@ -136,6 +138,9 @@ public class LLParser {
     public void getFirstSet() {
         Arrays.asList(NonTerminalType.values())
                 .forEach(item -> getFirst(item.toString()));
+        for (Map.Entry<String, TreeSet<String>> entry : firstSet.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+        }
     }
 
     /*
@@ -144,33 +149,57 @@ public class LLParser {
     public void getFirst(String item) {
         TreeSet<String> treeSet = firstSet.containsKey(item) ? firstSet.get(item) : new TreeSet<>();
         Set<Map.Entry<Integer, Production>> set = grammer.getProductions().entrySet();
-        ArrayList<String> item_production = new ArrayList<>();
+        ArrayList<List<Object>> item_production = new ArrayList<>();
         for (Map.Entry<Integer, Production> integerProductionEntry : set) {
             Production production = integerProductionEntry.getValue();
             NonTerminalType left_expr = production.getLeftExpression();
             List<Object> right_expr = production.getRightExpression();
             if (left_expr.getValue().equals(item)) {
-                item_production.add(right_expr.get(0).toString());
+                item_production.add(right_expr);
             }
         }
-        System.out.println("********");
-        for (String s : item_production)
-            System.out.println("hu" + s);
-        System.out.println("#######");
-//        if (!VnSet.contains(item)){
-//            treeSet.add(item);
-//            firstSet.put(item,treeSet);
-//            return;
+//        for (List<Object> list : item_production) {
+//            System.out.println(item);
+//            System.out.println(list);
 //        }
-//        else {
-//        }
+//        System.out.println("*******");
+        if (!VnSet.contains(item)) {
+            treeSet.add(item);
+            firstSet.put(item, treeSet);
+            return;
+        } else {
+            for (List<Object> s : item_production) {
+                int i = 0;
+                while (i < s.size()) {
+                    String str = s.get(i).toString();
+                    getFirst(str);
+                    TreeSet<String> tvSet = firstSet.get(str);
+                    for (String tmp : tvSet) {
+                        if (tmp != "EPSILON")
+                            treeSet.add(tmp);
+                    }
+                    if (tvSet.contains("EPSILON"))
+                        i++;
+                    else
+                        break;
+                }
+                if (i == s.size())
+                    treeSet.add("EPSILON");
+            }
+            firstSet.put(item, treeSet);
+        }
     }
-//    /*
-//    获取Follow集
-//     */
-//    // TODO
-//    public void getFollowSet() {
-//
-//    }
+
+    public void getFollowSet(){
+
+    }
+    public void getFollow(){
+
+    }
+
+    public void buildTable(){
+
+    }
+
 
 }

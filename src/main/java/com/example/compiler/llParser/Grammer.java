@@ -142,7 +142,9 @@ public class Grammer {
             add(TokenType.NUM);
         }}));
         productions.put(28, new Production(NonTerminalType.SIMPLEEXPR, new ArrayList<Object>() {{
-            add(TokenType.EPSILON);
+            add(TokenType.OPENBRACE);
+            add(NonTerminalType.ARITHEXPRPRIME);
+            add(TokenType.CLOSEBRACE);
         }}));
 
 
