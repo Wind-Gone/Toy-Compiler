@@ -4,14 +4,14 @@ public enum TokenType {
     /**
      * 注释
      */
-    COMMENTS,
+    COMMENTS("COMMENTS"),
 
     /**
      * 特殊数字先判断
      */
-    REALNUMBER,
-    EXPONENT,
-    FRACTION,
+    REALNUMBER("REALNUMBER"),
+    EXPONENT("EXPONENT"),
+    FRACTION("FRACTION"),
 
 
 
@@ -19,71 +19,71 @@ public enum TokenType {
     /**
      * keywords
      */
-    IF,
-    THEN,
-    ELSE,
-    WHILE,
+    IF("IF"),
+    THEN("THEN"),
+    ELSE("ELSE"),
+    WHILE("WHILE"),
 
     /**
      * 标识符
      */
-    IDENTIFIERS,
+    IDENTIFIERS("IDENTIFIERS"),
 
     /**
      * operator
      */
-    PLUS,
-    MINUS,
-    DIVIDE,
-    MULTIPLY,
-    EQUAL,
-    EQUALEQUAL,
-    LESS,
-    LESSEQUAL,
-    GREATER,
-    GREATEREQUAL,
-    NOTEQUAL,
+    PLUS("PLUS"),
+    MINUS("MINUS"),
+    DIVIDE("DIVIDE"),
+    MULTIPLY("MULTIPLY"),
+    EQUAL("EQUAL"),
+    EQUALEQUAL("EQUALEQUAL"),
+    LESS("LESS"),
+    LESSEQUAL("LESSEQUAL"),
+    GREATER("GREATER"),
+    GREATEREQUAL("GREATEREQUAL"),
+    NOTEQUAL("NOTEQUAL"),
 
     /**
      * delimiters
      */
-    OPENBRACE,       // (
-    CLOSEBRACE,      // )
-    OPENCURLYBRACE,  // {
-    CLOSECURLYBRACE, // }
-    SEMICOLON,       // ;
-    COMMA,           // ,
+    OPENBRACE("OPENBRACE"),       // (
+    CLOSEBRACE("CLOSEBRACE"),      // )
+    OPENCURLYBRACE("OPENCURLYBRACE"),  // {
+    CLOSECURLYBRACE("CLOSECURLYBRACE"), // }
+    SEMICOLON("SEMICOLON"),       // ;
+    COMMA("COMMA"),           // ,
 
     /**
      * numbers
      */
-    DIGIT,
-    INTNUMBER,
+    DIGIT("DIGIT"),
+    INTNUMBER("INTNUMBER"),
 
 
 
     /**
      * 空格 TAB 回车
      */
-    WHITESPACE,
-    NEWLINE,
-    TAB,
-    ENTER,
+    WHITESPACE("WHITESPACE"),
+    NEWLINE("NEWLINE"),
+    TAB("TAB"),
+    ENTER("ENTER"),
 
     /**
      * 数字 DIGIT + INT + E + ...
      */
-    NUM,
+    NUM("NUM"),
 
     /**
      * 美元符
      */
-    DOLLAR,
+    DOLLAR("DOLLAR"),
 
     /**
      * epsilon
      */
-    EPSILON;
+    EPSILON("EPSILON");
 
 
     /**
@@ -94,8 +94,20 @@ public enum TokenType {
     public boolean isAuxiliary() {
         return  this == NEWLINE || this == TAB || this == WHITESPACE || this == ENTER;
     }
+    private final String value;
 
+    TokenType(final String value) {
+        this.value = value;
+    }
 
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return this.getValue();
+    }
 
 
 

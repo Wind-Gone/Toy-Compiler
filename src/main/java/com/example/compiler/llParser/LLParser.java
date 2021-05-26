@@ -9,11 +9,12 @@ import java.util.*;
 public class LLParser {
     private final Grammer grammer;
     private final ParsingTable parsingTable;
-    private HashMap<NonTerminalType, TreeSet<String>> firstSet;
-    private HashMap<NonTerminalType, TreeSet<String>> followSet;
+    private final HashMap<String, TreeSet<String>> firstSet;
+    private final HashMap<String, TreeSet<String>> followSet;
     private List<TokenType> w;
     private Stack<Object> stk;
-    private List<Production> productions;
+    private final List<Production> productions;
+    private final HashSet<String> VnSet = new HashSet<>();//非终结符Vn集合
     private int id = 0;
 
 
@@ -21,9 +22,12 @@ public class LLParser {
         grammer = new Grammer();
         parsingTable = new ParsingTable();
         productions = new ArrayList<>();
+        firstSet = new HashMap<>();
+        followSet = new HashMap<>();
         stk_init();
         w_init(input);
         lmDerivation();
+        VnSet.addAll(Collections.singletonList(Arrays.toString(NonTerminalType.values())));
     }
 
     private void stk_init() {
@@ -105,48 +109,6 @@ public class LLParser {
         recurseProduction(p);
     }
 
-    public void getFirstSet() {
-        Set<Map.Entry<Integer, Production>> set = grammer.getProductions().entrySet();
-        for (Map.Entry<Integer, Production> integerProductionEntry : set) {
-            int label = integerProductionEntry.getKey();
-            getFirst(label);
-        }
-    }
-
-    /*
-    获取First集
-     */
-    public void getFirst(int label) {
-        NonTerminalType leftExpr = grammer.getProductions().get(label).getLeftExpression();
-        List<Object> rightExprList = grammer.getProductions().get(label).getRightExpression();
-        TreeSet<String> treeSet = firstSet.containsKey(leftExpr) ? firstSet.get(leftExpr) : new TreeSet<>();
-        Object rightExpr = rightExprList.get(0);
-        int i = 0;
-        if (!(rightExpr instanceof NonTerminalType)) {
-            String rightExpr2String = (String) rightExpr;
-            treeSet.add(rightExpr2String);
-            return;
-        } else {
-            while (i < rightExprList.size()) {
-                for (Map.Entry<Integer, Production> entry : grammer.getProductions().entrySet()) {
-                    if (entry.getValue().getLeftExpression().equals(rightExprList.get((i)))) {
-                        getFirst(entry.getKey());
-                    }
-                }
-                TreeSet<String> nonTerTreeSet = firstSet.get((NonTerminalType) rightExprList.get(i));
-                for (String tmp : nonTerTreeSet) {
-                    if (!tmp.equals("EPSILON"))
-                        treeSet.add(tmp);
-                }
-                if (nonTerTreeSet.contains("EPSILON"))
-                    i++;
-                else
-                    break;
-            }
-        }
-        firstSet.put(leftExpr, treeSet);
-    }
-
 
     public void recurseProduction(Production p) {
         List<Object> rightExpression = p.getRightExpression();
@@ -167,17 +129,48 @@ public class LLParser {
                     }
                 }
             }
-
         }
+    }
 
 
+    public void getFirstSet() {
+        Arrays.asList(NonTerminalType.values())
+                .forEach(item -> getFirst(item.toString()));
     }
 
     /*
-    获取Follow集
+    获取First集
      */
-    // TODO
-    public void getFollowSet() {
-
+    public void getFirst(String item) {
+        TreeSet<String> treeSet = firstSet.containsKey(item) ? firstSet.get(item) : new TreeSet<>();
+        Set<Map.Entry<Integer, Production>> set = grammer.getProductions().entrySet();
+        ArrayList<String> item_production = new ArrayList<>();
+        for (Map.Entry<Integer, Production> integerProductionEntry : set) {
+            Production production = integerProductionEntry.getValue();
+            NonTerminalType left_expr = production.getLeftExpression();
+            List<Object> right_expr = production.getRightExpression();
+            if (left_expr.getValue().equals(item)) {
+                item_production.add(right_expr.get(0).toString());
+            }
+        }
+        System.out.println("********");
+        for (String s : item_production)
+            System.out.println("hu" + s);
+        System.out.println("#######");
+//        if (!VnSet.contains(item)){
+//            treeSet.add(item);
+//            firstSet.put(item,treeSet);
+//            return;
+//        }
+//        else {
+//        }
     }
+//    /*
+//    获取Follow集
+//     */
+//    // TODO
+//    public void getFollowSet() {
+//
+//    }
+
 }

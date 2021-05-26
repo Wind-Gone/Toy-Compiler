@@ -55,7 +55,7 @@ public class Grammer {
             add(NonTerminalType.STMT);
             add(NonTerminalType.STMTS);
         }}));
-        productions.put(8, new Production(NonTerminalType.STMT, new ArrayList<Object>() {{
+        productions.put(8, new Production(NonTerminalType.STMTS, new ArrayList<Object>() {{
             add(TokenType.EPSILON);
         }}));
         productions.put(9, new Production(NonTerminalType.IFSTMT, new ArrayList<Object>() {{
@@ -63,6 +63,9 @@ public class Grammer {
             add(TokenType.OPENBRACE);
             add(NonTerminalType.BOOLEXPR);
             add(TokenType.CLOSEBRACE);
+            add(TokenType.THEN);
+            add(NonTerminalType.STMT);
+            add(TokenType.ELSE);
             add(NonTerminalType.STMT);
         }}));
         productions.put(10, new Production(NonTerminalType.WHILESTMT, new ArrayList<Object>() {{
