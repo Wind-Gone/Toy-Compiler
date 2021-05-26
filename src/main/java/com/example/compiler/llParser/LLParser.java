@@ -12,6 +12,7 @@ public class LLParser {
     private final ParsingTable parsingTable;
     private final HashMap<String, TreeSet<String>> firstSet;
     private final HashMap<String, TreeSet<String>> followSet;
+    private final HashMap<List<Object>, TreeSet<String>> firstSet2;
     private List<TokenType> w;
     private Stack<Object> stk;
     private final List<Production> productions;
@@ -25,6 +26,7 @@ public class LLParser {
         parsingTable = new ParsingTable();
         productions = new ArrayList<>();
         firstSet = new HashMap<>();
+        firstSet2 = new HashMap<>();
         followSet = new HashMap<>();
         stk_init();
         w_init(input);
@@ -135,7 +137,9 @@ public class LLParser {
         }
     }
 
-
+    /*
+        获取First集
+         */
     public void getFirstSet() {
         Arrays.asList(NonTerminalType.values())
                 .forEach(item -> getFirst(item.toString()));
@@ -144,9 +148,7 @@ public class LLParser {
         }
     }
 
-    /*
-    获取First集
-     */
+
     public void getFirst(String item) {
         TreeSet<String> treeSet = firstSet.containsKey(item) ? firstSet.get(item) : new TreeSet<>();    //如果已经存在了这个key就直接获取否则新建一个
         Set<Map.Entry<Integer, Production>> set = grammer.getProductions().entrySet();
@@ -161,9 +163,11 @@ public class LLParser {
         }
 //        for (List<Object> list : item_production) {
 //            System.out.println(item);
-//            System.out.println(list);
+//            System.out.println(list.toString());
+////            System.out.println("&*******");
+////            System.out.println(list.get(0));
+////            System.out.println("######");
 //        }
-//        System.out.println("*******");
         if (!VnSet.contains(item)) {                // 如果是终结符
             treeSet.add(item);
             firstSet.put(item, treeSet);
@@ -191,12 +195,40 @@ public class LLParser {
         }
     }
 
-    public void getFollowSet() {
+    public void getFirstList(List<Object> list) {
+        TreeSet<String> treeSet = firstSet2.containsKey(list) ? firstSet2.get(list) : new TreeSet<>();    //如果已经存在了这个key就直接获取否则新建一个
+        int index = 0;
+        while (index < list.size()) {
+            String str = list.get(index).toString();
+            if (!firstSet.containsKey(str))
+                getFirst(str);
+            TreeSet<String> tmpSet = firstSet.get(str);
+            for (String tmp : tmpSet) {
+                if (tmp != "EPSILON")
+                    treeSet.add(tmp);
+            }
+            if (tmpSet.contains("EPSILON"))
+                index++;
+            else
+                break;
+            if (index == list.size())
+                treeSet.add("EPSILON");
+        }
+        firstSet2.put(list, treeSet);
+    }
 
+    public void getFollowSet() {
+        for (int i = 0; i < 3; i++) {
+            Arrays.asList(NonTerminalType.values())
+                    .forEach(item -> getFollow(item.toString()));
+        }
+        for (Map.Entry<String, TreeSet<String>> entry : followSet.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+        }
     }
 
     public void getFollow(String item) {
-        TreeSet<String> treeSet = followSet.containsKey(item) ? followSet.get(item) : new TreeSet<>();
+        TreeSet<String> setA = followSet.containsKey(item) ? followSet.get(item) : new TreeSet<>();
         Set<Map.Entry<Integer, Production>> set = grammer.getProductions().entrySet();
         ArrayList<List<Object>> item_production = new ArrayList<>();
         for (Map.Entry<Integer, Production> integerProductionEntry : set) {     //得到所有产生式
@@ -208,7 +240,53 @@ public class LLParser {
             }
         }
         if (item == start) {
-            treeSet.add(TokenType.DOLLAR.toString());
+            setA.add(TokenType.DOLLAR.toString());
+            followSet.put(item, setA);
+        }
+
+        for (List<Object> list : item_production) {
+            int endIndex = list.size() - 1;
+            while (endIndex >= 0) {
+                String str = list.get(endIndex).toString();
+                if (VnSet.contains(str)) {
+                    // 假定都满足A->αBβ产生式
+                    if (list.size() - endIndex <= 1) { //非终结符后没有字符，运用规则3
+                        if (str != item) {
+                            TreeSet<String> setB = followSet.containsKey(str) ? followSet.get(str) : new TreeSet<>();
+                            setB.addAll(setA);
+                            followSet.put(str, setB);
+                        }
+                    } else {                //非终结符后有字符，运用规则2
+                        List<Object> templist = list.subList(endIndex + 1, list.size());
+                        TreeSet<String> tempSet = null;
+                        if (templist.size() == 1) {         // 如果β只有单个字符串，获取单个字符串的first集合
+                            if (!firstSet.containsKey(templist.get(0)))
+                                getFirst(templist.get(0).toString());
+                            tempSet = firstSet.get(templist.get(0));
+                        } else {                        // 如果β具有多个字符串，获取以列表形式的字符串的first集合
+                            if (!firstSet2.containsKey(templist))
+                                getFirstList(templist);
+                            tempSet = firstSet2.get(templist);
+                        }
+                        TreeSet<String> setX = followSet.containsKey(str) ? followSet.get(str) : new TreeSet<>();   //更新str的follow集合
+                        for (String var : tempSet)
+                            if (var != "EPSILON")
+                                setX.add(var);
+                        followSet.put(str, setX);
+
+                        // 若first(β)包含空串   followA 加入 followB
+                        if (tempSet.contains("EPSILON")) {
+                            if (item != str) {
+                                TreeSet<String> setB = followSet.containsKey(str) ? followSet.get(str) : new TreeSet<>();
+                                setB.addAll(setA);
+                                followSet.put(str, setB);
+                            }
+                        }
+                    }
+                    endIndex--;
+                } else
+                    endIndex--;
+            }
         }
 
     }
