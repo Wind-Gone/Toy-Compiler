@@ -1,8 +1,11 @@
 package com.example.compiler.llParser;
 
+import com.example.compiler.entity.ErrorCode;
+import com.example.compiler.entity.WrongMessage;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.token.Token;
 import com.example.compiler.token.TokenType;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -16,6 +19,7 @@ public class LLParser {
     private final List<Production> productions;                         // 存储每个非终结符的所有产生式
     private final HashSet<String> VnSet = new HashSet<>();              //非终结符Vn集合
     private final HashSet<String> VtSet = new HashSet<>();              //终结符Vt集合
+    private final HashMap<Pair<Integer, Integer>, WrongMessage> wrongList = new HashMap<>();    //错误列表
     private static String start = "PROGRAM";
     private final HashMap<String, ArrayList<List<Object>>> productionMap = new HashMap<>();
     private List<TokenType> w;
@@ -74,17 +78,17 @@ public class LLParser {
                 ip++;
             } else if (X instanceof TokenType) {
 //                System.out.println("-----跳入2---------a 为：" + a);
-                error(X);
+                error(X,a);
                 break;
             } else if (parsingTable.get((NonTerminalType) X, a) == -1) {
 //                System.out.println("-----跳入3--------- a 为：" + a);
-                error(X);
+                error(X,a);
                 break;
             } else {
 //                System.out.println("-----跳入4---------a 为：" + a);
-                System.out.print("当前栈：" + X + "  action:  ");
+//                System.out.print("当前栈：" + X + "  action:  ");
                 Production production = grammer.get(parsingTable.get((NonTerminalType) X, a));
-                System.out.println(production);
+//                System.out.println(production);
                 production.setId(id);
                 productions.add(production);
                 id++;
@@ -108,8 +112,11 @@ public class LLParser {
     /**
      * 书上就一个函数名，我也不知道咋写
      */
-    private void error(Object X) {
-        System.out.println(X);
+    private void error(Object X,TokenType a) {
+        System.out.println(X + "  " + a);
+        WrongMessage wrongMessage = new WrongMessage(X.toString(), ErrorCode.NOT_MATCH);
+        if (X instanceof TokenType)
+            wrongList.put(new Pair<>(((Token) X).getRow(),((Token) X).getColumn()), wrongMessage);
     }
 
     private void printParsingTree(List<Production> productions) {
@@ -203,7 +210,7 @@ public class LLParser {
                 set.add("EPSILON");
             }
         }
-        System.out.println("  " + s + "  " + set);
+//        System.out.println("  " + s + "  " + set);
         firstSet2.put(s, set);
     }
 
@@ -221,6 +228,8 @@ public class LLParser {
     public void init() {
         Arrays.asList(NonTerminalType.values())
                 .forEach(item -> createProduces(item.getValue()));
+        getFirstSet();
+        getFollowSet();
     }
 
     /**
@@ -283,10 +292,10 @@ public class LLParser {
                             if (!firstSet2.containsKey(templist))
                                 getFirstList(templist);
                             TreeSet<String> tempSet = firstSet2.get(templist);
-                            System.out.println("this" + ch);
-                            for (String str : tempSet) {
-                                System.out.println(str);
-                            }
+//                            System.out.println("this" + ch);
+//                            for (String str : tempSet) {
+//                                System.out.println(str);
+//                            }
                             if (tempSet.contains("EPSILON")) {
                                 tempSet.remove("EPSILON");
                                 set.addAll(tempSet);
@@ -309,7 +318,6 @@ public class LLParser {
                 }
             }
         }
-
     }
 
     /**
