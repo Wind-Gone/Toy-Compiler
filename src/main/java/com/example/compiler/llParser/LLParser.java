@@ -10,16 +10,16 @@ import java.util.*;
 public class LLParser {
     private final Grammer grammer;
     private final ParsingTable parsingTable;
-    private final HashMap<String, TreeSet<String>> firstSet;
-    private final HashMap<String, TreeSet<String>> followSet;
-    private final HashMap<List<Object>, TreeSet<String>> firstSet2;
-    private List<TokenType> w;
-    private Stack<Object> stk;
-    private final List<Production> productions;
-    private final HashSet<String> VnSet = new HashSet<>();//非终结符Vn集合
-    private final HashSet<String> VtSet = new HashSet<>();//终结符Vt集合
+    private final HashMap<String, TreeSet<String>> firstSet;            // 计算单字符串的first集
+    private final HashMap<String, TreeSet<String>> followSet;           // 计算单字符串的follow集
+    private final HashMap<List<Object>, TreeSet<String>> firstSet2;     // 计算字符串链表的first集
+    private final List<Production> productions;                         // 存储每个非终结符的所有产生式
+    private final HashSet<String> VnSet = new HashSet<>();              //非终结符Vn集合
+    private final HashSet<String> VtSet = new HashSet<>();              //终结符Vt集合
     private static String start = "PROGRAM";
     private final HashMap<String, ArrayList<List<Object>>> productionMap = new HashMap<>();
+    private List<TokenType> w;
+    private Stack<Object> stk;
     private int id = 0;
 
 
@@ -141,14 +141,16 @@ public class LLParser {
     }
 
     /*
-        获取First集
-         */
+    计算所有的First集
+     */
     public void getFirstSet() {
         Arrays.asList(NonTerminalType.values())
                 .forEach(item -> getFirst(item.toString()));
     }
 
-
+    /*
+    计算单个字符串的First集
+     */
     public void getFirst(String item) {
         TreeSet<String> treeSet = firstSet.containsKey(item) ? firstSet.get(item) : new TreeSet<>();    //如果已经存在了这个key就直接获取否则新建一个
         ArrayList<List<Object>> item_production = productionMap.get(item.toString());
@@ -179,6 +181,9 @@ public class LLParser {
         }
     }
 
+    /*
+    计算某个字符串列表的First集
+     */
     public void getFirstList(List<Object> s) {
         TreeSet<String> set = (firstSet2.containsKey(s)) ? firstSet2.get(s) : new TreeSet<>();
         int i = 0;
@@ -202,16 +207,25 @@ public class LLParser {
         firstSet2.put(s, set);
     }
 
+    /*
+    计算所有的Follow集
+     */
     public void getFollowSet() {
         Arrays.asList(NonTerminalType.values())
                 .forEach(item -> getFollow(item.toString()));
     }
 
+    /**
+     * 生成所有的非终结符的产生式
+     */
     public void init() {
         Arrays.asList(NonTerminalType.values())
                 .forEach(item -> createProduces(item.getValue()));
     }
 
+    /**
+     * 具体的执行函数
+     */
     public void createProduces(String nonTerminalType) {
         Set<Map.Entry<Integer, Production>> set = grammer.getProductions().entrySet();
         ArrayList<List<Object>> templist = new ArrayList<>();
@@ -226,13 +240,18 @@ public class LLParser {
         productionMap.put(nonTerminalType, templist);
     }
 
-    public void print2() {
+    /**
+     * 具体的执行函数
+     */
+    public void printproductionMap() {
         for (Map.Entry<String, ArrayList<List<Object>>> entry : productionMap.entrySet()) {
             System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
         }
     }
 
-
+    /**
+     * 得到单个字符串的follow集
+     */
     public void getFollow(String ch) {
         TreeSet<String> set = followSet.containsKey(ch) ? followSet.get(ch) : new TreeSet<>();
         if (ch == start) {
@@ -293,13 +312,15 @@ public class LLParser {
 
     }
 
-
+    /**
+     * 通过first/follow构建表
+     */
     public void buildTable() {
 
     }
 
     // 打印first集和follow集
-    public void print() {
+    public void printFirstAFollow() {
         for (Map.Entry<String, TreeSet<String>> entry : firstSet.entrySet()) {/// first(A)
             String key = entry.getKey();
             System.out.print("FIRST(" + key + ")= ");
