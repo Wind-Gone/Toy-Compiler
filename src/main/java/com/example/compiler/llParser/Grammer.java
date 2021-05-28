@@ -103,7 +103,7 @@ public class Grammer {
         }}));
         productions.put(18, new Production(NonTerminalType.ARITHEXPR, new ArrayList<Object>() {{
             add(NonTerminalType.MULTEXPR);
-            add(NonTerminalType.MULTEXPRPRIME);
+            add(NonTerminalType.ARITHEXPRPRIME);
         }}));
         productions.put(19, new Production(NonTerminalType.ARITHEXPRPRIME, new ArrayList<Object>() {{
             add(TokenType.PLUS);
