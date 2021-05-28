@@ -136,6 +136,7 @@ public class LLParser {
      */
     private void printParseTree(List<Production> productions) {
         Production p = productions.get(0);
+        System.out.println(p.getLeftExpression());
         recurseProduction(p);
     }
 
