@@ -10,9 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootTest
 @SuppressWarnings("all")
@@ -39,21 +37,23 @@ class CompilerApplicationTests {
         }
 
     }
+
     @Test
-    void czh(){
-        List<Object> list = new ArrayList<Object>(){{
+    void czh() {
+        List<Object> list = new ArrayList<Object>() {{
             add(TokenType.DIVIDE);
             add(NonTerminalType.WHILESTMT);
         }};
-        for (Object i: list){
-            if(i instanceof  TokenType){
+        for (Object i : list) {
+            if (i instanceof TokenType) {
                 System.out.println(i);
             }
         }
     }
+
     @Test
     void czh2() {
-        Grammer grammer= new Grammer();
+        Grammer grammer = new Grammer();
         Production production = grammer.get(1);
     }
 
@@ -63,6 +63,38 @@ class CompilerApplicationTests {
         String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语法开始 ------");
 
-        LLParser llParser=new LLParser(input);
+        LLParser llParser = new LLParser(input);
     }
+
+    @Test
+    void testFirstSet() throws IOException {
+        Lexer lexer = new Lexer();
+        String input = lexer.ReadFile("src/3.txt");
+        System.out.println("--------语法开始 ------");
+        LLParser llParser = new LLParser(input);
+        llParser.getFirstSet();
+        llParser.getFollowSet();
+        llParser.printproductionMap();
+        llParser.printFirstAFollow();
+    }
+
+    @Test
+    void testPrint() throws IOException {
+        Lexer lexer = new Lexer();
+        String input = lexer.ReadFile("src/3.txt");
+        System.out.println("--------语法开始 ------");
+        LLParser llParser = new LLParser(input);
+        llParser.printproductionMap();
+    }
+
+    @Test
+    void testFirstAndFolloeSetForCzh() {
+        LLUtil llUtil = new LLUtil();
+//        HashMap<Object, Set<TokenType>> FirstSet =  llUtil.getFirstSet();
+//        HashMap<Object, Set<TokenType>> FollowSet =  llUtil.getFollowSet();
+        HashMap<Pair<NonTerminalType, TokenType>, Production> parsingTable = llUtil.getParsingTable();
+
+    }
+
+
 }

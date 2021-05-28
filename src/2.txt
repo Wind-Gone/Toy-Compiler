@@ -1,22 +1,13 @@
-if(caizhenghai < yangsunan){
-    yushuyi = 10;
-    while(caizhenghai <= yushuyi){
-        caizhenghai = 1.1;
-        // caizhenghai increase by 1;
-        pantiantian = 10E128;
-        pantiantian5 = E+129;
-        pantiantian6 = ./E129;
-        yangsunanaicaizhenghai =
-        huzirui = 1.56784.6666;
-        huzirui4 = 1.56784;
-        huzirui2 = -1.0+ 2.0;
-        huzirui3 = +1.0a111;
-        pantiantian2 = 10E+55;
-        pantiantian3 = -1E-55;
-    }
-}
-else if (caizhenghai > yushuyi){
-    caizhenghai = yushuyi;
-    yushuyi = yangsunan;
-    yangsunan = 11122222222;
+{
+i=10;
+j=100;
+n=1;
+sum=0;
+mult=1;
+while (i>0) {n=n+1;i=i-1;}
+if (j>=50) then sum=sum+j; else {mult=mult*(j+1);sum=sum+i;}
+if (i<=10) then sum=sum-i; else mult=mult+i/2;
+if (i==j) then sum=sum-j; else mult=mult-j/2;
+if (n>1) then n=n-1; else n=n+1;
+if (n<2) then n=n+2; else n=n-2;
 }
