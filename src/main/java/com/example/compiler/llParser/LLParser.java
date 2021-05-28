@@ -10,14 +10,16 @@ import java.util.*;
 public class LLParser {
     private final Grammer grammer;
     private final ParsingTable parsingTable;
-    private final HashMap<String, TreeSet<String>> firstSet;
-    private final HashMap<String, TreeSet<String>> followSet;
-    private final HashMap<List<Object>, TreeSet<String>> firstSet2;
+    private final HashMap<String, TreeSet<String>> firstSet;            // 计算单字符串的first集
+    private final HashMap<String, TreeSet<String>> followSet;           // 计算单字符串的follow集
+    private final HashMap<List<Object>, TreeSet<String>> firstSet2;     // 计算字符串链表的first集
+    private final List<Production> productions;                         // 存储每个非终结符的所有产生式
+    private final HashSet<String> VnSet = new HashSet<>();              //非终结符Vn集合
+    private final HashSet<String> VtSet = new HashSet<>();              //终结符Vt集合
+    private static String start = "PROGRAM";
+    private final HashMap<String, ArrayList<List<Object>>> productionMap = new HashMap<>();
     private List<TokenType> w;
     private Stack<Object> stk;
-    private final List<Production> productions;
-    private final HashSet<String> VnSet = new HashSet<>();//非终结符Vn集合
-    private static String start = "PROGRAM";
     private int id = 0;
 
 
@@ -33,6 +35,7 @@ public class LLParser {
         lmDerivation();
         Arrays.asList(NonTerminalType.values())
                 .forEach(item -> VnSet.add(item.getValue()));
+        init();
     }
 
     private void stk_init() {
@@ -138,36 +141,19 @@ public class LLParser {
     }
 
     /*
-        获取First集
-         */
+    计算所有的First集
+     */
     public void getFirstSet() {
         Arrays.asList(NonTerminalType.values())
                 .forEach(item -> getFirst(item.toString()));
-        for (Map.Entry<String, TreeSet<String>> entry : firstSet.entrySet()) {
-            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-        }
     }
 
-
+    /*
+    计算单个字符串的First集
+     */
     public void getFirst(String item) {
         TreeSet<String> treeSet = firstSet.containsKey(item) ? firstSet.get(item) : new TreeSet<>();    //如果已经存在了这个key就直接获取否则新建一个
-        Set<Map.Entry<Integer, Production>> set = grammer.getProductions().entrySet();
-        ArrayList<List<Object>> item_production = new ArrayList<>();
-        for (Map.Entry<Integer, Production> integerProductionEntry : set) {
-            Production production = integerProductionEntry.getValue();
-            NonTerminalType left_expr = production.getLeftExpression();
-            List<Object> right_expr = production.getRightExpression();
-            if (left_expr.getValue().equals(item)) {
-                item_production.add(right_expr);
-            }
-        }
-//        for (List<Object> list : item_production) {
-//            System.out.println(item);
-//            System.out.println(list.toString());
-////            System.out.println("&*******");
-////            System.out.println(list.get(0));
-////            System.out.println("######");
-//        }
+        ArrayList<List<Object>> item_production = productionMap.get(item.toString());
         if (!VnSet.contains(item)) {                // 如果是终结符
             treeSet.add(item);
             firstSet.put(item, treeSet);
@@ -195,105 +181,166 @@ public class LLParser {
         }
     }
 
-    public void getFirstList(List<Object> list) {
-        TreeSet<String> treeSet = firstSet2.containsKey(list) ? firstSet2.get(list) : new TreeSet<>();    //如果已经存在了这个key就直接获取否则新建一个
-        int index = 0;
-        while (index < list.size()) {
-            String str = list.get(index).toString();
-            if (!firstSet.containsKey(str))
-                getFirst(str);
-            TreeSet<String> tmpSet = firstSet.get(str);
-            for (String tmp : tmpSet) {
+    /*
+    计算某个字符串列表的First集
+     */
+    public void getFirstList(List<Object> s) {
+        TreeSet<String> set = (firstSet2.containsKey(s)) ? firstSet2.get(s) : new TreeSet<>();
+        int i = 0;
+        while (i < s.size()) {
+            String tn = s.get(i).toString();
+            if (!firstSet.containsKey(tn))
+                getFirst(tn);
+            TreeSet<String> tvSet = firstSet.get(tn);
+            for (String tmp : tvSet)
                 if (tmp != "EPSILON")
-                    treeSet.add(tmp);
-            }
-            if (tmpSet.contains("EPSILON"))
-                index++;
+                    set.add(tmp);
+            if (tvSet.contains("EPSILON"))
+                i++;
             else
                 break;
-            if (index == list.size())
-                treeSet.add("EPSILON");
+            if (i == s.size()) {
+                set.add("EPSILON");
+            }
         }
-        firstSet2.put(list, treeSet);
+        System.out.println("  " + s + "  " + set);
+        firstSet2.put(s, set);
     }
 
+    /*
+    计算所有的Follow集
+     */
     public void getFollowSet() {
-        for (int i = 0; i < 3; i++) {
-            Arrays.asList(NonTerminalType.values())
-                    .forEach(item -> getFollow(item.toString()));
+        Arrays.asList(NonTerminalType.values())
+                .forEach(item -> getFollow(item.toString()));
+    }
+
+    /**
+     * 生成所有的非终结符的产生式
+     */
+    public void init() {
+        Arrays.asList(NonTerminalType.values())
+                .forEach(item -> createProduces(item.getValue()));
+    }
+
+    /**
+     * 具体的执行函数
+     */
+    public void createProduces(String nonTerminalType) {
+        Set<Map.Entry<Integer, Production>> set = grammer.getProductions().entrySet();
+        ArrayList<List<Object>> templist = new ArrayList<>();
+        for (Map.Entry<Integer, Production> integerProductionEntry : set) {
+            Production production = integerProductionEntry.getValue();
+            NonTerminalType left_expr = production.getLeftExpression();
+            List<Object> right_expr = production.getRightExpression();
+            if (nonTerminalType == left_expr.getValue()) {
+                templist.add(right_expr);
+            }
         }
-        for (Map.Entry<String, TreeSet<String>> entry : followSet.entrySet()) {
+        productionMap.put(nonTerminalType, templist);
+    }
+
+    /**
+     * 具体的执行函数
+     */
+    public void printproductionMap() {
+        for (Map.Entry<String, ArrayList<List<Object>>> entry : productionMap.entrySet()) {
             System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
         }
     }
 
-    public void getFollow(String item) {
-        TreeSet<String> setA = followSet.containsKey(item) ? followSet.get(item) : new TreeSet<>();
-        Set<Map.Entry<Integer, Production>> set = grammer.getProductions().entrySet();
-        ArrayList<List<Object>> item_production = new ArrayList<>();
-        for (Map.Entry<Integer, Production> integerProductionEntry : set) {     //得到所有产生式
-            Production production = integerProductionEntry.getValue();
-            NonTerminalType left_expr = production.getLeftExpression();
-            List<Object> right_expr = production.getRightExpression();
-            if (left_expr.getValue().equals(item)) {
-                item_production.add(right_expr);
-            }
+    /**
+     * 得到单个字符串的follow集
+     */
+    public void getFollow(String ch) {
+        TreeSet<String> set = followSet.containsKey(ch) ? followSet.get(ch) : new TreeSet<>();
+        if (ch == start) {
+            set.add(TokenType.DOLLAR.toString());
+            followSet.put(ch, set);
         }
-        if (item == start) {
-            setA.add(TokenType.DOLLAR.toString());
-            followSet.put(item, setA);
-        }
+        for (Map.Entry<String, ArrayList<List<Object>>> entry : productionMap.entrySet()) {
+            String key = entry.getKey().toString();
+            ArrayList<List<Object>> item_production = entry.getValue();
+            for (List<Object> s : item_production) {
+                for (int i = 0; i < s.size(); i++) {
+                    if (s.get(i).toString() == ch) {
+                        if (i == (s.size() - 1)) {
+                            TreeSet<String> tempSet = null;
+                            if (key != ch) {
+                                if (followSet.containsKey(key))
+                                    tempSet = followSet.get(key);
+                                else {
+                                    getFollow(key);
+                                    tempSet = followSet.get(key);
+                                }
+                                set.addAll(tempSet);
+                                followSet.put(ch, set);
+                            }
 
-        for (List<Object> list : item_production) {
-            int endIndex = list.size() - 1;
-            while (endIndex >= 0) {
-                String str = list.get(endIndex).toString();
-                if (VnSet.contains(str)) {
-                    // 假定都满足A->αBβ产生式
-                    if (list.size() - endIndex <= 1) { //非终结符后没有字符，运用规则3
-                        if (str != item) {
-                            TreeSet<String> setB = followSet.containsKey(str) ? followSet.get(str) : new TreeSet<>();
-                            setB.addAll(setA);
-                            followSet.put(str, setB);
-                        }
-                    } else {                //非终结符后有字符，运用规则2
-                        List<Object> templist = list.subList(endIndex + 1, list.size());
-                        TreeSet<String> tempSet = null;
-                        if (templist.size() == 1) {         // 如果β只有单个字符串，获取单个字符串的first集合
-                            if (!firstSet.containsKey(templist.get(0)))
-                                getFirst(templist.get(0).toString());
-                            tempSet = firstSet.get(templist.get(0));
-                        } else {                        // 如果β具有多个字符串，获取以列表形式的字符串的first集合
+                        } else {
+                            int j = i + 1;
+                            List<Object> templist = s.subList(j, s.size());
                             if (!firstSet2.containsKey(templist))
                                 getFirstList(templist);
-                            tempSet = firstSet2.get(templist);
-                        }
-                        TreeSet<String> setX = followSet.containsKey(str) ? followSet.get(str) : new TreeSet<>();   //更新str的follow集合
-                        for (String var : tempSet)
-                            if (var != "EPSILON")
-                                setX.add(var);
-                        followSet.put(str, setX);
-
-                        // 若first(β)包含空串   followA 加入 followB
-                        if (tempSet.contains("EPSILON")) {
-                            if (item != str) {
-                                TreeSet<String> setB = followSet.containsKey(str) ? followSet.get(str) : new TreeSet<>();
-                                setB.addAll(setA);
-                                followSet.put(str, setB);
+                            TreeSet<String> tempSet = firstSet2.get(templist);
+                            System.out.println("this" + ch);
+                            for (String str : tempSet) {
+                                System.out.println(str);
                             }
+                            if (tempSet.contains("EPSILON")) {
+                                tempSet.remove("EPSILON");
+                                set.addAll(tempSet);
+                                TreeSet<String> tempSet3 = null;
+                                if (ch != key) {
+                                    if (followSet.containsKey(key))
+                                        tempSet3 = followSet.get(key);
+                                    else {
+                                        getFollow(key);
+                                        tempSet3 = followSet.get(key);
+                                    }
+                                    set.addAll(tempSet3);
+                                }
+                            } else {
+                                set.addAll(tempSet);
+                            }
+                            followSet.put(ch, set);
                         }
                     }
-                    endIndex--;
-                } else
-                    endIndex--;
+                }
             }
         }
 
     }
 
+    /**
+     * 通过first/follow构建表
+     */
     public void buildTable() {
 
     }
 
+    // 打印first集和follow集
+    public void printFirstAFollow() {
+        for (Map.Entry<String, TreeSet<String>> entry : firstSet.entrySet()) {/// first(A)
+            String key = entry.getKey();
+            System.out.print("FIRST(" + key + ")= ");
+            TreeSet<String> set = firstSet.get(key);
+            Iterator<String> iterator = set.iterator();
+            while (iterator.hasNext()) {
+                System.out.print(iterator.next() + " ");
+            }
+            System.out.println();
+        }
+        for (Map.Entry<String, TreeSet<String>> entry : followSet.entrySet()) {
+            String key = entry.getKey();
+            System.out.print("FOLLOW(" + key + ")= ");
+            TreeSet<String> set = followSet.get(key);
+            Iterator<String> iterator = set.iterator();
+            while (iterator.hasNext()) {
+                System.out.print(iterator.next() + " ");
+            }
+            System.out.println();
+        }
+    }
 
 }
