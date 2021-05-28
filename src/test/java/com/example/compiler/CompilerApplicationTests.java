@@ -92,9 +92,14 @@ class CompilerApplicationTests {
 //        HashMap<Object, Set<TokenType>> FirstSet =  llUtil.getFirstSet();
 //        HashMap<Object, Set<TokenType>> FollowSet =  llUtil.getFollowSet();
         HashMap<Pair<NonTerminalType, TokenType>, Object> parsingTable = llUtil.getParsingTable();
+
         for (Map.Entry<Pair<NonTerminalType, TokenType>, Object> entry : parsingTable.entrySet()) {
-            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+
+                System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+
+
         }
+
     }
 
 //    @Test
