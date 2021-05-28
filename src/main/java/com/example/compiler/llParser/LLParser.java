@@ -113,7 +113,7 @@ public class LLParser {
             X = stk.peek();
         }
 
-        printParsingTree(productions);
+        printParseTree(productions);
 
     }
 
@@ -127,13 +127,18 @@ public class LLParser {
             wrongList.put(new Pair<>(((Token) X).getRow(),((Token) X).getColumn()), wrongMessage);
     }
 
-    private void printParsingTree(List<Production> productions) {
+    /**
+     * 打印语法树
+     */
+    private void printParseTree(List<Production> productions) {
         Production p = productions.get(0);
         System.out.println(p.getLeftExpression());
         recurseProduction(p);
     }
 
-
+    /**
+     * 递归调用打印预测分析步骤
+     */
     public void recurseProduction(Production p) {
         List<Object> rightExpression = p.getRightExpression();
         ListIterator<Object> iterator = rightExpression.listIterator();
