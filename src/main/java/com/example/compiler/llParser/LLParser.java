@@ -22,8 +22,9 @@ public class LLParser {
     private final HashMap<Pair<Integer, Integer>, WrongMessage> wrongList = new HashMap<>();    //错误列表
     private static String start = "PROGRAM";
     private final HashMap<String, ArrayList<List<Object>>> productionMap = new HashMap<>();
-    private List<TokenType> w;
-    private Stack<Object> stk;
+
+    private List<Token> w;              // 分析程序的输入串
+    private Stack<Object> stk;          // 分析程序的栈
     private int id = 0;
 
 
@@ -56,33 +57,40 @@ public class LLParser {
         for (Token token : tokens) {
             TokenType type = token.getTokenType();
             if (type == TokenType.REALNUMBER || type == TokenType.EXPONENT || type == TokenType.FRACTION || type == TokenType.DIGIT || type == TokenType.INTNUMBER) {
-                type = TokenType.NUM;
+                token.setTokenType(TokenType.NUM);
+                w.add(token);
+                continue;
             }
-            w.add(type);
+            w.add(token);
         }
-        w.add(TokenType.DOLLAR);
+        w.add(new Token(TokenType.DOLLAR));
     }
 
     /**
      * 输出最左推导 -- 书上的伪代码
      */
     private void lmDerivation() {
+//        System.out.println("------w-------------:  "+ w );
         int ip = 0;
         Object X = stk.peek();
         while (X != TokenType.DOLLAR) {
+            System.out.println("------stk-------------: "+stk);
+            System.out.println("------token-------------: "+w.get(ip).getTokenType());
 //            System.out.println("------当前X-----: "+X);
-            TokenType a = w.get(ip);
+            TokenType a = w.get(ip).getTokenType();
             if (X == a) {
 //                System.out.println("-----跳入1---------a 为：" + a);
                 stk.pop();
                 ip++;
             } else if (X instanceof TokenType) {
 //                System.out.println("-----跳入2---------a 为：" + a);
-                error(X,a);
+                error(X,w.get(ip));
                 break;
             } else if (parsingTable.get((NonTerminalType) X, a) == -1) {
 //                System.out.println("-----跳入3--------- a 为：" + a);
-                error(X,a);
+//                System.out.println("-----跳入3--------- X 为：" + X);
+
+                error(X,w.get(ip));
                 break;
             } else {
 //                System.out.println("-----跳入4---------a 为：" + a);
@@ -112,8 +120,8 @@ public class LLParser {
     /**
      * 书上就一个函数名，我也不知道咋写
      */
-    private void error(Object X,TokenType a) {
-        System.out.println(X + "  " + a);
+    private void error(Object X,Token a) {
+        System.out.println("--------error--------"+X + "  " + a);
         WrongMessage wrongMessage = new WrongMessage(X.toString(), ErrorCode.NOT_MATCH);
         if (X instanceof TokenType)
             wrongList.put(new Pair<>(((Token) X).getRow(),((Token) X).getColumn()), wrongMessage);

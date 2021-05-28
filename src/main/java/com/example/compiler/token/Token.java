@@ -16,6 +16,10 @@ public class Token {
         this.tokenString = tokenString;
     }
 
+    public Token(TokenType tokenType){
+        this.tokenType = tokenType;
+    }
+
     public Token(int beginIndex, int endIndex, int row, TokenType tokenType, String tokenString) {
         this.beginIndex = beginIndex;
         this.endIndex = endIndex;
