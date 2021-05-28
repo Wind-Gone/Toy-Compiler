@@ -13,7 +13,8 @@ public enum ErrorCode {
     NOT_MATCH("1002", "输入的程序存在无法识别的程序模块"),
     EXPONENT_GREATER_LIMIT("1003", "Exponent类型值数字位不能超过128"),
     REALNUMBER_FORMAT_ERROR("1004", "不是正确的Realnumber格式"),
-    MISS_SEMICOLON("2001","遗漏分号");
+    MISS_SEMICOLON("2001","遗漏分号"),
+    NOT_MATCH_FOR_GRAMMER("2002","语法阶段报错");
 
 
     private final String code;

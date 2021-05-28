@@ -17,12 +17,12 @@ public class LLParser {
     private final HashMap<String, TreeSet<String>> followSet;           // 计算单字符串的follow集
     private final HashMap<List<Object>, TreeSet<String>> firstSet2;     // 计算字符串链表的first集
     private final List<Production> productions;                         // 存储每个非终结符的所有产生式
-    private final HashSet<String> VnSet = new HashSet<>();              //非终结符Vn集合
-    private final HashSet<String> VtSet = new HashSet<>();              //终结符Vt集合
+    private HashSet<String> VnSet = new HashSet<>();              //非终结符Vn集合
+    private HashSet<String> VtSet = new HashSet<>();              //终结符Vt集合
     private final HashMap<Pair<Integer, Integer>, WrongMessage> wrongList = new HashMap<>();    //错误列表
+    private String[][] finalTable;
     private static String start = "PROGRAM";
     private final HashMap<String, ArrayList<List<Object>>> productionMap = new HashMap<>();
-
     private List<Token> w;              // 分析程序的输入串
     private Stack<Object> stk;          // 分析程序的栈
     private int id = 0;
@@ -37,9 +37,7 @@ public class LLParser {
         followSet = new HashMap<>();
         stk_init();
         w_init(input);
-        lmDerivation();
-        Arrays.asList(NonTerminalType.values())
-                .forEach(item -> VnSet.add(item.getValue()));
+//        lmDerivation();
         init();
     }
 
@@ -74,23 +72,22 @@ public class LLParser {
         int ip = 0;
         Object X = stk.peek();
         while (X != TokenType.DOLLAR) {
-            System.out.println("------stk-------------: "+stk);
-            System.out.println("------token-------------: "+w.get(ip).getTokenType());
+            System.out.println("------stk-------------: " + stk);
+            System.out.println("------token-------------: " + w.get(ip).getTokenType());
 //            System.out.println("------当前X-----: "+X);
             TokenType a = w.get(ip).getTokenType();
             if (X == a) {
 //                System.out.println("-----跳入1---------a 为：" + a);
                 stk.pop();
                 ip++;
-            } else if (X instanceof TokenType) {
+            } else if (X instanceof TokenType) {        // X是终结符
 //                System.out.println("-----跳入2---------a 为：" + a);
-                error(X,w.get(ip));
+                error(X, w.get(ip));
                 break;
             } else if (parsingTable.get((NonTerminalType) X, a) == -1) {
 //                System.out.println("-----跳入3--------- a 为：" + a);
 //                System.out.println("-----跳入3--------- X 为：" + X);
-
-                error(X,w.get(ip));
+                error(X, w.get(ip));
                 break;
             } else {
 //                System.out.println("-----跳入4---------a 为：" + a);
@@ -112,19 +109,26 @@ public class LLParser {
             }
             X = stk.peek();
         }
-
         printParseTree(productions);
 
     }
 
     /**
-     * 书上就一个函数名，我也不知道咋写
+     * 错误恢复
      */
-    private void error(Object X,Token a) {
-        System.out.println("--------error--------"+X + "  " + a);
-        WrongMessage wrongMessage = new WrongMessage(X.toString(), ErrorCode.NOT_MATCH);
-        if (X instanceof TokenType)
-            wrongList.put(new Pair<>(((Token) X).getRow(),((Token) X).getColumn()), wrongMessage);
+    private void error(Object X, Token a) {
+        System.out.println("--------error--------" + X + "  " + a);
+        if (X instanceof TokenType) {        // 如果是个终结符，就直接弹栈尝试继续分析 ? 怎么下面例子是跳过了输入
+            stk.pop();
+        } else if (X instanceof NonTerminalType) {
+            TreeSet<String> firstSetForX = firstSet.get(X.toString());
+            TreeSet<String> followSetForX = followSet.get(X.toString());
+            LLUtil llUtil = new LLUtil();
+            HashMap<Pair<NonTerminalType, TokenType>, Object> parsingTable = llUtil.getParsingTable();
+
+        }
+        WrongMessage wrongMessage = new WrongMessage(X.toString(), ErrorCode.NOT_MATCH_FOR_GRAMMER);
+        wrongList.put(new Pair<>(((Token) X).getRow(), ((Token) X).getColumn()), wrongMessage);
     }
 
     /**
@@ -240,7 +244,11 @@ public class LLParser {
      */
     public void init() {
         Arrays.asList(NonTerminalType.values())
+                .forEach(item -> VnSet.add(item.getValue()));
+        Arrays.asList(NonTerminalType.values())
                 .forEach(item -> createProduces(item.getValue()));
+        String Terminal = "OPENCURLYBRACE,CLOSECURLYBRACE,IF,OPENBRACE,CLOSEBRACE,THEN,ELSE,WHILE,IDENTIFIERS,EQUAL,SEMICOLON,LESS,GREATER,LESSEQUAL,GREATEREQUAL,EQUALEQUAL,PLUS,MINUS,MULTIPLY,DIVIDE,NUM,DOLLAR";
+        VtSet = new HashSet<>(Arrays.asList(Terminal.split(",")));
         getFirstSet();
         getFollowSet();
     }
@@ -333,12 +341,33 @@ public class LLParser {
         }
     }
 
-    /**
-     * 通过first/follow构建表
-     */
-    public void buildTable() {
+//    /**
+//     * 通过first/follow构建表
+//     */
+//    public void buildTable() {
+//        Object[] VnArray = VnSet.toArray();
+//        Object[] VtArray = VtSet.toArray();
+//        finalTable = new String[VnArray.length + 1][VtArray.length + 1];
+//        finalTable[0][0] = "NT\\T";
+//        for (int i = 0; i < VtArray.length; i++)
+//            finalTable[0][i + 1] = VtArray[i].toString();
+//        for (int i = 0; i < VnArray.length; i++)
+//            finalTable[i + 1][0] = VnArray[i] + "";
+//
+//    }
 
-    }
+//    /**
+//     * 将生成式插入表中
+//     */
+//    private void insertTable(String a, String ch, List<Object> l) {
+//        if (ch == TokenType.EPSILON.getValue()){
+//            System.out.println("This is EPSILON");
+//            ch = TokenType.DOLLAR.getValue();
+//        }
+//        for (int i = 0; i < VnSet.size() + 1; i++) {
+//
+//        }
+//    }
 
     // 打印first集和follow集
     public void printFirstAFollow() {

@@ -62,7 +62,6 @@ class CompilerApplicationTests {
         Lexer lexer = new Lexer();
         String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语法开始 ------");
-
         LLParser llParser = new LLParser(input);
     }
 
@@ -92,9 +91,26 @@ class CompilerApplicationTests {
         LLUtil llUtil = new LLUtil();
 //        HashMap<Object, Set<TokenType>> FirstSet =  llUtil.getFirstSet();
 //        HashMap<Object, Set<TokenType>> FollowSet =  llUtil.getFollowSet();
-        HashMap<Pair<NonTerminalType, TokenType>, Production> parsingTable = llUtil.getParsingTable();
-
+        HashMap<Pair<NonTerminalType, TokenType>, Object> parsingTable = llUtil.getParsingTable();
+        for (Map.Entry<Pair<NonTerminalType, TokenType>, Object> entry : parsingTable.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+        }
     }
+
+//    @Test
+//    /**
+//     * @Description
+//     * @Author Hu Zirui
+//     * @Throws
+//     */
+//    void testFinalTable() throws IOException {
+//        Lexer lexer = new Lexer();
+//        String input = lexer.ReadFile("src/3.txt");
+//        System.out.println("--------语法开始 ------");
+//        LLParser llParser = new LLParser(input);
+//        llParser.buildTable();
+//    }
+
 
 
 }
