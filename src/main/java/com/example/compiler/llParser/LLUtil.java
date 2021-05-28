@@ -198,27 +198,26 @@ public class LLUtil {
             NonTerminalType left = production.getLeftExpression();
             Set<TokenType> FS = getFirstSetForAlphas(FirstSet, production.getRightExpression());
             for (TokenType token : FS) {
-                if(token!=TokenType.EPSILON)
+                if (token != TokenType.EPSILON)
                     res.put(new Pair<>(left, token), production);
             }
-//            for (String Terminal : VtSet) {
-//                Set<TokenType> leftFollowSet = FollowSet.get(left);
-//                if (!res.containsKey(new Pair<>(left, TokenType.valueOf(Terminal))))
-//                    if (leftFollowSet.contains(TokenType.valueOf(Terminal))) {
-//                        res.put(new Pair<>(left, TokenType.valueOf(Terminal)), "synch");
-//                    } else {
-//                        res.put(new Pair<>(left, TokenType.valueOf(Terminal)), null);
-//                    }
-//            }
+            for (String Terminal : VtSet) {
+                Set<TokenType> leftFollowSet = FollowSet.get(left);
+                if (!res.containsKey(new Pair<>(left, TokenType.valueOf(Terminal))))
+                    if (leftFollowSet.contains(TokenType.valueOf(Terminal))) {
+                        res.put(new Pair<>(left, TokenType.valueOf(Terminal)), "synch");
+                    } else {
+                        res.put(new Pair<>(left, TokenType.valueOf(Terminal)), null);
+                    }
+            }
             if (FS.contains(TokenType.EPSILON)) {
                 Set<TokenType> leftFollowSet = FollowSet.get(left);
                 for (TokenType token : leftFollowSet) {
-                    if(token!=TokenType.EPSILON)
+                    if (token != TokenType.EPSILON)
                         res.put(new Pair<>(left, token), production);
                 }
             }
         }
-//        System.out.println(VtSet.size());
         System.out.println(res.size());
         return res;
     }

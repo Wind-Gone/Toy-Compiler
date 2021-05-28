@@ -37,7 +37,7 @@ public class LLParser {
         followSet = new HashMap<>();
         stk_init();
         w_init(input);
-//        lmDerivation();
+        lmDerivation();
         init();
     }
 
@@ -120,15 +120,24 @@ public class LLParser {
         System.out.println("--------error--------" + X + "  " + a);
         if (X instanceof TokenType) {        // 如果是个终结符，就直接弹栈尝试继续分析 ? 怎么下面例子是跳过了输入
             stk.pop();
-        } else if (X instanceof NonTerminalType) {
+        } else if (X instanceof NonTerminalType) {      // 如果是个非终结符
             TreeSet<String> firstSetForX = firstSet.get(X.toString());
             TreeSet<String> followSetForX = followSet.get(X.toString());
             LLUtil llUtil = new LLUtil();
             HashMap<Pair<NonTerminalType, TokenType>, Object> parsingTable = llUtil.getParsingTable();
-
+            boolean flag = false;
+            for (Map.Entry<Pair<NonTerminalType, TokenType>, Object> entry : parsingTable.entrySet()) {
+                if (entry.getKey().getKey() == X && entry.getKey().getValue() == a.getTokenType() && entry.getValue() == "synch") {
+                    flag = true;    //如果矩阵元素为 synch，则弹出栈顶非终结符
+                    System.out.println("wuhu");
+                    stk.pop();
+                }
+            }
+            if (!flag)
+                System.out.println("跳过当前输入符号"); // 但我还没写
         }
         WrongMessage wrongMessage = new WrongMessage(X.toString(), ErrorCode.NOT_MATCH_FOR_GRAMMER);
-        wrongList.put(new Pair<>(((Token) X).getRow(), ((Token) X).getColumn()), wrongMessage);
+        wrongList.put(new Pair<>(a.getRow(), a.getColumn()), wrongMessage);
     }
 
     /**
@@ -228,7 +237,6 @@ public class LLParser {
                 set.add("EPSILON");
             }
         }
-//        System.out.println("  " + s + "  " + set);
         firstSet2.put(s, set);
     }
 
@@ -314,10 +322,6 @@ public class LLParser {
                             if (!firstSet2.containsKey(templist))
                                 getFirstList(templist);
                             TreeSet<String> tempSet = firstSet2.get(templist);
-//                            System.out.println("this" + ch);
-//                            for (String str : tempSet) {
-//                                System.out.println(str);
-//                            }
                             if (tempSet.contains("EPSILON")) {
                                 tempSet.remove("EPSILON");
                                 set.addAll(tempSet);

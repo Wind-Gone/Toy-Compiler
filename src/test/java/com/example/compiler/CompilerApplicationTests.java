@@ -73,8 +73,8 @@ class CompilerApplicationTests {
         LLParser llParser = new LLParser(input);
         llParser.getFirstSet();
         llParser.getFollowSet();
-        llParser.printproductionMap();
-        llParser.printFirstAFollow();
+//        llParser.printproductionMap();
+//        llParser.printFirstAFollow();
     }
 
     @Test
@@ -92,12 +92,8 @@ class CompilerApplicationTests {
 //        HashMap<Object, Set<TokenType>> FirstSet =  llUtil.getFirstSet();
 //        HashMap<Object, Set<TokenType>> FollowSet =  llUtil.getFollowSet();
         HashMap<Pair<NonTerminalType, TokenType>, Object> parsingTable = llUtil.getParsingTable();
-
         for (Map.Entry<Pair<NonTerminalType, TokenType>, Object> entry : parsingTable.entrySet()) {
-
-                System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-
-
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
         }
 
     }
@@ -115,7 +111,6 @@ class CompilerApplicationTests {
 //        LLParser llParser = new LLParser(input);
 //        llParser.buildTable();
 //    }
-
 
 
 }
