@@ -90,7 +90,10 @@ class CompilerApplicationTests {
     @Test
     void testFirstAndFolloeSetForCzh() {
         LLUtil llUtil = new LLUtil();
-        HashMap<Object, Set<TokenType>> res =  llUtil.getFollowSet();
+//        HashMap<Object, Set<TokenType>> FirstSet =  llUtil.getFirstSet();
+//        HashMap<Object, Set<TokenType>> FollowSet =  llUtil.getFollowSet();
+        HashMap<Pair<NonTerminalType, TokenType>, Production> parsingTable = llUtil.getParsingTable();
+
     }
 
 

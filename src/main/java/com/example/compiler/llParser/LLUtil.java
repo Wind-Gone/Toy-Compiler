@@ -2,11 +2,9 @@ package com.example.compiler.llParser;
 
 import com.example.compiler.token.Token;
 import com.example.compiler.token.TokenType;
+import javafx.util.Pair;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * czh First 集 Follow 集
@@ -147,21 +145,13 @@ public class LLUtil {
                         Set<TokenType> itemFollowSet = res.get(item);
                         List<Object> alphas = right_expr.subList(j+1,right_expr.size());
                         Set<TokenType> alphasFirstSet = getFirstSetForAlphas(FirstSet,alphas);
-//                        System.out.println("j:  "+j);
-//                        System.out.println("right_expr:   "+right_expr);
-//                        System.out.println("alphas:  "+ alphas);
-//                        System.out.println("alphasFirstSet:  "+ alphasFirstSet);
-                        for(TokenType token : alphasFirstSet ) {
+                      for(TokenType token : alphasFirstSet ) {
                             if(token == TokenType.EPSILON){
                                 continue;
                             }
                             if(!itemFollowSet.contains(token)){
                                 change = true;
                                 itemFollowSet.add(token);
-//                                if(item == NonTerminalType.MULTEXPR && token == TokenType.MULTIPLY ){
-//                                    System.out.println("1111");
-//                                    System.out.println(production);
-//                                }
                             }
                         }
                         if(alphasFirstSet.contains(TokenType.EPSILON) || (j+1) >= right_expr.size() ) {
@@ -185,6 +175,29 @@ public class LLUtil {
         }
         return res;
 
+    }
+
+    public HashMap<Pair<NonTerminalType, TokenType>, Production> getParsingTable() {
+        HashMap<Pair<NonTerminalType, TokenType>, Production> res = new HashMap<>();
+        Grammer grammer=new Grammer();
+        HashMap<Object, Set<TokenType>> FirstSet = getFirstSet();
+        HashMap<Object, Set<TokenType>> FollowSet = getFollowSet();
+        int n=28;
+        for(int i=1;i<=n;i++){
+            Production production = grammer.get(i);
+            NonTerminalType left = production.getLeftExpression();
+            Set<TokenType> FS = getFirstSetForAlphas(FirstSet, production.getRightExpression());
+            for(TokenType token : FS) {
+                res.put(new Pair<>(left,token),production);
+            }
+            if(FS.contains(TokenType.EPSILON)){
+                Set<TokenType> leftFollowSet = FollowSet.get(left);
+                for(TokenType token : leftFollowSet) {
+                    res.put(new Pair<>(left,token),production);
+                }
+            }
+        }
+        return res;
     }
 
 }
