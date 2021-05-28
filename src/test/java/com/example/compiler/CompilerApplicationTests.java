@@ -10,9 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootTest
 @SuppressWarnings("all")
@@ -74,4 +72,12 @@ class CompilerApplicationTests {
 //        llParser.getFirstSet();
         llParser.getFollowSet();
     }
+
+    @Test
+    void testFirstAndFolloeSetForCzh() {
+        LLUtil llUtil = new LLUtil();
+        HashMap<Object, Set<TokenType>> res =  llUtil.getFollowSet();
+    }
+
+
 }
