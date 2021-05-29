@@ -26,6 +26,7 @@ public class LLParser {
     private List<Token> w;              // 分析程序的输入串
     private Stack<Object> stk;          // 分析程序的栈
     private int id = 0;
+    private int ip = 0;
 
 
     public LLParser(String input) {
@@ -69,7 +70,7 @@ public class LLParser {
      */
     private void lmDerivation() {
 //        System.out.println("------w-------------:  "+ w );
-        int ip = 0;
+        ip = 0;
         Object X = stk.peek();
         while (X != TokenType.DOLLAR) {
             System.out.println("------stk-------------: " + stk);
@@ -110,7 +111,7 @@ public class LLParser {
             X = stk.peek();
         }
         printParseTree(productions);
-
+        System.out.println(wrongList + "\n");
     }
 
     /**
@@ -133,10 +134,12 @@ public class LLParser {
                     stk.pop();
                 }
             }
-            if (!flag)
-                System.out.println("跳过当前输入符号"); // 但我还没写
+            if (!flag) {
+                ip++;
+                System.out.println("跳过当前输入符号"); // 指针前移
+            }
         }
-        WrongMessage wrongMessage = new WrongMessage(X.toString(), ErrorCode.NOT_MATCH_FOR_GRAMMER);
+        WrongMessage wrongMessage = new WrongMessage(X.toString(), ErrorCode.NOT_MATCH_FOR_GRAMMER, "语法分析阶段");
         wrongList.put(new Pair<>(a.getRow(), a.getColumn()), wrongMessage);
     }
 
@@ -252,6 +255,7 @@ public class LLParser {
      * 生成所有的非终结符的产生式
      */
     public void init() {
+        ip = 0;
         Arrays.asList(NonTerminalType.values())
                 .forEach(item -> VnSet.add(item.getValue()));
         Arrays.asList(NonTerminalType.values())

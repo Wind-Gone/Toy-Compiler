@@ -19,6 +19,12 @@ public class WrongMessage {
         this.stage = "词法分析阶段";
     }
 
+    public WrongMessage(String tokenContent, ErrorCode errorCode, String stage) {
+        this.tokenContent = tokenContent;
+        this.errorCode = errorCode;
+        this.stage = stage;
+    }
+
     public String getTokenContent() {
         return tokenContent;
     }
