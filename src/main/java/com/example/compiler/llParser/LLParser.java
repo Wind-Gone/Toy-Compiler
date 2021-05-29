@@ -26,7 +26,7 @@ public class LLParser {
     private List<Token> w;              // 分析程序的输入串
     private Stack<Object> stk;          // 分析程序的栈
     private int id = 0;
-    private int ip = 0;
+    private int ip = 0;                 // 栈顶指针
 
 
     public LLParser(String input) {
@@ -38,8 +38,8 @@ public class LLParser {
         followSet = new HashMap<>();
         stk_init();
         w_init(input);
-        lmDerivation();
         init();
+        lmDerivation();
     }
 
     private void stk_init() {
@@ -64,6 +64,22 @@ public class LLParser {
         }
         w.add(new Token(TokenType.DOLLAR));
     }
+
+    /**
+     * 基础初始化
+     */
+    public void init() {
+        ip = 0;
+        Arrays.asList(NonTerminalType.values())
+                .forEach(item -> VnSet.add(item.getValue()));
+        Arrays.asList(NonTerminalType.values())
+                .forEach(item -> createProduces(item.getValue()));
+        String Terminal = "OPENCURLYBRACE,CLOSECURLYBRACE,IF,OPENBRACE,CLOSEBRACE,THEN,ELSE,WHILE,IDENTIFIERS,EQUAL,SEMICOLON,LESS,GREATER,LESSEQUAL,GREATEREQUAL,EQUALEQUAL,PLUS,MINUS,MULTIPLY,DIVIDE,NUM,DOLLAR";
+        VtSet = new HashSet<>(Arrays.asList(Terminal.split(",")));
+        getFirstSet();
+        getFollowSet();
+    }
+
 
     /**
      * 输出最左推导 -- 书上的伪代码
@@ -251,20 +267,6 @@ public class LLParser {
                 .forEach(item -> getFollow(item.toString()));
     }
 
-    /**
-     * 生成所有的非终结符的产生式
-     */
-    public void init() {
-        ip = 0;
-        Arrays.asList(NonTerminalType.values())
-                .forEach(item -> VnSet.add(item.getValue()));
-        Arrays.asList(NonTerminalType.values())
-                .forEach(item -> createProduces(item.getValue()));
-        String Terminal = "OPENCURLYBRACE,CLOSECURLYBRACE,IF,OPENBRACE,CLOSEBRACE,THEN,ELSE,WHILE,IDENTIFIERS,EQUAL,SEMICOLON,LESS,GREATER,LESSEQUAL,GREATEREQUAL,EQUALEQUAL,PLUS,MINUS,MULTIPLY,DIVIDE,NUM,DOLLAR";
-        VtSet = new HashSet<>(Arrays.asList(Terminal.split(",")));
-        getFirstSet();
-        getFollowSet();
-    }
 
     /**
      * 具体的执行函数
