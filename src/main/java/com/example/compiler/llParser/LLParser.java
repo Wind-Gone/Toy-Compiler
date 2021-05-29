@@ -20,9 +20,9 @@ public class LLParser {
     private HashSet<String> VnSet = new HashSet<>();              //非终结符Vn集合
     private HashSet<String> VtSet = new HashSet<>();              //终结符Vt集合
     private final HashMap<Pair<Integer, Integer>, WrongMessage> wrongList = new HashMap<>();    //错误列表
-    private String[][] finalTable;
-    private static String start = "PROGRAM";
-    private final HashMap<String, ArrayList<List<Object>>> productionMap = new HashMap<>();
+    private final HashMap<String, ArrayList<List<Object>>> productionMap = new HashMap<>(); //所有的产生式集合
+    private String[][] finalTable;              //最终的打印表
+    private static String start = "PROGRAM";    // 起始符号
     private List<Token> w;              // 分析程序的输入串
     private Stack<Object> stk;          // 分析程序的栈
     private int id = 0;
@@ -135,8 +135,10 @@ public class LLParser {
      */
     private void error(Object X, Token a) {
         System.out.println("--------error--------" + X + "  " + a);
+        WrongMessage wrongMessage = null;
         if (X instanceof TokenType) {        // 如果是个终结符，就直接弹栈尝试继续分析 ? 怎么下面例子是跳过了输入
             stk.pop();
+            wrongMessage = new WrongMessage(X.toString(), ErrorCode.MISSORADDMORE_SOMETHING, "语法分析阶段");
         } else if (X instanceof NonTerminalType) {      // 如果是个非终结符
             TreeSet<String> firstSetForX = firstSet.get(X.toString());
             TreeSet<String> followSetForX = followSet.get(X.toString());
@@ -154,8 +156,8 @@ public class LLParser {
                 ip++;
                 System.out.println("跳过当前输入符号"); // 指针前移
             }
+            wrongMessage = new WrongMessage(X.toString(), ErrorCode.NOT_MATCH_FOR_GRAMMER, "语法分析阶段");
         }
-        WrongMessage wrongMessage = new WrongMessage(X.toString(), ErrorCode.NOT_MATCH_FOR_GRAMMER, "语法分析阶段");
         wrongList.put(new Pair<>(a.getRow(), a.getColumn()), wrongMessage);
     }
 
@@ -269,7 +271,7 @@ public class LLParser {
 
 
     /**
-     * 具体的执行函数
+     * 生成所有产生式的具体执行函数
      */
     public void createProduces(String nonTerminalType) {
         Set<Map.Entry<Integer, Production>> set = grammer.getProductions().entrySet();
@@ -286,7 +288,7 @@ public class LLParser {
     }
 
     /**
-     * 具体的执行函数
+     * 打印所有的产生式
      */
     public void printproductionMap() {
         for (Map.Entry<String, ArrayList<List<Object>>> entry : productionMap.entrySet()) {
@@ -367,18 +369,6 @@ public class LLParser {
 //
 //    }
 
-//    /**
-//     * 将生成式插入表中
-//     */
-//    private void insertTable(String a, String ch, List<Object> l) {
-//        if (ch == TokenType.EPSILON.getValue()){
-//            System.out.println("This is EPSILON");
-//            ch = TokenType.DOLLAR.getValue();
-//        }
-//        for (int i = 0; i < VnSet.size() + 1; i++) {
-//
-//        }
-//    }
 
     // 打印first集和follow集
     public void printFirstAFollow() {
