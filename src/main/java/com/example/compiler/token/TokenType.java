@@ -4,14 +4,14 @@ public enum TokenType {
     /**
      * 注释
      */
-    COMMENTS("COMMENTS"),
+    COMMENTS("comments"),
 
     /**
      * 特殊数字先判断
      */
-    REALNUMBER("REALNUMBER"),
-    EXPONENT("EXPONENT"),
-    FRACTION("FRACTION"),
+    REALNUMBER("realnumber"),
+    EXPONENT("exponent"),
+    FRACTION("fraction"),
 
 
 
@@ -19,46 +19,45 @@ public enum TokenType {
     /**
      * keywords
      */
-    IF("IF"),
-    THEN("THEN"),
-    ELSE("ELSE"),
-    WHILE("WHILE"),
+    IF("if"),
+    THEN("then"),
+    ELSE("else"),
+    WHILE("while"),
 
     /**
      * 标识符
      */
-    IDENTIFIERS("IDENTIFIERS"),
+    IDENTIFIERS("identifiers"),
 
     /**
      * operator
      */
-    PLUS("PLUS"),
-    MINUS("MINUS"),
-    DIVIDE("DIVIDE"),
-    MULTIPLY("MULTIPLY"),
-    EQUAL("EQUAL"),
-    EQUALEQUAL("EQUALEQUAL"),
-    LESS("LESS"),
-    LESSEQUAL("LESSEQUAL"),
-    GREATER("GREATER"),
-    GREATEREQUAL("GREATEREQUAL"),
-    NOTEQUAL("NOTEQUAL"),
+    PLUS("+"),
+    MINUS("-"),
+    DIVIDE("/"),
+    MULTIPLY("*"),
+    EQUAL("="),
+    EQUALEQUAL("=="),
+    LESS("<"),
+    LESSEQUAL("<="),
+    GREATER(">"),
+    GREATEREQUAL(">="),
 
     /**
      * delimiters
      */
-    OPENBRACE("OPENBRACE"),       // (
-    CLOSEBRACE("CLOSEBRACE"),      // )
-    OPENCURLYBRACE("OPENCURLYBRACE"),  // {
-    CLOSECURLYBRACE("CLOSECURLYBRACE"), // }
-    SEMICOLON("SEMICOLON"),       // ;
-    COMMA("COMMA"),           // ,
+    OPENBRACE("("),       // (
+    CLOSEBRACE(")"),      // )
+    OPENCURLYBRACE("{"),  // {
+    CLOSECURLYBRACE("}"), // }
+    SEMICOLON(";"),       // ;
+    COMMA(","),           // ,
 
     /**
      * numbers
      */
-    DIGIT("DIGIT"),
-    INTNUMBER("INTNUMBER"),
+    DIGIT("digit"),
+    INTNUMBER("intnumber"),
 
 
 
@@ -73,7 +72,7 @@ public enum TokenType {
     /**
      * 数字 DIGIT + INT + E + ...
      */
-    NUM("NUM"),
+    NUM("num"),
 
     /**
      * 美元符

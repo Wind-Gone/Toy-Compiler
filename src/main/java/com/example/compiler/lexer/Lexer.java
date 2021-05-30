@@ -202,7 +202,6 @@ public class Lexer {
         regEx.put(TokenType.LESSEQUAL, "(<=).*");
         regEx.put(TokenType.GREATER, "(>).*");
         regEx.put(TokenType.GREATEREQUAL, "(>=).*");
-        regEx.put(TokenType.NOTEQUAL, "(\\!=).*");
 
         /*
          * delimiters

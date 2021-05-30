@@ -53,8 +53,7 @@ class CompilerApplicationTests {
 
     @Test
     void czh2() {
-        Grammer grammer = new Grammer();
-        Production production = grammer.get(1);
+        TokenType token = TokenType.valueOf("{");
     }
 
     @Test

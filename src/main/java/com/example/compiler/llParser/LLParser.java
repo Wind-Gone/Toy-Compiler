@@ -38,7 +38,7 @@ public class LLParser {
         followSet = new HashMap<>();
         stk_init();
         w_init(input);
-        init();
+//        init();
         lmDerivation();
     }
 

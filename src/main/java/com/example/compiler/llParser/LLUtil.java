@@ -184,7 +184,6 @@ public class LLUtil {
             }
         }
         return res;
-
     }
 
     public HashMap<Pair<NonTerminalType, TokenType>, Object> getParsingTable() {
@@ -221,5 +220,46 @@ public class LLUtil {
         System.out.println(res.size());
         return res;
     }
+
+    public HashMap<Pair<NonTerminalType, TokenType>, Object> getParsingTableWithoutSynch() {
+        HashMap<Pair<NonTerminalType, TokenType>, Object> res = new HashMap<>();
+        Grammer grammer = new Grammer();
+        HashMap<Object, Set<TokenType>> FirstSet = getFirstSet();
+        HashMap<Object, Set<TokenType>> FollowSet = getFollowSet();
+        int n = 28;
+        for (int i = 1; i <= n; i++) {
+            Production production = grammer.get(i);
+            NonTerminalType left = production.getLeftExpression();
+            Set<TokenType> FS = getFirstSetForAlphas(FirstSet, production.getRightExpression());
+            for (TokenType token : FS) {
+                if (token != TokenType.EPSILON)
+                    res.put(new Pair<>(left, token), production);
+            }
+//            for (String Terminal : VtSet) {
+//                Set<TokenType> leftFollowSet = FollowSet.get(left);
+//                if (!res.containsKey(new Pair<>(left, TokenType.valueOf(Terminal))))
+//                    if (leftFollowSet.contains(TokenType.valueOf(Terminal))) {
+//                        res.put(new Pair<>(left, TokenType.valueOf(Terminal)), "synch");
+//                    } else {
+//                        res.put(new Pair<>(left, TokenType.valueOf(Terminal)), null);
+//                    }
+//            }
+            if (FS.contains(TokenType.EPSILON)) {
+                Set<TokenType> leftFollowSet = FollowSet.get(left);
+                for (TokenType token : leftFollowSet) {
+                    if (token != TokenType.EPSILON)
+                        res.put(new Pair<>(left, token), production);
+                }
+            }
+        }
+        System.out.println(res.size());
+        return res;
+    }
+
+    public String printParsingTable() {
+        return "";
+    }
+
+
 
 }

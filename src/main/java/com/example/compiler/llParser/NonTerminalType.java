@@ -4,20 +4,20 @@ package com.example.compiler.llParser;
  * 非终结符
  */
 public enum NonTerminalType {
-    PROGRAM("PROGRAM"),
-    STMT("STMT"),
-    COMPOUNDSTMT("COMPOUNDSTMT"),
-    STMTS("STMTS"),
-    IFSTMT("IFSTMT"),
-    WHILESTMT("WHILESTMT"),
-    ASSGSTMT("ASSGSTMT"),
-    BOOLEXPR("BOOLEXPR"),
-    BOOLOP("BOOLOP"),
-    ARITHEXPR("ARITHEXPR"),
-    ARITHEXPRPRIME("ARITHEXPRPRIME"),
-    MULTEXPR("MULTEXPR"),
-    MULTEXPRPRIME("MULTEXPRPRIME"),
-    SIMPLEEXPR("SIMPLEEXPR");
+    PROGRAM("program"),
+    STMT("stmt"),
+    COMPOUNDSTMT("compoundstmt"),
+    STMTS("stmts"),
+    IFSTMT("ifstmt"),
+    WHILESTMT("whilestmt"),
+    ASSGSTMT("assgstmt"),
+    BOOLEXPR("boolexpr"),
+    BOOLOP("boolop"),
+    ARITHEXPR("arithexpr"),
+    ARITHEXPRPRIME("arithexprprime"),
+    MULTEXPR("multexpr"),
+    MULTEXPRPRIME("multexprptime"),
+    SIMPLEEXPR("simpleexpr");
     private final String value;
 
     NonTerminalType(final String value) {
