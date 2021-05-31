@@ -2,6 +2,7 @@ package com.example.compiler.controller;
 
 
 import com.example.compiler.lexer.Lexer;
+import com.example.compiler.llParser.LLUtil;
 import com.example.compiler.token.Text;
 import com.example.compiler.token.Token;
 import org.springframework.web.bind.annotation.*;
@@ -29,5 +30,17 @@ public class controller {
         }
         System.out.println(res.toString());
         return res.toString();
+    }
+
+    @GetMapping("/FirstSet")
+    public List<String> getFirstSet() {
+        LLUtil llUtil = new LLUtil();
+        return llUtil.printFIrstSet();
+    }
+
+    @GetMapping("/FollowSet")
+    public List<String> getFollowSet() {
+        LLUtil llUtil = new LLUtil();
+        return llUtil.printFollowSet();
     }
 }

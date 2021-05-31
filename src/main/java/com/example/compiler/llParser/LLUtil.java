@@ -256,9 +256,82 @@ public class LLUtil {
         return res;
     }
 
-    public String printParsingTable() {
-        return "";
+    public List<String> printFIrstSet () {
+        List<String> res = new LinkedList<>();
+        HashMap<Object, Set<TokenType>> fs = getFirstSet();
+        for(NonTerminalType item : NonTerminalType.values()){
+            String t = "";
+            t= t+item.getValue()+" ";
+            Set<TokenType> curSet = fs.get(item);
+            for(TokenType token: curSet) {
+                t = t + token.getValue() + " ";
+            }
+            res.add(t);
+        }
+        return res;
     }
+
+    public List<String> printFollowSet () {
+        List<String> res = new LinkedList<>();
+        HashMap<Object, Set<TokenType>> fs = getFollowSet();
+        for(NonTerminalType item : NonTerminalType.values()){
+            String t = "";
+            t= t+item.getValue()+" ";
+            Set<TokenType> curSet = fs.get(item);
+            for(TokenType token: curSet) {
+                t = t + token.getValue() + " ";
+            }
+            res.add(t);
+        }
+        return res;
+    }
+
+    public String[][] printParsingTable() {
+
+        /* 初始化终结符集合 */
+        Set<TokenType> Vt = new TreeSet<>();
+        Grammer grammer = new Grammer();
+        for (int i = 1; i <= 28; i++) {
+            Production production = grammer.get(i);
+            List<Object> right_expr = production.getRightExpression();
+            for (Object object : right_expr) {
+                if (object instanceof TokenType) {
+                    if((TokenType) object!=TokenType.EPSILON)
+                    Vt.add((TokenType) object);
+                }
+            }
+        }
+        String[][] res = new String[NonTerminalType.values().length+1][Vt.size()+1];
+        /* 获取表 */
+        ParsingTable table = new ParsingTable();
+        /* 表初始化 */
+        int i=0;
+        for(NonTerminalType item : NonTerminalType.values()){
+            i++;
+            res[i][0]=item.getValue();
+        }
+        i=0;
+        for(TokenType token: Vt) {
+            i++;
+            res[0][i]=token.getValue();
+        }
+        /* 打印表 */
+        i=1;
+        for(NonTerminalType item : NonTerminalType.values()){
+            int j=1;
+            for(TokenType token: Vt){
+                if(table.get(item,token)!=-1){
+                    res[i][j]= String.valueOf(table.get(item,token));
+                }else{
+                    res[i][j] = "";
+                }
+                j++;
+            }
+            i++;
+        }
+        return res;
+    }
+
 
 
 

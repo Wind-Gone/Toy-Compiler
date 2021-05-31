@@ -53,7 +53,15 @@ class CompilerApplicationTests {
 
     @Test
     void czh2() {
-        TokenType token = TokenType.valueOf("{");
+        LLUtil llUtil=new LLUtil();
+        String[][] res = llUtil.printParsingTable();
+        for(int i=0;i<res.length;i++){
+            for(int j=0;j<res.length;j++){
+                System.out.print(res[i][j]);
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
     }
 
     @Test
