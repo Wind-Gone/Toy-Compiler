@@ -1,6 +1,5 @@
 package com.example.compiler.llParser;
 
-import com.example.compiler.token.Token;
 import com.example.compiler.token.TokenType;
 import javafx.util.Pair;
 
@@ -9,8 +8,11 @@ import java.util.*;
 /**
  * First 集 Follow 集
  */
+@SuppressWarnings("all")
 public class LLUtil {
     private HashSet<String> VtSet = new HashSet<>();              //终结符Vt集合
+    private HashSet<String> VtSetForPrint = new HashSet<>();    //  内容与上一致，只是为了额外输出
+    private String[][] res;
 
     public LLUtil() {
         init();
@@ -19,6 +21,8 @@ public class LLUtil {
     void init() {
         String Terminal = "OPENCURLYBRACE,CLOSECURLYBRACE,IF,OPENBRACE,CLOSEBRACE,THEN,ELSE,WHILE,IDENTIFIERS,EQUAL,SEMICOLON,LESS,GREATER,LESSEQUAL,GREATEREQUAL,EQUALEQUAL,PLUS,MINUS,MULTIPLY,DIVIDE,NUM,DOLLAR";
         VtSet = new HashSet<>(Arrays.asList(Terminal.split(",")));
+        Terminal = "{,},if,(,),then,else,while,id,=,;,<,>,<=,>=,==,+,-,*,/,num,$";
+        VtSetForPrint = new HashSet<>(Arrays.asList(Terminal.split(",")));
     }
 
     public HashMap<Object, Set<TokenType>> getFirstSet() {
@@ -256,14 +260,14 @@ public class LLUtil {
         return res;
     }
 
-    public List<String> printFIrstSet () {
+    public List<String> printFIrstSet() {
         List<String> res = new LinkedList<>();
         HashMap<Object, Set<TokenType>> fs = getFirstSet();
-        for(NonTerminalType item : NonTerminalType.values()){
+        for (NonTerminalType item : NonTerminalType.values()) {
             String t = "";
-            t= t+item.getValue()+" ";
+            t = t + item.getValue() + " ";
             Set<TokenType> curSet = fs.get(item);
-            for(TokenType token: curSet) {
+            for (TokenType token : curSet) {
                 t = t + token.getValue() + " ";
             }
             res.add(t);
@@ -271,14 +275,14 @@ public class LLUtil {
         return res;
     }
 
-    public List<String> printFollowSet () {
+    public List<String> printFollowSet() {
         List<String> res = new LinkedList<>();
         HashMap<Object, Set<TokenType>> fs = getFollowSet();
-        for(NonTerminalType item : NonTerminalType.values()){
+        for (NonTerminalType item : NonTerminalType.values()) {
             String t = "";
-            t= t+item.getValue()+" ";
+            t = t + item.getValue() + " ";
             Set<TokenType> curSet = fs.get(item);
-            for(TokenType token: curSet) {
+            for (TokenType token : curSet) {
                 t = t + token.getValue() + " ";
             }
             res.add(t);
@@ -287,7 +291,6 @@ public class LLUtil {
     }
 
     public String[][] printParsingTable() {
-
         /* 初始化终结符集合 */
         Set<TokenType> Vt = new TreeSet<>();
         Grammer grammer = new Grammer();
@@ -296,33 +299,33 @@ public class LLUtil {
             List<Object> right_expr = production.getRightExpression();
             for (Object object : right_expr) {
                 if (object instanceof TokenType) {
-                    if((TokenType) object!=TokenType.EPSILON)
-                    Vt.add((TokenType) object);
+                    if ((TokenType) object != TokenType.EPSILON)
+                        Vt.add((TokenType) object);
                 }
             }
         }
-        String[][] res = new String[NonTerminalType.values().length+1][Vt.size()+1];
+        res = new String[NonTerminalType.values().length + 1][Vt.size() + 1];
         /* 获取表 */
         ParsingTable table = new ParsingTable();
         /* 表初始化 */
-        int i=0;
-        for(NonTerminalType item : NonTerminalType.values()){
+        int i = 0;
+        for (NonTerminalType item : NonTerminalType.values()) {
             i++;
-            res[i][0]=item.getValue();
+            res[i][0] = item.getValue();
         }
-        i=0;
-        for(TokenType token: Vt) {
+        i = 0;
+        for (TokenType token : Vt) {
             i++;
-            res[0][i]=token.getValue();
+            res[0][i] = token.getValue();
         }
         /* 打印表 */
-        i=1;
-        for(NonTerminalType item : NonTerminalType.values()){
-            int j=1;
-            for(TokenType token: Vt){
-                if(table.get(item,token)!=-1){
-                    res[i][j]= String.valueOf(table.get(item,token));
-                }else{
+        i = 1;
+        for (NonTerminalType item : NonTerminalType.values()) {
+            int j = 1;
+            for (TokenType token : Vt) {
+                if (table.get(item, token) != -1) {
+                    res[i][j] = String.valueOf(table.get(item, token));
+                } else {
                     res[i][j] = "";
                 }
                 j++;
@@ -331,8 +334,4 @@ public class LLUtil {
         }
         return res;
     }
-
-
-
-
 }

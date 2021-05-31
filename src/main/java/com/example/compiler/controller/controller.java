@@ -9,17 +9,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:1212")
+@CrossOrigin(origins = "http://localhost:4343")
 public class controller {
     @PostMapping("/lexer")
     public String getLexer(@RequestBody Text text) {
         String input = text.getSource();
         System.out.println(input);
-//        input = URLDecoder.decode(input,"UTF-8");
-//        System.out.println(input);
         Lexer lexer = new Lexer();
         lexer.tokenize(input);
         List<Token> tokens = lexer.getFilteredTokens();
@@ -28,7 +27,7 @@ public class controller {
             res.append(token);
             res.append("\n");
         }
-        System.out.println(res.toString());
+        System.out.println(res);
         return res.toString();
     }
 
@@ -42,5 +41,14 @@ public class controller {
     public List<String> getFollowSet() {
         LLUtil llUtil = new LLUtil();
         return llUtil.printFollowSet();
+    }
+
+    @GetMapping("/finalTable")
+    public String getFinalTable() {
+        LLUtil llUtil = new LLUtil();
+        String[][] finalTable = llUtil.printParsingTable();
+        finalTable[0][0] = "VT/T";
+        System.out.println(Arrays.deepToString(finalTable));
+        return Arrays.deepToString(finalTable);
     }
 }
