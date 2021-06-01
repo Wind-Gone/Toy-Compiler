@@ -36,12 +36,13 @@ public enum TokenType {
     MINUS("-"),
     DIVIDE("/"),
     MULTIPLY("*"),
-    EQUAL("="),
     EQUALEQUAL("=="),
-    LESS("<"),
     LESSEQUAL("<="),
-    GREATER(">"),
     GREATEREQUAL(">="),
+    EQUAL("="),
+    LESS("<"),
+    GREATER(">"),
+
 
     /**
      * delimiters

@@ -105,19 +105,21 @@ class CompilerApplicationTests {
 
     }
 
-//    @Test
-//    /**
-//     * @Description
-//     * @Author Hu Zirui
-//     * @Throws
-//     */
-//    void testFinalTable() throws IOException {
-//        Lexer lexer = new Lexer();
-//        String input = lexer.ReadFile("src/3.txt");
-//        System.out.println("--------语法开始 ------");
-//        LLParser llParser = new LLParser(input);
-//        llParser.buildTable();
-//    }
+    @Test
+    /**
+     * @Description
+     * @Author Hu Zirui
+     * @Throws
+     */
+    void testFinalTable() throws IOException {
+        Lexer lexer = new Lexer();
+        String input = lexer.ReadFile("src/2.txt");
+        System.out.println("--------语法开始 ------");
+        LLParser llParser = new LLParser(input);
+//        StringBuilder res = llParser.printParseTree();
+        System.out.println("********");
+//        System.out.println(res.toString());
+    }
 
 
 }

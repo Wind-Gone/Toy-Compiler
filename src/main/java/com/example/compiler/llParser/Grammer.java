@@ -143,10 +143,8 @@ public class Grammer {
         }}));
         productions.put(28, new Production(NonTerminalType.SIMPLEEXPR, new ArrayList<Object>() {{
             add(TokenType.OPENBRACE);
-            add(NonTerminalType.ARITHEXPRPRIME);
+            add(NonTerminalType.ARITHEXPR);
             add(TokenType.CLOSEBRACE);
         }}));
-
-
     }
 }

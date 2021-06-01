@@ -126,7 +126,7 @@ public class LLParser {
             }
             X = stk.peek();
         }
-        printParseTree(productions);
+        printParseTree();
         System.out.println(wrongList + "\n");
     }
 
@@ -164,14 +164,16 @@ public class LLParser {
     /**
      * 打印语法树
      */
-    private void printParseTree(List<Production> productions) {
+    public void printParseTree() {
         Production p = productions.get(0);
-        System.out.println(p.getLeftExpression());
+        System.out.println("printParse" + p.getLeftExpression());
         recurseProduction(p);
     }
 
     /**
      * 递归调用打印预测分析步骤
+     *
+     * @return
      */
     public void recurseProduction(Production p) {
         List<Object> rightExpression = p.getRightExpression();
@@ -180,8 +182,9 @@ public class LLParser {
             Object s = iterator.next();
             if (s instanceof TokenType) {
                 System.out.println(s);
-                if (!iterator.hasNext())
+                if (!iterator.hasNext()) {
                     return;
+                }
             } else if (s instanceof NonTerminalType) {
                 System.out.println(s);
                 for (Production productionInfer : productions) {

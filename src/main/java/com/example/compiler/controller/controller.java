@@ -2,6 +2,7 @@ package com.example.compiler.controller;
 
 
 import com.example.compiler.lexer.Lexer;
+import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.LLUtil;
 import com.example.compiler.token.Text;
 import com.example.compiler.token.Token;
@@ -16,7 +17,9 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4343")
 public class controller {
     @PostMapping("/lexer")
-    public String getLexer(@RequestBody Text text) {
+    public String getLexer(@RequestBody(required = false) Text text) {
+        if (text == null || text.getSource().equals("") || text.getSource() == null)
+            return "您此时的输入为空";
         String input = text.getSource();
         System.out.println(input);
         Lexer lexer = new Lexer();
@@ -29,6 +32,24 @@ public class controller {
         }
         System.out.println(res);
         return res.toString();
+    }
+
+    @PostMapping("/grammer")
+    public String getGrammerResult(@RequestBody Text text) {
+        System.out.println(text.getSource());
+        if (text.getSource().equals("") || text.getSource() == null)
+            return "您此时的输入为空";
+        String input = text.getSource();
+        System.out.println(input);
+        Lexer lexer = new Lexer();
+        System.out.println("--------语法开始 ------");
+        LLParser llParser = new LLParser(input);
+//        StringBuilder res = llParser.printParseTree();
+//        System.out.println(res);
+//        if (res == null)
+//            return "";
+//        return res.toString();
+        return "";
     }
 
     @GetMapping("/FirstSet")
