@@ -8,8 +8,6 @@ import com.example.compiler.token.Text;
 import com.example.compiler.token.Token;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,11 +42,6 @@ public class controller {
         Lexer lexer = new Lexer();
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
-//        StringBuilder res = llParser.printParseTree();
-//        System.out.println(res);
-//        if (res == null)
-//            return "";
-//        return res.toString();
         return "";
     }
 

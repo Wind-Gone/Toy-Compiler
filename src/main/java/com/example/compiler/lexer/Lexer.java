@@ -72,11 +72,11 @@ public class Lexer {
                             expFlag = false;
                             wrongMessage = new WrongMessage(token.getTokenString(), ErrorCode.EXPONENT_GREATER_LIMIT);
                             wrongList.put(new Pair<>(token.getRow(), token.getColumn()), wrongMessage);
-                            System.out.println(wrongList+"\n");
+                            System.out.println(wrongList + "\n");
                         }
                     }
                 } else if (token.getTokenType() == TokenType.INTNUMBER) {
-                    System.out.println("666    "+token.getTokenString());
+                    System.out.println("666    " + token.getTokenString());
                     String tokenContent = token.getTokenString();
                     for (int i = 0; i < tokenContent.length(); i++) {
                         if (Character.isDigit(tokenContent.charAt(i))) {
@@ -84,7 +84,7 @@ public class Lexer {
                         }
                     }
                     BigInteger a = new BigInteger(digitNumber);
-                    BigInteger b = BigDecimal.valueOf(Math.pow(2,31)).toBigInteger();
+                    BigInteger b = BigDecimal.valueOf(Math.pow(2, 31)).toBigInteger();
                     if (a.compareTo(b) == 1) {
                         intFlag = false;
                         wrongMessage = new WrongMessage(token.getTokenString(), ErrorCode.INT_GREATER_LIMIT);
@@ -114,7 +114,7 @@ public class Lexer {
         for (TokenType tokenType : TokenType.values()) {
 
             // NUM EPSILON DOLLAR 不识别
-            if(tokenType == TokenType.NUM || tokenType== TokenType.EPSILON || tokenType == TokenType.DOLLAR)
+            if (tokenType == TokenType.NUM || tokenType == TokenType.EPSILON || tokenType == TokenType.DOLLAR)
                 continue;
 //            System.out.println(tokenType);
             Pattern p = Pattern.compile(".{" + fromIndex + "}" + regEx.get(tokenType),
@@ -142,7 +142,7 @@ public class Lexer {
         column++;
         wrongMessage = new WrongMessage(String.valueOf(source.charAt(fromIndex)), ErrorCode.NOT_MATCH);
         wrongList.put(new Pair<>(position_row, position_col), wrongMessage);
-        System.out.println(wrongList+"\n");
+        System.out.println(wrongList + "\n");
         return null;
     }
 
@@ -157,6 +157,7 @@ public class Lexer {
 
     /**
      * 获取除空格tab回车之外的token列表
+     *
      * @return List<Token>
      */
     public List<Token> getFilteredTokens() {
@@ -221,7 +222,6 @@ public class Lexer {
         regEx.put(TokenType.EXPONENT, "\\b([Ee]([\\+\\-]?)(\\d+))\\b.*");
         regEx.put(TokenType.FRACTION, "\\b(\\.\\d+)\\s.*");
         regEx.put(TokenType.REALNUMBER, "\\b((\\d+([Ee]([\\+\\-]?)(\\d+)))|(\\d+(\\.\\d+)([Ee]([\\+\\-]?)(\\d+))?))\\b.*");
-        //
 
         /*
          * 空格 回车 tab
