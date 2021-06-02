@@ -17,6 +17,7 @@ public class LLParser {
     private final HashMap<String, TreeSet<String>> followSet;           // 计算单字符串的follow集
     private final HashMap<List<Object>, TreeSet<String>> firstSet2;     // 计算字符串链表的first集
     private final List<Production> productions;                         // 存储每个非终结符的所有产生式
+    private final List<ParseTreeNode> parseTree;                        //存储语法树
     private HashSet<String> VnSet = new HashSet<>();              //非终结符Vn集合
     private HashSet<String> VtSet = new HashSet<>();              //终结符Vt集合
     private final HashMap<Pair<Integer, Integer>, WrongMessage> wrongList = new HashMap<>();    //错误列表
@@ -33,6 +34,7 @@ public class LLParser {
         grammer = new Grammer();
         parsingTable = new ParsingTable();
         productions = new ArrayList<>();
+        parseTree = new ArrayList<>();
         firstSet = new HashMap<>();
         firstSet2 = new HashMap<>();
         followSet = new HashMap<>();
@@ -167,7 +169,9 @@ public class LLParser {
     public void printParseTree() {
         Production p = productions.get(0);
         System.out.println("printParse" + p.getLeftExpression());
-        recurseProduction(p);
+        //recurseProduction(p);
+        initParseTree();
+        traverseParseTree();
     }
 
     /**
@@ -197,6 +201,155 @@ public class LLParser {
             }
         }
     }
+
+    public void initParseTree(){
+        int i = 0 ;
+        boolean root = true;
+        //遍历产生式
+        for (Production productionInfer : productions) {
+            //ptNode肯定是非终结符的节点
+            ParseTreeNode NonTerminalTypeptNode =
+                    new ParseTreeNode(productionInfer.getLeftExpression());
+            //如果是根节点
+            if (root){
+                NonTerminalTypeptNode.setRoot();
+            }
+            root = false;
+
+            List<Object> rightExpression = productionInfer.getRightExpression();
+            ListIterator<Object> iterator = rightExpression.listIterator();
+            //将ptNode的后继补充完整
+            while (iterator.hasNext()) {
+                Object s = iterator.next();
+                if (s instanceof TokenType) {
+                    ParseTreeNode TokenTypeptNode = new ParseTreeNode((TokenType)s);
+                    NonTerminalTypeptNode.addSuccessors(TokenTypeptNode);
+                } else if(s instanceof NonTerminalType){
+                    NonTerminalTypeptNode.addSuccessors(new ParseTreeNode((NonTerminalType)s));
+                }
+            }
+            NonTerminalTypeptNode.setId(id);
+            id++;
+            parseTree.add(NonTerminalTypeptNode);
+
+
+
+        }
+
+        for(ParseTreeNode infer : parseTree){
+            System.out.print(infer.getNonTerminalExpression()+" : ");
+
+            List<ParseTreeNode> successors = infer.getSuccessors();
+            ListIterator<ParseTreeNode> successorIterator = successors.listIterator();
+            while(successorIterator.hasNext()){
+                ParseTreeNode p = successorIterator.next();
+                if(!p.getIsToken()){
+                    System.out.print(p.getNonTerminalExpression()+" ");
+                }
+                else{
+                    System.out.print(p.getTokenTypeExpression()+" ");
+                }
+
+            }
+            System.out.print('\n');
+
+
+        }
+
+
+    }
+
+    public void traverseParseTree(){
+        int flag = -1;
+        List<ParseTreeNode> successors1 = new ArrayList<>();
+        successors1.add(parseTree.get(0));
+        List<ParseTreeNode> successors2 = new ArrayList<>();
+
+        while (!(successors1.isEmpty()&& successors2.isEmpty()))
+        {
+            if(!successors1.isEmpty())
+            {
+                ListIterator<ParseTreeNode> iterator1 = successors1.listIterator();
+                while(iterator1.hasNext()){
+                    ParseTreeNode p = iterator1.next();
+                    //若为非终结符，将p的后继加入
+                    if(!p.getIsToken()){
+                        System.out.print(p.getNonTerminalExpression()+" ");
+                        for(ParseTreeNode infer : parseTree){
+                            if(infer.getNonTerminalExpression() == p.getNonTerminalExpression()
+                            && !infer.getUsed()){
+                                List<ParseTreeNode> successors = infer.getSuccessors();
+                                ListIterator<ParseTreeNode> successorIterator = successors.listIterator();
+                                while(successorIterator.hasNext()){
+                                    successors2.add(successorIterator.next());
+                                }
+                                infer.setUsed();
+                                break;
+                            }
+                        }
+
+
+                    }
+                    //若为终结符
+                    else{
+                        System.out.print(p.getTokenTypeExpression()+" ");
+                    }
+
+                }
+                flag = 1;
+            }
+            else if(!successors2.isEmpty()){
+                ListIterator<ParseTreeNode> iterator2 = successors2.listIterator();
+                while(iterator2.hasNext()){
+                    ParseTreeNode p = iterator2.next();
+                    //若为非终结符，将p的后继加入
+                    if(!p.getIsToken()){
+                        System.out.print(p.getNonTerminalExpression()+" ");
+                        for(ParseTreeNode infer : parseTree){
+                            if(infer.getNonTerminalExpression() == p.getNonTerminalExpression()
+                                    && !infer.getUsed()){
+                                List<ParseTreeNode> successors = infer.getSuccessors();
+                                ListIterator<ParseTreeNode> successorIterator = successors.listIterator();
+                                while(successorIterator.hasNext()){
+                                    successors1.add(successorIterator.next());
+                                }
+                                infer.setUsed();
+                                break;
+                            }
+                        }
+                    }
+                    //若为终结符
+                    else{
+                        System.out.print(p.getTokenTypeExpression()+" ");
+                    }
+
+                }
+                flag = 2;
+            }
+            if(flag == 1){
+                System.out.println('\n');
+                successors1.clear();
+            }else if (flag == 2)
+            {
+                System.out.println('\n');
+                successors2.clear();
+            }
+
+
+        }
+
+
+
+
+    }
+
+
+
+
+
+
+
+
 
     /*
     计算所有的First集
