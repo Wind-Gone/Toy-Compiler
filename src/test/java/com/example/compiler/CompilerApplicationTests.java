@@ -140,15 +140,7 @@ class CompilerApplicationTests {
         AstNode t3_3_1 = new AstNode("g");
         AstNode t4_2_1_1 = new AstNode("h");
         AstNode t4_1_1_1 = new AstNode("j");
-        t1.setChildren(t2_1);
-        t2_1.setSiblings(t2_2);
-        t2_2.setSiblings(t2_3);
-        t2_1.setChildren(t3_1_1);
-        t3_1_1.setChildren(t4_1_1_1);
-        t2_2.setChildren(t3_2_1);
-        t3_2_1.setChildren(t4_2_1_1);
-        t3_2_1.setSiblings(t3_2_2);
-        t2_3.setChildren(t3_3_1);
+
         SyntaxTree s = new SyntaxTree(t1);
         s.preOrder();
     }

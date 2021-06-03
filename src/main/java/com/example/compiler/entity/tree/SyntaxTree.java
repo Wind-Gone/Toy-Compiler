@@ -44,18 +44,6 @@ public class SyntaxTree {
         } else {
             System.out.println("|__" + node.getValue());
         }
-        if (node.hasChildren()) {
-            if (node.hasSiblings()) {
-                if (level > 0)
-                    printArr[level - 1] = true;
-            } else {
-                if (level > 0)
-                    printArr[level - 1] = false;
-            }
-            preOrderPrint(node.getChildren(), level + 1, printArr);
-        }
-        if (node.hasSiblings()) {
-            preOrderPrint(node.getSiblings(), level, printArr);
-        }
+
     }
 }

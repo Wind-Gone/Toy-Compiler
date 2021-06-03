@@ -30,6 +30,7 @@ public class LLParser {
     private int id = 0;
     private int ip = 0;                 // 栈顶指针
     private SyntaxTree syntaxTree;      // 语法树
+    private Stack<AstNode> treeStack;
 
 
     public LLParser(String input) {
@@ -91,8 +92,7 @@ public class LLParser {
     private void lmDerivation() {
         ip = 0;
         Object X = stk.peek();
-        AstNode root = new AstNode("program");
-        AstNode head = root;
+//        AstNode head = root;
         int cnt = 0;
         while (X != TokenType.DOLLAR) {
             System.out.println("------stk-------------: " + stk);
@@ -114,8 +114,6 @@ public class LLParser {
                 id++;
                 stk.pop();
                 List<Object> rightExpression = production.getRightExpression();
-                AstNode tempNode = new AstNode(((NonTerminalType) X).getValue());
-
                 for (int i = rightExpression.size() - 1; i >= 0; i--) {
                     //EPSILON 不入栈
                     if (rightExpression.get(i) == TokenType.EPSILON) {
@@ -127,10 +125,9 @@ public class LLParser {
             X = stk.peek();
         }
         printParseTree();
-        syntaxTree = new SyntaxTree(root);
-        syntaxTree.preOrder();
         System.out.println("错误列表为" + wrongList + "\n");
     }
+
 
     /**
      * 错误恢复
@@ -168,9 +165,42 @@ public class LLParser {
      */
     public void printParseTree() {
         Production p = productions.get(0);
-        System.out.println("printParse" + p.getLeftExpression());
-        recurseProduction(p);
+        AstNode root = new AstNode(p.getLeftExpression().getValue());
+        List<Object> rightExpression = p.getRightExpression();
+        ListIterator<Object> iterator = rightExpression.listIterator();
+        while (iterator.hasNext()) {
+            Object s = iterator.next();
+            AstNode tmp = new AstNode(s.toString());
+            treeStack.push(tmp);
+        }
+        System.out.println("printParse " + p.getLeftExpression() + " " + root.getValue());
+        recurseProduction2(p, root);
+        syntaxTree = new SyntaxTree(root);
     }
+
+    public void recurseProduction2(Production p, AstNode node) {
+        List<Object> rightExpression = p.getRightExpression();
+        ListIterator<Object> iterator = rightExpression.listIterator();
+        while (iterator.hasNext()) {
+            Object s = iterator.next();
+            if (s instanceof TokenType) {
+                System.out.println(s);
+                if (!iterator.hasNext()) {
+                    return;
+                }
+            } else if (s instanceof NonTerminalType) {
+                System.out.println(s);
+                for (Production productionInfer : productions) {
+                    if (productionInfer.getLeftExpression() == s && !productionInfer.getUsed()) {
+                        productionInfer.setUsed();
+                        recurseProduction(productionInfer);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * 递归调用打印预测分析步骤

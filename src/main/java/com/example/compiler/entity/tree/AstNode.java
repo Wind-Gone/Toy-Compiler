@@ -1,5 +1,8 @@
 package com.example.compiler.entity.tree;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Hu Zirui
  * @version 1.0.0
@@ -8,51 +11,60 @@ package com.example.compiler.entity.tree;
  * @createTime 2021年06月03日 11:22:00
  */
 public class AstNode {
-    private AstNode siblings;
-    private AstNode children;
+    private int fatherId;
+    private int selfId;
+    private List<AstNode> children;
     private String value;
     private AstNode father;
 
-    public AstNode getFather() {
-        return father;
-    }
-
-    public void setFather(AstNode father) {
-        this.father = father;
-    }
-
-    public boolean hasSiblings() {
-        return siblings != null;
-    }
-
-    public boolean hasChildren() {
-        return children != null;
+    public AstNode() {
+        initChildList();
     }
 
     public AstNode(String value) {
         this.value = value;
     }
 
-    public AstNode(AstNode siblings, AstNode children, String value, AstNode father) {
-        this.siblings = siblings;
-        this.children = children;
-        this.value = value;
-        this.father = father;
+    public void initChildList() {
+        if (children == null)
+            children = new ArrayList<>();
     }
 
-    public AstNode getSiblings() {
-        return siblings;
+    public boolean isLeaf() {
+        if (children == null)
+            return true;
+        else {
+            return children.isEmpty();
+        }
     }
 
-    public void setSiblings(AstNode siblings) {
-        this.siblings = siblings;
+    /* 插入一个child节点到当前节点中 */
+    public void addChildNode(AstNode treeNode) {
+        initChildList();
+        children.add(treeNode);
     }
 
-    public AstNode getChildren() {
+    public int getFatherId() {
+        return fatherId;
+    }
+
+    public void setFatherId(int fatherId) {
+        this.fatherId = fatherId;
+    }
+
+    public int getSelfId() {
+        return selfId;
+    }
+
+    public void setSelfId(int selfId) {
+        this.selfId = selfId;
+    }
+
+    public List<AstNode> getChildren() {
         return children;
     }
 
-    public void setChildren(AstNode children) {
+    public void setChildren(List<AstNode> children) {
         this.children = children;
     }
 
@@ -62,5 +74,13 @@ public class AstNode {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public AstNode getFather() {
+        return father;
+    }
+
+    public void setFather(AstNode father) {
+        this.father = father;
     }
 }
