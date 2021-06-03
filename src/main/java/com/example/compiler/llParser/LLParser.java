@@ -2,6 +2,8 @@ package com.example.compiler.llParser;
 
 import com.example.compiler.entity.ErrorCode;
 import com.example.compiler.entity.WrongMessage;
+import com.example.compiler.entity.tree.AstNode;
+import com.example.compiler.entity.tree.SyntaxTree;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.token.Token;
 import com.example.compiler.token.TokenType;
@@ -27,6 +29,7 @@ public class LLParser {
     private Stack<Object> stk;          // 分析程序的栈
     private int id = 0;
     private int ip = 0;                 // 栈顶指针
+    private SyntaxTree syntaxTree;      // 语法树
 
 
     public LLParser(String input) {
@@ -78,6 +81,7 @@ public class LLParser {
         VtSet = new HashSet<>(Arrays.asList(Terminal.split(",")));
         getFirstSet();
         getFollowSet();
+
     }
 
 
@@ -85,37 +89,33 @@ public class LLParser {
      * 输出最左推导 -- 书上的伪代码
      */
     private void lmDerivation() {
-//        System.out.println("------w-------------:  "+ w );
         ip = 0;
         Object X = stk.peek();
+        AstNode root = new AstNode("program");
+        AstNode head = root;
+        int cnt = 0;
         while (X != TokenType.DOLLAR) {
             System.out.println("------stk-------------: " + stk);
             System.out.println("------token-------------: " + w.get(ip).getTokenType());
-//            System.out.println("------当前X-----: "+X);
             TokenType a = w.get(ip).getTokenType();
-            if (X == a) {
-//                System.out.println("-----跳入1---------a 为：" + a);
+            if (X == a) {                               // X是终结符且匹配成功
                 stk.pop();
                 ip++;
-            } else if (X instanceof TokenType) {        // X是终结符
-//                System.out.println("-----跳入2---------a 为：" + a);
+            } else if (X instanceof TokenType) {        // X是终结符且出错
                 error(X, w.get(ip));
                 break;
             } else if (parsingTable.get((NonTerminalType) X, a) == -1) {
-//                System.out.println("-----跳入3--------- a 为：" + a);
-//                System.out.println("-----跳入3--------- X 为：" + X);
                 error(X, w.get(ip));
                 break;
             } else {
-//                System.out.println("-----跳入4---------a 为：" + a);
-//                System.out.print("当前栈：" + X + "  action:  ");
                 Production production = grammer.get(parsingTable.get((NonTerminalType) X, a));
-//                System.out.println(production);
                 production.setId(id);
                 productions.add(production);
                 id++;
                 stk.pop();
                 List<Object> rightExpression = production.getRightExpression();
+                AstNode tempNode = new AstNode(((NonTerminalType) X).getValue());
+
                 for (int i = rightExpression.size() - 1; i >= 0; i--) {
                     //EPSILON 不入栈
                     if (rightExpression.get(i) == TokenType.EPSILON) {
@@ -127,7 +127,9 @@ public class LLParser {
             X = stk.peek();
         }
         printParseTree();
-        System.out.println(wrongList + "\n");
+        syntaxTree = new SyntaxTree(root);
+        syntaxTree.preOrder();
+        System.out.println("错误列表为" + wrongList + "\n");
     }
 
     /**
@@ -197,6 +199,7 @@ public class LLParser {
             }
         }
     }
+
 
     /*
     计算所有的First集

@@ -1,6 +1,8 @@
 package com.example.compiler;
 
 import com.example.compiler.entity.WrongMessage;
+import com.example.compiler.entity.tree.AstNode;
+import com.example.compiler.entity.tree.SyntaxTree;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.*;
 import com.example.compiler.token.Token;
@@ -113,13 +115,41 @@ class CompilerApplicationTests {
      */
     void testFinalTable() throws IOException {
         Lexer lexer = new Lexer();
-        String input = lexer.ReadFile("src/2.txt");
+        String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
-//        StringBuilder res = llParser.printParseTree();
+        llParser.printParseTree();
         System.out.println("********");
 //        System.out.println(res.toString());
     }
 
-
+    @Test
+    /**
+     * @Description
+     * @Author Hu Zirui
+     * @Throws
+     */
+    public void testTree() {
+        AstNode t1 = new AstNode("root");
+        AstNode t2_1 = new AstNode("a");
+        AstNode t2_2 = new AstNode("b");
+        AstNode t2_3 = new AstNode("c");
+        AstNode t3_1_1 = new AstNode("d");
+        AstNode t3_2_1 = new AstNode("e");
+        AstNode t3_2_2 = new AstNode("f");
+        AstNode t3_3_1 = new AstNode("g");
+        AstNode t4_2_1_1 = new AstNode("h");
+        AstNode t4_1_1_1 = new AstNode("j");
+        t1.setChildren(t2_1);
+        t2_1.setSiblings(t2_2);
+        t2_2.setSiblings(t2_3);
+        t2_1.setChildren(t3_1_1);
+        t3_1_1.setChildren(t4_1_1_1);
+        t2_2.setChildren(t3_2_1);
+        t3_2_1.setChildren(t4_2_1_1);
+        t3_2_1.setSiblings(t3_2_2);
+        t2_3.setChildren(t3_3_1);
+        SyntaxTree s = new SyntaxTree(t1);
+        s.preOrder();
+    }
 }
