@@ -33,6 +33,7 @@ public class LLParser {
     private int ip = 0;                 // 栈顶指针
     private SyntaxTree syntaxTree;      // 语法树
     private Stack<AstNode> treeStack;   // 用于语法树输出的栈
+    private List<String> values = new ArrayList<>();       //所有数字和identifier
 
     public SyntaxTree getSyntaxTree() {
         return syntaxTree;
@@ -120,8 +121,10 @@ public class LLParser {
                 boolean isMatch = Pattern.matches(pattern, b.getTokenString());
                 if (isMatch)
                     node.setValue(b.getTokenString());
-                else
+                else {
                     node.setValue(a.getValue() + ":" + b.getTokenString());     // 否则要加上原来token的字符值
+                    values.add(b.getTokenString());
+                }
                 System.out.println(b.getTokenString());
                 treeStack.pop();
                 ip++;
@@ -443,6 +446,7 @@ public class LLParser {
     //打印Gui用的语法树
     public GuiNode printGuiNode() {
         int guiId = 0;
+        int j=0;
         GuiNode root = new GuiNode(String.valueOf(guiId), "program");
         guiId++;
         Stack<GuiNode> leftMostStk = new Stack<>();
@@ -452,7 +456,11 @@ public class LLParser {
             List<Object> rightExpr = production.getRightExpression();
             List<GuiNode> children = new ArrayList<>();
             for (Object item : rightExpr) {
-                children.add(new GuiNode(String.valueOf(guiId), item.toString()));
+                if(item instanceof TokenType && (item == TokenType.NUM || item ==TokenType.IDENTIFIERS)) {
+                    children.add(new GuiNode(String.valueOf(guiId), item.toString()+"--"+values.get(j++)));
+                }else{
+                    children.add(new GuiNode(String.valueOf(guiId), item.toString()));
+                }
                 guiId++;
             }
             /* 非终结符倒序压栈 */

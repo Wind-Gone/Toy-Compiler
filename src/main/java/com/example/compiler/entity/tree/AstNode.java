@@ -71,21 +71,6 @@ public class AstNode {
         children.add(treeNode);
     }
 
-    public int getFatherId() {
-        return fatherId;
-    }
-
-    public void setFatherId(int fatherId) {
-        this.fatherId = fatherId;
-    }
-
-    public int getSelfId() {
-        return selfId;
-    }
-
-    public void setSelfId(int selfId) {
-        this.selfId = selfId;
-    }
 
     public List<AstNode> getChildren() {
         return children;
@@ -103,12 +88,6 @@ public class AstNode {
         this.value = value;
     }
 
-    public AstNode getFather() {
-        return father;
-    }
 
-    public void setFather(AstNode father) {
-        this.father = father;
-    }
 
 }

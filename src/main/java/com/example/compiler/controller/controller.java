@@ -2,6 +2,7 @@ package com.example.compiler.controller;
 
 
 import com.example.compiler.entity.gui.GuiNode;
+import com.example.compiler.entity.tree.AstNode;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.LLUtil;
@@ -58,6 +59,7 @@ public class controller {
         LLParser llParser = new LLParser(input);
         System.out.println("-----------guinode---------");
         System.out.println("-----------guinode---------:   "+llParser.printGuiNode().getChildren().get(0).getId());
+//        return llParser.getSyntaxTree().getRoot();
         return llParser.printGuiNode();
     }
 
