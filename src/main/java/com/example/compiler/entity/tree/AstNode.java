@@ -13,9 +13,18 @@ import java.util.List;
  * @createTime 2021年06月03日 11:22:00
  */
 public class AstNode {
+    private String id;
     private int fatherId;
     private int selfId;
     private int level;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public int getLevel() {
         return level;
@@ -49,6 +58,11 @@ public class AstNode {
         else {
             return children.isEmpty();
         }
+    }
+
+    public AstNode(String id, String value) {
+        this.id = id;
+        this.value = value;
     }
 
     /* 插入一个child节点到当前节点中 */

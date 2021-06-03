@@ -45,6 +45,7 @@ public class controller {
         LLParser llParser = new LLParser(input);
         return "语法分析成功";
     }
+
     @PostMapping("/grammerTree")
     public GuiNode getGrammerTree(@RequestBody Text text) {
         System.out.println(text.getSource());

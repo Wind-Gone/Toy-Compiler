@@ -104,9 +104,11 @@ public class LLParser {
     private void lmDerivation() {
         ip = 0;
         Object X = stk.peek();
-        AstNode root = new AstNode("program");
+        int guiId = 0;
+        AstNode root = new AstNode(String.valueOf(guiId), "program");
         treeStack.push(root);
         AstNode node = treeStack.peek();
+        guiId++;
         while (X != TokenType.DOLLAR && !treeStack.isEmpty()) {
             System.out.println("------stk-------------: " + stk);
             System.out.println("------token-------------: " + w.get(ip).getTokenType());
@@ -139,7 +141,8 @@ public class LLParser {
                 List<AstNode> childList = new ArrayList<>();
                 List<Object> rightExpression = production.getRightExpression();
                 for (Object o : rightExpression) {
-                    childList.add(new AstNode(o.toString()));
+                    childList.add(new AstNode(String.valueOf(guiId), o.toString()));
+                    guiId++;
                 }
                 for (int i = rightExpression.size() - 1; i >= 0; i--) {
                     //EPSILON 不入栈
@@ -439,8 +442,8 @@ public class LLParser {
 
     //打印Gui用的语法树
     public GuiNode printGuiNode() {
-        int guiId=0;
-        GuiNode root = new GuiNode(String.valueOf(guiId),"program");
+        int guiId = 0;
+        GuiNode root = new GuiNode(String.valueOf(guiId), "program");
         guiId++;
         Stack<GuiNode> leftMostStk = new Stack<>();
         leftMostStk.push(root);
@@ -449,7 +452,7 @@ public class LLParser {
             List<Object> rightExpr = production.getRightExpression();
             List<GuiNode> children = new ArrayList<>();
             for (Object item : rightExpr) {
-                children.add(new GuiNode(String.valueOf(guiId),item.toString()));
+                children.add(new GuiNode(String.valueOf(guiId), item.toString()));
                 guiId++;
             }
             /* 非终结符倒序压栈 */
@@ -465,5 +468,4 @@ public class LLParser {
         }
         return root;
     }
-
 }
