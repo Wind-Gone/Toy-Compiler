@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4343")
+@CrossOrigin()
 public class controller {
     @PostMapping("/lexer")
     public String getLexer(@RequestBody(required = false) Text text) {

@@ -2,6 +2,7 @@ package com.example.compiler.llParser;
 
 import com.example.compiler.entity.ErrorCode;
 import com.example.compiler.entity.WrongMessage;
+import com.example.compiler.entity.gui.GuiNode;
 import com.example.compiler.entity.tree.AstNode;
 import com.example.compiler.entity.tree.SyntaxTree;
 import com.example.compiler.lexer.Lexer;
@@ -124,7 +125,6 @@ public class LLParser {
             }
             X = stk.peek();
         }
-        printParseTree();
         System.out.println("错误列表为" + wrongList + "\n");
     }
 
@@ -200,6 +200,8 @@ public class LLParser {
             }
         }
     }
+
+
 
 
     /**
@@ -428,6 +430,32 @@ public class LLParser {
             }
             System.out.println();
         }
+    }
+
+    //打印Gui用的语法树
+    public GuiNode printGuiNode(){
+        GuiNode root = new GuiNode("program");
+        Stack<GuiNode> leftMostStk = new Stack<>();
+        leftMostStk.push(root);
+        for(Production production: productions) {
+            GuiNode curNode = leftMostStk.pop();
+            List<Object> rightExpr = production.getRightExpression();
+            List<GuiNode> children = new ArrayList<>();
+            for(Object item : rightExpr){
+                children.add(new GuiNode(item.toString()));
+            }
+            /* 非终结符倒序压栈 */
+            for(int i=rightExpr.size()-1;i>=0;i-- ){
+                if(rightExpr.get(i) instanceof NonTerminalType){
+                    leftMostStk.push(children.get(i));
+                }
+            }
+            /* child顺序入树 */
+            for(int i=0;i<rightExpr.size();i++){
+                curNode.addChild(children.get(i));
+            }
+        }
+        return root;
     }
 
 }

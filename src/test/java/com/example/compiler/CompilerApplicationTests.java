@@ -1,6 +1,7 @@
 package com.example.compiler;
 
 import com.example.compiler.entity.WrongMessage;
+import com.example.compiler.entity.gui.GuiNode;
 import com.example.compiler.entity.tree.AstNode;
 import com.example.compiler.entity.tree.SyntaxTree;
 import com.example.compiler.lexer.Lexer;
@@ -72,6 +73,7 @@ class CompilerApplicationTests {
         String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
+        GuiNode tree = llParser.printGuiNode();
     }
 
     @Test
