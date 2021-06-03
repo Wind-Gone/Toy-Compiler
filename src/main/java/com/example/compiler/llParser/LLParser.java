@@ -11,6 +11,7 @@ import com.example.compiler.token.TokenType;
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("all")
 public class LLParser {
@@ -59,6 +60,8 @@ public class LLParser {
         stk = new Stack<>();
         stk.push(TokenType.DOLLAR);
         stk.push(NonTerminalType.PROGRAM);
+        treeStack = new Stack<>();
+        treeStack.push(new AstNode(TokenType.DOLLAR.getValue()));
     }
 
     private void w_init(String input) {
@@ -101,16 +104,26 @@ public class LLParser {
     private void lmDerivation() {
         ip = 0;
         Object X = stk.peek();
-//        AstNode head = root;
-        int cnt = 0;
-        while (X != TokenType.DOLLAR) {
+        AstNode root = new AstNode("program");
+        treeStack.push(root);
+        AstNode node = treeStack.peek();
+        while (X != TokenType.DOLLAR && !treeStack.isEmpty()) {
             System.out.println("------stk-------------: " + stk);
             System.out.println("------token-------------: " + w.get(ip).getTokenType());
             TokenType a = w.get(ip).getTokenType();
-            if (X == a) {                               // X是终结符且匹配成功
+            Token b = w.get(ip);
+            if (X == a && node.getValue() == a.getValue()) {                      // X是终结符且匹配成功
                 stk.pop();
+                String pattern = "\\W";                                           // 如果该终结符不是字母/数字，就直接赋值
+                boolean isMatch = Pattern.matches(pattern, b.getTokenString());
+                if (isMatch)
+                    node.setValue(b.getTokenString());
+                else
+                    node.setValue(a.getValue() + ":" + b.getTokenString());     // 否则要加上原来token的字符值
+                System.out.println(b.getTokenString());
+                treeStack.pop();
                 ip++;
-            } else if (X instanceof TokenType) {        // X是终结符且出错
+            } else if (X instanceof TokenType) {                                // X是终结符且出错
                 error(X, w.get(ip));
                 break;
             } else if (parsingTable.get((NonTerminalType) X, a) == -1) {
@@ -122,18 +135,27 @@ public class LLParser {
                 productions.add(production);
                 id++;
                 stk.pop();
+                treeStack.pop();
+                List<AstNode> childList = new ArrayList<>();
                 List<Object> rightExpression = production.getRightExpression();
+                for (Object o : rightExpression) {
+                    childList.add(new AstNode(o.toString()));
+                }
                 for (int i = rightExpression.size() - 1; i >= 0; i--) {
                     //EPSILON 不入栈
                     if (rightExpression.get(i) == TokenType.EPSILON) {
                         continue;
                     }
                     stk.push(rightExpression.get(i));
+                    treeStack.push(childList.get(i));
                 }
+                node.setChildren(childList);
             }
             X = stk.peek();
+            node = treeStack.peek();
         }
         System.out.println("错误列表为" + wrongList + "\n");
+        syntaxTree = new SyntaxTree(root);
     }
 
 
@@ -388,6 +410,7 @@ public class LLParser {
         }
     }
 
+    @Deprecated
     // 输出语法树
     public void createParseTree() {
         Production p = productions.get(0);      // root 为 program

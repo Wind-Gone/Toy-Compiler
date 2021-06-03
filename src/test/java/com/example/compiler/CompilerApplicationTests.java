@@ -82,7 +82,7 @@ class CompilerApplicationTests {
         String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
-        llParser.createParseTree();
+//        llParser.createParseTree();
         llParser.getSyntaxTree().preOrder();
 //        llParser.getFirstSet();
 //        llParser.getFollowSet();
