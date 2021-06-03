@@ -31,10 +31,18 @@ public class LLParser {
     private int id = 0;
     private int ip = 0;                 // 栈顶指针
     private SyntaxTree syntaxTree;      // 语法树
-    private Stack<AstNode> treeStack;
+    private Stack<AstNode> treeStack;   // 用于语法树输出的栈
 
+    public SyntaxTree getSyntaxTree() {
+        return syntaxTree;
+    }
+
+    public void setSyntaxTree(SyntaxTree syntaxTree) {
+        this.syntaxTree = syntaxTree;
+    }
 
     public LLParser(String input) {
+        treeStack = new Stack<>();
         grammer = new Grammer();
         parsingTable = new ParsingTable();
         productions = new ArrayList<>();
@@ -160,48 +168,12 @@ public class LLParser {
         wrongList.put(new Pair<>(a.getRow(), a.getColumn()), wrongMessage);
     }
 
-    /**
-     * 打印语法树
-     */
+
     public void printParseTree() {
         Production p = productions.get(0);
-        AstNode root = new AstNode(p.getLeftExpression().getValue());
-        List<Object> rightExpression = p.getRightExpression();
-        ListIterator<Object> iterator = rightExpression.listIterator();
-        while (iterator.hasNext()) {
-            Object s = iterator.next();
-            AstNode tmp = new AstNode(s.toString());
-            treeStack.push(tmp);
-        }
-        System.out.println("printParse " + p.getLeftExpression() + " " + root.getValue());
-        recurseProduction2(p, root);
-        syntaxTree = new SyntaxTree(root);
+        System.out.println("printParse " + p.getLeftExpression());
+        recurseProduction(p);
     }
-
-    public void recurseProduction2(Production p, AstNode node) {
-        List<Object> rightExpression = p.getRightExpression();
-        ListIterator<Object> iterator = rightExpression.listIterator();
-        while (iterator.hasNext()) {
-            Object s = iterator.next();
-            if (s instanceof TokenType) {
-                System.out.println(s);
-                if (!iterator.hasNext()) {
-                    return;
-                }
-            } else if (s instanceof NonTerminalType) {
-                System.out.println(s);
-                for (Production productionInfer : productions) {
-                    if (productionInfer.getLeftExpression() == s && !productionInfer.getUsed()) {
-                        productionInfer.setUsed();
-                        recurseProduction(productionInfer);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-
 
 
     /**
@@ -307,7 +279,6 @@ public class LLParser {
                 .forEach(item -> getFollow(item.toString()));
     }
 
-
     /**
      * 生成所有产生式的具体执行函数
      */
@@ -392,21 +363,6 @@ public class LLParser {
         }
     }
 
-//    /**
-//     * 通过first/follow构建表
-//     */
-//    public void buildTable() {
-//        Object[] VnArray = VnSet.toArray();
-//        Object[] VtArray = VtSet.toArray();
-//        finalTable = new String[VnArray.length + 1][VtArray.length + 1];
-//        finalTable[0][0] = "NT\\T";
-//        for (int i = 0; i < VtArray.length; i++)
-//            finalTable[0][i + 1] = VtArray[i].toString();
-//        for (int i = 0; i < VnArray.length; i++)
-//            finalTable[i + 1][0] = VnArray[i] + "";
-//
-//    }
-
 
     // 打印first集和follow集
     public void printFirstAFollow() {
@@ -432,26 +388,52 @@ public class LLParser {
         }
     }
 
+    // 输出语法树
+    public void createParseTree() {
+        Production p = productions.get(0);      // root 为 program
+        AstNode root = new AstNode(p.getLeftExpression().getValue());
+        List<Object> rightExpression = p.getRightExpression();
+        treeStack.push(root);
+        int i = 0;
+        while (!treeStack.isEmpty()) {
+            AstNode node = treeStack.pop();
+            Production p1 = productions.get(i++);
+            List<Object> right = p1.getRightExpression();
+            List<AstNode> childList = new ArrayList<>();
+            for (Object o : right) {
+                childList.add(new AstNode(o.toString()));
+            }
+            for (int j = right.size() - 1; j >= 0; j--) {
+                if (right.get(j) instanceof NonTerminalType) {
+                    treeStack.push(childList.get(j));
+                }
+            }
+            node.setChildren(childList);
+        }
+        syntaxTree = new SyntaxTree(root);
+    }
+
+
     //打印Gui用的语法树
-    public GuiNode printGuiNode(){
+    public GuiNode printGuiNode() {
         GuiNode root = new GuiNode("program");
         Stack<GuiNode> leftMostStk = new Stack<>();
         leftMostStk.push(root);
-        for(Production production: productions) {
+        for (Production production : productions) {
             GuiNode curNode = leftMostStk.pop();
             List<Object> rightExpr = production.getRightExpression();
             List<GuiNode> children = new ArrayList<>();
-            for(Object item : rightExpr){
+            for (Object item : rightExpr) {
                 children.add(new GuiNode(item.toString()));
             }
             /* 非终结符倒序压栈 */
-            for(int i=rightExpr.size()-1;i>=0;i-- ){
-                if(rightExpr.get(i) instanceof NonTerminalType){
+            for (int i = rightExpr.size() - 1; i >= 0; i--) {
+                if (rightExpr.get(i) instanceof NonTerminalType) {
                     leftMostStk.push(children.get(i));
                 }
             }
             /* child顺序入树 */
-            for(int i=0;i<rightExpr.size();i++){
+            for (int i = 0; i < rightExpr.size(); i++) {
                 curNode.addChild(children.get(i));
             }
         }

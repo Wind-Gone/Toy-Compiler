@@ -56,10 +56,10 @@ class CompilerApplicationTests {
 
     @Test
     void czh2() {
-        LLUtil llUtil=new LLUtil();
+        LLUtil llUtil = new LLUtil();
         String[][] res = llUtil.printParsingTable();
-        for(int i=0;i<res.length;i++){
-            for(int j=0;j<res.length;j++){
+        for (int i = 0; i < res.length; i++) {
+            for (int j = 0; j < res.length; j++) {
                 System.out.print(res[i][j]);
                 System.out.print(" ");
             }
@@ -82,8 +82,10 @@ class CompilerApplicationTests {
         String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
-        llParser.getFirstSet();
-        llParser.getFollowSet();
+        llParser.createParseTree();
+        llParser.getSyntaxTree().preOrder();
+//        llParser.getFirstSet();
+//        llParser.getFollowSet();
 //        llParser.printproductionMap();
 //        llParser.printFirstAFollow();
     }

@@ -1,6 +1,8 @@
 package com.example.compiler.entity.tree;
 
-import java.util.Arrays;
+import javafx.util.Pair;
+
+import java.util.*;
 
 /**
  * @author Hu Zirui
@@ -25,25 +27,26 @@ public class SyntaxTree {
     }
 
     public void preOrder() {
-        Boolean[] printArr = new Boolean[200];
-        Arrays.fill(printArr, Boolean.FALSE);
-        preOrderPrint(root, 0, printArr);
+        preOrderPrint(root);
     }
 
-    public void preOrderPrint(AstNode node, int level, Boolean[] printArr) {
-        if (root == null) return;
-        for (int i = 0; i < level - 1; i++) {
-            if (printArr[i]) {
-                System.out.print("|  ");
-            } else {
-                System.out.print("   ");
-            }
+    public void preOrderPrint(AstNode root) {
+        System.out.println(root.getValue());
+        Queue<AstNode> myQueue = new LinkedList<>();
+        List<Pair<String, Integer>> res = new ArrayList<>();
+        myQueue.offer(root);
+        while (!myQueue.isEmpty()) {
+            AstNode curNode = myQueue.remove();
+            System.out.println(curNode.getValue());
+            res.add(new Pair<>(curNode.getValue(), curNode.getLevel()));
+            if (!curNode.isLeaf())
+                for (AstNode astNode : curNode.getChildren()) {
+                    astNode.setLevel(curNode.getLevel() + 1);
+                    myQueue.offer(astNode);
+                }
         }
-        if (node == root) {
-            System.out.println(node.getValue());
-        } else {
-            System.out.println("|__" + node.getValue());
+        for (Pair<String, Integer> pair : res) {
+            System.out.println("第" + pair.getValue() + "层有" + pair.getKey());
         }
-
     }
 }

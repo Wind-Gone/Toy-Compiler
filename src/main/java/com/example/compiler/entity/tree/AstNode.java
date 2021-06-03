@@ -1,5 +1,7 @@
 package com.example.compiler.entity.tree;
 
+import com.example.compiler.entity.gui.GuiNode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,16 @@ import java.util.List;
 public class AstNode {
     private int fatherId;
     private int selfId;
+    private int level;
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
     private List<AstNode> children;
     private String value;
     private AstNode father;
@@ -22,6 +34,7 @@ public class AstNode {
     }
 
     public AstNode(String value) {
+        this.level = 1;
         this.value = value;
     }
 
@@ -83,4 +96,5 @@ public class AstNode {
     public void setFather(AstNode father) {
         this.father = father;
     }
+
 }
