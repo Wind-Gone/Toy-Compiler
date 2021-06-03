@@ -439,7 +439,9 @@ public class LLParser {
 
     //打印Gui用的语法树
     public GuiNode printGuiNode() {
-        GuiNode root = new GuiNode("program");
+        int guiId=0;
+        GuiNode root = new GuiNode(String.valueOf(guiId),"program");
+        guiId++;
         Stack<GuiNode> leftMostStk = new Stack<>();
         leftMostStk.push(root);
         for (Production production : productions) {
@@ -447,7 +449,8 @@ public class LLParser {
             List<Object> rightExpr = production.getRightExpression();
             List<GuiNode> children = new ArrayList<>();
             for (Object item : rightExpr) {
-                children.add(new GuiNode(item.toString()));
+                children.add(new GuiNode(String.valueOf(guiId),item.toString()));
+                guiId++;
             }
             /* 非终结符倒序压栈 */
             for (int i = rightExpr.size() - 1; i >= 0; i--) {

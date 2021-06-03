@@ -1,6 +1,7 @@
 package com.example.compiler.controller;
 
 
+import com.example.compiler.entity.gui.GuiNode;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.LLUtil;
@@ -42,7 +43,21 @@ public class controller {
         Lexer lexer = new Lexer();
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
-        return "";
+        return "语法分析成功";
+    }
+    @PostMapping("/grammerTree")
+    public GuiNode getGrammerTree(@RequestBody Text text) {
+        System.out.println(text.getSource());
+        if (text.getSource().equals("") || text.getSource() == null)
+            return new GuiNode("-1","输入为空");
+        String input = text.getSource();
+        System.out.println(input);
+        Lexer lexer = new Lexer();
+        System.out.println("--------语法开始 ------");
+        LLParser llParser = new LLParser(input);
+        System.out.println("-----------guinode---------");
+        System.out.println("-----------guinode---------:   "+llParser.printGuiNode().getChildren().get(0).getId());
+        return llParser.printGuiNode();
     }
 
     @GetMapping("/FirstSet")
@@ -65,4 +80,6 @@ public class controller {
         System.out.println(Arrays.deepToString(finalTable));
         return Arrays.deepToString(finalTable);
     }
+
+
 }
