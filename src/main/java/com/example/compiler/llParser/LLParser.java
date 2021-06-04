@@ -3,8 +3,8 @@ package com.example.compiler.llParser;
 import com.example.compiler.entity.ErrorCode;
 import com.example.compiler.entity.WrongMessage;
 import com.example.compiler.entity.gui.GuiNode;
-import com.example.compiler.entity.tree.AstNode;
 import com.example.compiler.entity.tree.SyntaxTree;
+import com.example.compiler.entity.tree.TreeNode;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.token.Token;
 import com.example.compiler.token.TokenType;
@@ -32,7 +32,7 @@ public class LLParser {
     private int id = 0;
     private int ip = 0;                 // 栈顶指针
     private SyntaxTree syntaxTree;      // 语法树
-    private Stack<AstNode> treeStack;   // 用于语法树输出的栈
+    private Stack<TreeNode> treeStack;   // 用于语法树输出的栈
     private List<String> values = new ArrayList<>();       //所有数字和identifier
 
     public SyntaxTree getSyntaxTree() {
@@ -62,7 +62,7 @@ public class LLParser {
         stk.push(TokenType.DOLLAR);
         stk.push(NonTerminalType.PROGRAM);
         treeStack = new Stack<>();
-        treeStack.push(new AstNode(TokenType.DOLLAR.getValue()));
+        treeStack.push(new TreeNode(TokenType.DOLLAR.getValue()));
     }
 
     private void w_init(String input) {
@@ -93,9 +93,6 @@ public class LLParser {
                 .forEach(item -> createProduces(item.getValue()));
         String Terminal = "OPENCURLYBRACE,CLOSECURLYBRACE,IF,OPENBRACE,CLOSEBRACE,THEN,ELSE,WHILE,IDENTIFIERS,EQUAL,SEMICOLON,LESS,GREATER,LESSEQUAL,GREATEREQUAL,EQUALEQUAL,PLUS,MINUS,MULTIPLY,DIVIDE,NUM,DOLLAR";
         VtSet = new HashSet<>(Arrays.asList(Terminal.split(",")));
-        getFirstSet();
-        getFollowSet();
-
     }
 
 
@@ -106,9 +103,9 @@ public class LLParser {
         ip = 0;
         Object X = stk.peek();
         int guiId = 0;
-        AstNode root = new AstNode(String.valueOf(guiId), "program");
+        TreeNode root = new TreeNode(String.valueOf(guiId), "program");
         treeStack.push(root);
-        AstNode node = treeStack.peek();
+        TreeNode node = treeStack.peek();
         guiId++;
         while (X != TokenType.DOLLAR && !treeStack.isEmpty()) {
             System.out.println("------stk-------------: " + stk);
@@ -141,10 +138,10 @@ public class LLParser {
                 id++;
                 stk.pop();
                 treeStack.pop();
-                List<AstNode> childList = new ArrayList<>();
+                List<TreeNode> childList = new ArrayList<>();
                 List<Object> rightExpression = production.getRightExpression();
                 for (Object o : rightExpression) {
-                    childList.add(new AstNode(String.valueOf(guiId), o.toString()));
+                    childList.add(new TreeNode(String.valueOf(guiId), o.toString()));
                     guiId++;
                 }
                 for (int i = rightExpression.size() - 1; i >= 0; i--) {
@@ -171,7 +168,7 @@ public class LLParser {
     private void error(Object X, Token a) {
         System.out.println("--------error--------" + X + "  " + a);
         WrongMessage wrongMessage = null;
-        if (X instanceof TokenType) {        // 如果是个终结符，就直接弹栈尝试继续分析 ? 怎么下面例子是跳过了输入
+        if (X instanceof TokenType) {        // 如果是个终结符，就直接弹栈尝试继续分析
             stk.pop();
             wrongMessage = new WrongMessage(X.toString(), ErrorCode.MISSORADDMORE_SOMETHING, "语法分析阶段");
         } else if (X instanceof NonTerminalType) {      // 如果是个非终结符
@@ -233,80 +230,6 @@ public class LLParser {
     }
 
 
-    /*
-    计算所有的First集
-     */
-    public void getFirstSet() {
-        Arrays.asList(NonTerminalType.values())
-                .forEach(item -> getFirst(item.toString()));
-    }
-
-    /*
-    计算单个字符串的First集
-     */
-    public void getFirst(String item) {
-        TreeSet<String> treeSet = firstSet.containsKey(item) ? firstSet.get(item) : new TreeSet<>();    //如果已经存在了这个key就直接获取否则新建一个
-        ArrayList<List<Object>> item_production = productionMap.get(item.toString());
-        if (!VnSet.contains(item)) {                // 如果是终结符
-            treeSet.add(item);
-            firstSet.put(item, treeSet);
-            return;
-        } else {
-            for (List<Object> s : item_production) {
-                int i = 0;
-                while (i < s.size()) {
-                    String str = s.get(i).toString();
-                    getFirst(str);
-                    TreeSet<String> tvSet = firstSet.get(str);
-                    for (String tmp : tvSet) {
-                        if (tmp != "EPSILON")
-                            treeSet.add(tmp);
-                    }
-                    if (tvSet.contains("EPSILON"))
-                        i++;
-                    else
-                        break;
-                }
-                if (i == s.size())
-                    treeSet.add("EPSILON");
-            }
-            firstSet.put(item, treeSet);
-        }
-    }
-
-    /*
-    计算某个字符串列表的First集
-     */
-    public void getFirstList(List<Object> s) {
-        TreeSet<String> set = (firstSet2.containsKey(s)) ? firstSet2.get(s) : new TreeSet<>();
-        int i = 0;
-        while (i < s.size()) {
-            String tn = s.get(i).toString();
-            if (!firstSet.containsKey(tn))
-                getFirst(tn);
-            TreeSet<String> tvSet = firstSet.get(tn);
-            for (String tmp : tvSet)
-                if (tmp != "EPSILON")
-                    set.add(tmp);
-            if (tvSet.contains("EPSILON"))
-                i++;
-            else
-                break;
-            if (i == s.size()) {
-                set.add("EPSILON");
-            }
-        }
-        firstSet2.put(s, set);
-    }
-
-    /*
-    计算所有的Follow集
-     */
-    public void getFollowSet() {
-        Arrays.asList(NonTerminalType.values())
-                .forEach(item -> getFollow(item.toString()));
-    }
-
     /**
      * 生成所有产生式的具体执行函数
      */
@@ -333,104 +256,21 @@ public class LLParser {
         }
     }
 
-    /**
-     * 得到单个字符串的follow集
-     */
-    public void getFollow(String ch) {
-        TreeSet<String> set = followSet.containsKey(ch) ? followSet.get(ch) : new TreeSet<>();
-        if (ch == start) {
-            set.add(TokenType.DOLLAR.toString());
-            followSet.put(ch, set);
-        }
-        for (Map.Entry<String, ArrayList<List<Object>>> entry : productionMap.entrySet()) {
-            String key = entry.getKey().toString();
-            ArrayList<List<Object>> item_production = entry.getValue();
-            for (List<Object> s : item_production) {
-                for (int i = 0; i < s.size(); i++) {
-                    if (s.get(i).toString() == ch) {
-                        if (i == (s.size() - 1)) {
-                            TreeSet<String> tempSet = null;
-                            if (key != ch) {
-                                if (followSet.containsKey(key))
-                                    tempSet = followSet.get(key);
-                                else {
-                                    getFollow(key);
-                                    tempSet = followSet.get(key);
-                                }
-                                set.addAll(tempSet);
-                                followSet.put(ch, set);
-                            }
-
-                        } else {
-                            int j = i + 1;
-                            List<Object> templist = s.subList(j, s.size());
-                            if (!firstSet2.containsKey(templist))
-                                getFirstList(templist);
-                            TreeSet<String> tempSet = firstSet2.get(templist);
-                            if (tempSet.contains("EPSILON")) {
-                                tempSet.remove("EPSILON");
-                                set.addAll(tempSet);
-                                TreeSet<String> tempSet3 = null;
-                                if (ch != key) {
-                                    if (followSet.containsKey(key))
-                                        tempSet3 = followSet.get(key);
-                                    else {
-                                        getFollow(key);
-                                        tempSet3 = followSet.get(key);
-                                    }
-                                    set.addAll(tempSet3);
-                                }
-                            } else {
-                                set.addAll(tempSet);
-                            }
-                            followSet.put(ch, set);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-    // 打印first集和follow集
-    public void printFirstAFollow() {
-        for (Map.Entry<String, TreeSet<String>> entry : firstSet.entrySet()) {/// first(A)
-            String key = entry.getKey();
-            System.out.print("FIRST(" + key + ")= ");
-            TreeSet<String> set = firstSet.get(key);
-            Iterator<String> iterator = set.iterator();
-            while (iterator.hasNext()) {
-                System.out.print(iterator.next() + " ");
-            }
-            System.out.println();
-        }
-        for (Map.Entry<String, TreeSet<String>> entry : followSet.entrySet()) {
-            String key = entry.getKey();
-            System.out.print("FOLLOW(" + key + ")= ");
-            TreeSet<String> set = followSet.get(key);
-            Iterator<String> iterator = set.iterator();
-            while (iterator.hasNext()) {
-                System.out.print(iterator.next() + " ");
-            }
-            System.out.println();
-        }
-    }
-
     @Deprecated
     // 输出语法树
     public void createParseTree() {
         Production p = productions.get(0);      // root 为 program
-        AstNode root = new AstNode(p.getLeftExpression().getValue());
+        TreeNode root = new TreeNode(p.getLeftExpression().getValue());
         List<Object> rightExpression = p.getRightExpression();
         treeStack.push(root);
         int i = 0;
         while (!treeStack.isEmpty()) {
-            AstNode node = treeStack.pop();
+            TreeNode node = treeStack.pop();
             Production p1 = productions.get(i++);
             List<Object> right = p1.getRightExpression();
-            List<AstNode> childList = new ArrayList<>();
+            List<TreeNode> childList = new ArrayList<>();
             for (Object o : right) {
-                childList.add(new AstNode(o.toString()));
+                childList.add(new TreeNode(o.toString()));
             }
             for (int j = right.size() - 1; j >= 0; j--) {
                 if (right.get(j) instanceof NonTerminalType) {
@@ -446,7 +286,7 @@ public class LLParser {
     //打印Gui用的语法树
     public GuiNode printGuiNode() {
         int guiId = 0;
-        int j=0;
+        int j = 0;
         GuiNode root = new GuiNode(String.valueOf(guiId), "program");
         guiId++;
         Stack<GuiNode> leftMostStk = new Stack<>();
@@ -456,9 +296,9 @@ public class LLParser {
             List<Object> rightExpr = production.getRightExpression();
             List<GuiNode> children = new ArrayList<>();
             for (Object item : rightExpr) {
-                if(item instanceof TokenType && (item == TokenType.NUM || item ==TokenType.IDENTIFIERS)) {
-                    children.add(new GuiNode(String.valueOf(guiId), item.toString()+"--"+values.get(j++)));
-                }else{
+                if (item instanceof TokenType && (item == TokenType.NUM || item == TokenType.IDENTIFIERS)) {
+                    children.add(new GuiNode(String.valueOf(guiId), item.toString() + "--" + values.get(j++)));
+                } else {
                     children.add(new GuiNode(String.valueOf(guiId), item.toString()));
                 }
                 guiId++;

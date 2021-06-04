@@ -14,8 +14,6 @@ public enum TokenType {
     FRACTION("fraction"),
 
 
-
-
     /**
      * keywords
      */
@@ -61,7 +59,6 @@ public enum TokenType {
     INTNUMBER("intnumber"),
 
 
-
     /**
      * 空格 TAB 回车
      */
@@ -92,8 +89,9 @@ public enum TokenType {
      * @return {@code true} if token is auxiliary, {@code false} otherwise
      */
     public boolean isAuxiliary() {
-        return  this == NEWLINE || this == TAB || this == WHITESPACE || this == ENTER;
+        return this == NEWLINE || this == TAB || this == WHITESPACE || this == ENTER;
     }
+
     private final String value;
 
     TokenType(final String value) {
@@ -108,7 +106,6 @@ public enum TokenType {
     public String toString() {
         return this.getValue();
     }
-
 
 
 }

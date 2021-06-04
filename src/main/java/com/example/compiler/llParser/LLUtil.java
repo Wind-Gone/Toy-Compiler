@@ -260,7 +260,7 @@ public class LLUtil {
         return res;
     }
 
-    public List<String> printFIrstSet() {
+    public List<String> printFirstSet() {
         List<String> res = new LinkedList<>();
         HashMap<Object, Set<TokenType>> fs = getFirstSet();
         for (NonTerminalType item : NonTerminalType.values()) {

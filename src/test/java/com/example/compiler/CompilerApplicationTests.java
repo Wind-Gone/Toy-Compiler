@@ -2,10 +2,12 @@ package com.example.compiler;
 
 import com.example.compiler.entity.WrongMessage;
 import com.example.compiler.entity.gui.GuiNode;
-import com.example.compiler.entity.tree.AstNode;
 import com.example.compiler.entity.tree.SyntaxTree;
+import com.example.compiler.entity.tree.TreeNode;
 import com.example.compiler.lexer.Lexer;
-import com.example.compiler.llParser.*;
+import com.example.compiler.llParser.LLParser;
+import com.example.compiler.llParser.LLUtil;
+import com.example.compiler.llParser.NonTerminalType;
 import com.example.compiler.token.Token;
 import com.example.compiler.token.TokenType;
 import javafx.util.Pair;
@@ -13,7 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 @SuppressWarnings("all")
@@ -82,12 +87,7 @@ class CompilerApplicationTests {
         String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
-//        llParser.createParseTree();
         llParser.getSyntaxTree().preOrder();
-//        llParser.getFirstSet();
-//        llParser.getFollowSet();
-//        llParser.printproductionMap();
-//        llParser.printFirstAFollow();
     }
 
     @Test
@@ -134,18 +134,26 @@ class CompilerApplicationTests {
      * @Throws
      */
     public void testTree() {
-        AstNode t1 = new AstNode("root");
-        AstNode t2_1 = new AstNode("a");
-        AstNode t2_2 = new AstNode("b");
-        AstNode t2_3 = new AstNode("c");
-        AstNode t3_1_1 = new AstNode("d");
-        AstNode t3_2_1 = new AstNode("e");
-        AstNode t3_2_2 = new AstNode("f");
-        AstNode t3_3_1 = new AstNode("g");
-        AstNode t4_2_1_1 = new AstNode("h");
-        AstNode t4_1_1_1 = new AstNode("j");
+        TreeNode t1 = new TreeNode("root");
+        TreeNode t2_1 = new TreeNode("a");
+        TreeNode t2_2 = new TreeNode("b");
+        TreeNode t2_3 = new TreeNode("c");
+        TreeNode t3_1_1 = new TreeNode("d");
+        TreeNode t3_2_1 = new TreeNode("e");
+        TreeNode t3_2_2 = new TreeNode("f");
+        TreeNode t3_3_1 = new TreeNode("g");
+        TreeNode t4_2_1_1 = new TreeNode("h");
+        TreeNode t4_1_1_1 = new TreeNode("j");
 
         SyntaxTree s = new SyntaxTree(t1);
         s.preOrder();
+    }
+
+    /**
+     * 语义分析测试
+     */
+    @Test
+    public void testForSemantic() {
+
     }
 }
