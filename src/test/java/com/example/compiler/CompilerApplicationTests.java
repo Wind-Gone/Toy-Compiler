@@ -8,6 +8,7 @@ import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.LLUtil;
 import com.example.compiler.llParser.NonTerminalType;
+import com.example.compiler.semantic.SemanticAnalyzer;
 import com.example.compiler.token.Token;
 import com.example.compiler.token.TokenType;
 import javafx.util.Pair;
@@ -87,7 +88,21 @@ class CompilerApplicationTests {
         String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
-        llParser.getSyntaxTree().preOrder();
+        System.out.println("******");
+        llParser.printParseTree();
+    }
+
+    @Test
+    void testSynTree() throws IOException {
+        Lexer lexer = new Lexer();
+        String input = lexer.ReadFile("src/3.txt");
+        System.out.println("--------语法开始 ------");
+        LLParser llParser = new LLParser(input);
+        System.out.println("******");
+        List<String> a = llParser.getSyntaxTree().dfs();
+        for (String s : a) {
+            System.out.println(s + " ");
+        }
     }
 
     @Test
@@ -153,7 +168,12 @@ class CompilerApplicationTests {
      * 语义分析测试
      */
     @Test
-    public void testForSemantic() {
-
+    public void testForSemantic() throws Exception {
+        Lexer lexer = new Lexer();
+        String input = lexer.ReadFile("src/3.txt");
+        System.out.println("--------语义开始 ------");
+        SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(input);
+        String output = semanticAnalyzer.toString();
+        System.out.println(output);
     }
 }

@@ -16,7 +16,7 @@ public enum NonTerminalType {
     ARITHEXPR("arithexpr"),
     ARITHEXPRPRIME("arithexprprime"),
     MULTEXPR("multexpr"),
-    MULTEXPRPRIME("multexprptime"),
+    MULTEXPRPRIME("multexprprime"),
     SIMPLEEXPR("simpleexpr");
     private final String value;
 

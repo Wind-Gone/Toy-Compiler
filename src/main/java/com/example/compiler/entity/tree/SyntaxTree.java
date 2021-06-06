@@ -2,10 +2,7 @@ package com.example.compiler.entity.tree;
 
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * @author Hu Zirui
@@ -33,6 +30,7 @@ public class SyntaxTree {
         preOrderPrint(root);
     }
 
+
     public void preOrderPrint(TreeNode root) {
         System.out.println(root.getValue());
         Queue<TreeNode> myQueue = new LinkedList<>();
@@ -54,17 +52,24 @@ public class SyntaxTree {
         }
     }
 
-//    public void createAttrTree(AstNode root) {
-//        if (root == null)
-//            return;
-//        Deque<AstNode> stack = new ArrayDeque<>();
-//        stack.addLast(root);
-//        while (!stack.isEmpty()) {
-//            AstNode node = stack.removeLast();
-//            for (int i = 0; i < node.getChildren().size(); i++) {
-//                stack.addLast(node.getChildren().get(i));
-//                if (node.getChildren().get(i).isLeaf() && )
-//            }
-//        }
-//    }
+    public List<String> dfs() {
+        List<String> res = new ArrayList<>();
+        if (root == null) {
+            System.out.println(1);
+            return res;
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        stack.add(root);
+        while (!stack.isEmpty()) {
+            TreeNode tempNode = stack.peek();
+            res.add(tempNode.getValue());
+            stack.pop();
+            if (!tempNode.isLeaf())
+                for (int i = tempNode.getChildren().size() - 1; i >= 0; i--) {
+                    if (tempNode.getChildren().get(i) != null)
+                        stack.push(tempNode.getChildren().get(i));
+                }
+        }
+        return res;
+    }
 }

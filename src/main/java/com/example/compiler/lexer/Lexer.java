@@ -2,9 +2,9 @@ package com.example.compiler.lexer;
 
 import com.example.compiler.entity.ErrorCode;
 import com.example.compiler.entity.WrongMessage;
-import com.example.compiler.token.*;
+import com.example.compiler.token.Token;
+import com.example.compiler.token.TokenType;
 import javafx.util.Pair;
-
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +12,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +34,13 @@ public class Lexer {
     }
 
     public Lexer() {
+        regEx = new LinkedHashMap<>();
+        launchRegex();
+        result = new ArrayList<>();
+        wrongList = new IdentityHashMap<>();
+    }
+
+    public Lexer(String fileContent) {
         regEx = new LinkedHashMap<>();
         launchRegex();
         result = new ArrayList<>();
@@ -112,7 +122,6 @@ public class Lexer {
             throw new IllegalArgumentException("Illegal index in the input stream!");
         }
         for (TokenType tokenType : TokenType.values()) {
-
             // NUM EPSILON DOLLAR 不识别
             if (tokenType == TokenType.NUM || tokenType == TokenType.EPSILON || tokenType == TokenType.DOLLAR)
                 continue;
@@ -123,7 +132,7 @@ public class Lexer {
             if (m.matches()) {
                 String lexema = m.group(1);
 //                System.out.println("---------matched-----------");
-                //找到回车，评论更新行和列
+                //找到回车，注释更新行和列
                 if (tokenType == TokenType.ENTER || tokenType == TokenType.COMMENTS) {
                     row++;
                     int t = column;
@@ -137,7 +146,6 @@ public class Lexer {
             }
         }
         int position_row = row;
-
         int position_col = column + 1;
         column++;
         wrongMessage = new WrongMessage(String.valueOf(source.charAt(fromIndex)), ErrorCode.NOT_MATCH);

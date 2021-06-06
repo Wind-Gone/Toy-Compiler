@@ -43,6 +43,10 @@ public class LLParser {
         this.syntaxTree = syntaxTree;
     }
 
+    public List<Production> getProductions() {
+        return productions;
+    }
+
     public LLParser(String input) {
         treeStack = new Stack<>();
         grammer = new Grammer();
@@ -194,10 +198,11 @@ public class LLParser {
     }
 
 
-    public void printParseTree() {
+    public List<String> printParseTree() {
         Production p = productions.get(0);
         System.out.println("printParse " + p.getLeftExpression());
-        recurseProduction(p);
+        List<String> res = recurseProduction(p);
+        return res;
     }
 
 
@@ -206,17 +211,20 @@ public class LLParser {
      *
      * @return
      */
-    public void recurseProduction(Production p) {
+    public List<String> recurseProduction(Production p) {
         List<Object> rightExpression = p.getRightExpression();
         ListIterator<Object> iterator = rightExpression.listIterator();
+        List<String> res = new ArrayList<>();
         while (iterator.hasNext()) {
             Object s = iterator.next();
             if (s instanceof TokenType) {
+                res.add(((TokenType) s).getValue());
                 System.out.println(s);
                 if (!iterator.hasNext()) {
-                    return;
+                    return null;
                 }
             } else if (s instanceof NonTerminalType) {
+                res.add(((NonTerminalType) s).getValue());
                 System.out.println(s);
                 for (Production productionInfer : productions) {
                     if (productionInfer.getLeftExpression() == s && !productionInfer.getUsed()) {
@@ -227,6 +235,7 @@ public class LLParser {
                 }
             }
         }
+        return res;
     }
 
 
