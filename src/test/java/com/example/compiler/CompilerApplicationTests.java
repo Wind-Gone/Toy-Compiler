@@ -2,8 +2,6 @@ package com.example.compiler;
 
 import com.example.compiler.entity.WrongMessage;
 import com.example.compiler.entity.gui.GuiNode;
-import com.example.compiler.entity.tree.SyntaxTree;
-import com.example.compiler.entity.tree.TreeNode;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.LLUtil;
@@ -17,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -114,17 +111,6 @@ class CompilerApplicationTests {
         llParser.printproductionMap();
     }
 
-    @Test
-    void testFirstAndFolloeSetForCzh() {
-        LLUtil llUtil = new LLUtil();
-//        HashMap<Object, Set<TokenType>> FirstSet =  llUtil.getFirstSet();
-//        HashMap<Object, Set<TokenType>> FollowSet =  llUtil.getFollowSet();
-        HashMap<Pair<NonTerminalType, TokenType>, Object> parsingTable = llUtil.getParsingTable();
-        for (Map.Entry<Pair<NonTerminalType, TokenType>, Object> entry : parsingTable.entrySet()) {
-            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-        }
-
-    }
 
     @Test
     /**
@@ -142,27 +128,6 @@ class CompilerApplicationTests {
 //        System.out.println(res.toString());
     }
 
-    @Test
-    /**
-     * @Description
-     * @Author Hu Zirui
-     * @Throws
-     */
-    public void testTree() {
-        TreeNode t1 = new TreeNode("root");
-        TreeNode t2_1 = new TreeNode("a");
-        TreeNode t2_2 = new TreeNode("b");
-        TreeNode t2_3 = new TreeNode("c");
-        TreeNode t3_1_1 = new TreeNode("d");
-        TreeNode t3_2_1 = new TreeNode("e");
-        TreeNode t3_2_2 = new TreeNode("f");
-        TreeNode t3_3_1 = new TreeNode("g");
-        TreeNode t4_2_1_1 = new TreeNode("h");
-        TreeNode t4_1_1_1 = new TreeNode("j");
-
-        SyntaxTree s = new SyntaxTree(t1);
-        s.preOrder();
-    }
 
     /**
      * 语义分析测试

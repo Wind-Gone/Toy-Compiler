@@ -81,10 +81,10 @@ public class SemanticAnalyzer {
             if (productionList.get(position) == NonTerminalType.STMTS.toString()) {
                 position++;
                 stmts((expr));
-            }
+            } else throw new Exception("stmts STMTS报错");
         } else if (temp.equals(TokenType.EPSILON.getValue())) {
             position++;
-        }
+        } else throw new Exception("stmts expr报错");
     }
 
     public void stmt(boolean expr) throws Exception {
@@ -101,7 +101,7 @@ public class SemanticAnalyzer {
         } else if (temp.equals(NonTerminalType.WHILESTMT.getValue())) {
             position++;
             whilestmt(expr);
-        }
+        } else throw new Exception("stmt 不匹配");
     }
 
     public void ifstmt(boolean expr) throws Exception {
@@ -120,12 +120,13 @@ public class SemanticAnalyzer {
                             if (productionList.get(position).equals(NonTerminalType.STMT.getValue())) {
                                 position++;
                                 stmt(expr && boolsyn != null && boolsyn);
-                                position++;
+//                                position++;
                                 if (productionList.get(position).contains(TokenType.ELSE.getValue())) {
                                     position++;
                                     if (productionList.get(position).equals(NonTerminalType.STMT.getValue())) {
                                         position++;
                                         stmt(expr && boolsyn != null && !boolsyn);
+                                        position++;
                                     } else throw new Exception("stmt if 报错2");
                                 } else throw new Exception("ELSE 语句 报错");
                             } else throw new Exception("stmt if 报错1");
@@ -159,8 +160,9 @@ public class SemanticAnalyzer {
         String temp = productionList.get(position);
         String syn = null;
         // match4Ex2Grammar the first set
-        if (temp.equals(TokenType.LESS.getValue()) || temp.equals(TokenType.LESSEQUAL.getValue()) || temp.equals(TokenType.GREATER.getValue()) || temp.equals(TokenType.GREATEREQUAL.getValue()) || temp.equals(TokenType.EQUALEQUAL.getValue())) {
-            syn = temp; // boolop.op = token.val
+        if (temp.contains(TokenType.LESS.getValue()) || temp.contains(TokenType.LESSEQUAL.getValue()) || temp.contains(TokenType.GREATER.getValue()) || temp.contains(TokenType.GREATEREQUAL.getValue()) || temp.contains(TokenType.EQUALEQUAL.getValue())) {
+            String[] tempList = temp.split(":");
+            syn = tempList[0]; // boolop.op = token.val
             position++;
         } else throw new Exception("boolop 条件符号报错");
         return syn;
@@ -206,31 +208,42 @@ public class SemanticAnalyzer {
     }
 
     public void whilestmt(boolean expr) throws Exception {
+        int i = 0;
+        int temp_pos = 0;
+        int temp_end = 0;
         String temp = productionList.get(position);
         String[] tempList = temp.split(":");
-        do {
-            if (tempList[1].equals(TokenType.WHILE.getValue())) {
+        if (tempList[1].equals(TokenType.WHILE.getValue())) {
+            position++;
+            boolean condition;
+            if (productionList.get(position).equals(TokenType.OPENBRACE.getValue())) {
                 position++;
-                boolean condition;
-                if (productionList.get(position).equals(TokenType.OPENBRACE.getValue())) {
+                if (productionList.get(position).equals(NonTerminalType.BOOLEXPR.getValue())) {
                     position++;
-                    if (productionList.get(position).equals(NonTerminalType.BOOLEXPR.getValue())) {
-                        position++;
+                    temp_pos = position;
+                    while (true) {
+                        i++;
+                        position = temp_pos;
                         Boolean boolsyn = boolexpr();
+                        System.out.println(i + " " + boolsyn);
                         condition = expr && boolsyn != null && boolsyn;
                         if (productionList.get(position).equals(TokenType.CLOSEBRACE.getValue())) {
                             position++;
+                            if (!condition) {
+                                position = temp_end + 1;
+                                break;
+                            }
                             if (productionList.get(position).equals(NonTerminalType.STMT.getValue())) {
                                 position++;
                                 stmt(condition);
-                                if (!condition)
-                                    break;
+                                temp_end = position;
+
                             } else throw new Exception("while语句中stmt报错");
                         } else throw new Exception("while语句没有右括号");
-                    } else throw new Exception("While语句包含非法的语句判断");
-                } else throw new Exception("While语句没有左括号");
-            } else throw new Exception("whilestmt While符号不正确");
-        } while (true);
+                    }
+                } else throw new Exception("While语句包含非法的语句判断");
+            } else throw new Exception("While语句没有左括号");
+        } else throw new Exception("whilestmt While符号不正确");
     }
 
     public void assgstmt(boolean expr) throws Exception {
@@ -255,7 +268,8 @@ public class SemanticAnalyzer {
                     throw new Exception("ARITHEXPR报错");
             } else
                 throw new Exception("非法的赋值语句");
-        }
+        } else
+            throw new Exception("assgstmt 报错");
     }
 
     public Number arithexpr() throws Exception {
@@ -264,15 +278,12 @@ public class SemanticAnalyzer {
         if (temp.equals(NonTerminalType.MULTEXPR.getValue())) {
             position++;
             Number multexprSyn = multexpr();
-            position++;
             if (productionList.get(position).equals(NonTerminalType.ARITHEXPRPRIME.getValue())) {
                 position++;
                 syn = arithexprprime(multexprSyn);
-                position++;
             } else
                 throw new Exception("arithexprprime报错");
-
-        }
+        } else throw new Exception("arithexpr MULTEXPR 报错");
         return syn;
     }
 
@@ -285,8 +296,8 @@ public class SemanticAnalyzer {
             if (productionList.get(position) == NonTerminalType.MULTEXPRPRIME.getValue()) {
                 position++;
                 syn = multexprprime(simpleexprSyn);// multexpr.syn = multexprprime.syn
-            }
-        }
+            } else throw new Exception("multexpr MULTEXPRPRIME 报错");
+        } else throw new Exception("multexpr SIMPLEEXPR报错");
         return syn;
     }
 
@@ -295,10 +306,13 @@ public class SemanticAnalyzer {
         Number syn = null;
         if (temp.equals(TokenType.OPENBRACE.getValue())) {
             position++;
-            syn = arithexpr();
-            if (temp.equals(TokenType.CLOSECURLYBRACE.getValue())) {
+            if (productionList.get(position).equals(NonTerminalType.ARITHEXPR.getValue())) {
                 position++;
-            } else throw new Exception("右括号未闭合");
+                syn = arithexpr();
+                if (productionList.get(position).equals(TokenType.CLOSEBRACE.getValue())) {
+                    position++;
+                } else throw new Exception("右括号未闭合");
+            } else throw new Exception("simpleexpr arithexpr报错");
         } else if (temp.contains(TokenType.IDENTIFIERS.getValue())) {
             String[] seperateList = temp.split(":");
             String name = seperateList[1];
@@ -342,7 +356,6 @@ public class SemanticAnalyzer {
             if (productionList.get(position).equals(NonTerminalType.SIMPLEEXPR.getValue())) {
                 position++;
                 Number simpleexprSyn = simpleexpr();
-                position++;
                 if (simpleexprSyn == null)
                     throw new Exception("multexprprime解析出错2");
                 if (productionList.get(position).equals(NonTerminalType.MULTEXPRPRIME.getValue())) {
@@ -355,7 +368,9 @@ public class SemanticAnalyzer {
                     throw new Exception("ARITHEXPRPRIME报错2");
             } else
                 throw new Exception("SIMPLEEXPR报错2");
-        }
+        } else if (productionList.get(position).equals(TokenType.EPSILON.getValue())) {
+            position++;
+        } else throw new Exception("multexprprime报错");
         return syn;
     }
 
@@ -367,7 +382,6 @@ public class SemanticAnalyzer {
             if (productionList.get(position).equals(NonTerminalType.MULTEXPR.getValue())) {
                 position++;
                 Number multexprSyn = multexpr();
-                position++;
                 if (multexprSyn == null)
                     throw new Exception("arithexprprime解析错误1");
                 if (productionList.get(position).equals(NonTerminalType.ARITHEXPRPRIME.getValue())) {
@@ -387,7 +401,6 @@ public class SemanticAnalyzer {
             if (productionList.get(position).equals(NonTerminalType.MULTEXPR.getValue())) {
                 position++;
                 Number multexprSyn = multexpr();
-                position++;
                 if (multexprSyn == null)
                     throw new Exception("arithexprprime解析错误2");
                 if (productionList.get(position).equals(NonTerminalType.ARITHEXPRPRIME.getValue())) {
@@ -400,7 +413,9 @@ public class SemanticAnalyzer {
                     throw new Exception("SIMPLEEXPR报错4");
             } else
                 throw new Exception("MULTEXPR报错2");
-        }
+        } else if (productionList.get(position).equals(TokenType.EPSILON.getValue())) {
+            position++;
+        } else throw new Exception("arithexprprime报错");
         return syn;
     }
 
