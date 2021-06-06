@@ -225,7 +225,6 @@ public class SemanticAnalyzer {
                         i++;
                         position = temp_pos;
                         Boolean boolsyn = boolexpr();
-                        System.out.println(i + " " + boolsyn);
                         condition = expr && boolsyn != null && boolsyn;
                         if (productionList.get(position).equals(TokenType.CLOSEBRACE.getValue())) {
                             position++;
