@@ -138,7 +138,7 @@ class CompilerApplicationTests {
         String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语义开始 ------");
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(input);
-        String output = semanticAnalyzer.toString();
+        String output = semanticAnalyzer.toString2();
         System.out.println(output);
     }
 }

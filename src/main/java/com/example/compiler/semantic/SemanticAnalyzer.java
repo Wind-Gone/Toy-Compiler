@@ -6,9 +6,9 @@ import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.NonTerminalType;
 import com.example.compiler.token.TokenType;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * @author Hu Zirui
@@ -19,13 +19,36 @@ import java.util.List;
  */
 @SuppressWarnings("all")
 public class SemanticAnalyzer {
-    private HashSet<String> VtSet;          // 所有终结符常量集合
     private SymbolTable symbolTable;        // 全局变量符号表
-    private Lexer lexer;
-    private int position = 0;
-    private LLParser llParser;
-    private SyntaxTree syntaxTree;
-    private List<String> productionList;
+    private Lexer lexer;                    // 调用的词法分析器
+    private int position = 0;               // 语法树列表的当前位置
+    private int label = 0;                  // 生成三地址码的代码块标号
+    private int v = 0;                      // 生成三地址码的临时变量标号
+    private int id = 0;                     // 生成三地址码的标识符标号
+    private Queue<String> StoreQueue;       //生成三地址码的辅助队列
+    private LLParser llParser;              // 调用的语法分析器
+    private SyntaxTree syntaxTree;          // 语法树
+    private List<String> productionList;    // 语法树 ——> 语法树列表
+    private ThreeCodeTable threeCodeTable;  // 三地址符号表
+    private int queuePos = 0;               // 辅助队列位置
+
+    public String PrintNewBlock() {
+        String s = "label" + (++this.label);
+        StoreQueue.offer(s);
+        return s;
+    }
+
+    public String PrintNewSymbol() {
+        String s = "v" + (++this.v);
+        StoreQueue.offer(s);
+        return s;
+    }
+
+    public String PrintNewId() {
+        String s = "id" + (++this.id);
+        StoreQueue.offer(s);
+        return s;
+    }
 
     public SemanticAnalyzer(String fileContent) throws Exception {
         lexer = new Lexer(fileContent);
@@ -40,8 +63,8 @@ public class SemanticAnalyzer {
 
     public void init() {
         symbolTable = new SymbolTable();
-        String Terminal = "OPENCURLYBRACE,CLOSECURLYBRACE,IF,OPENBRACE,CLOSEBRACE,THEN,ELSE,WHILE,IDENTIFIERS,EQUAL,SEMICOLON,LESS,GREATER,LESSEQUAL,GREATEREQUAL,EQUALEQUAL,PLUS,MINUS,MULTIPLY,DIVIDE,NUM,DOLLAR";
-        VtSet = new HashSet<>(Arrays.asList(Terminal.split(",")));  // 所有终结符常量
+        threeCodeTable = new ThreeCodeTable();
+        StoreQueue = new LinkedList<String>();
         syntaxTree = llParser.getSyntaxTree();
         productionList = llParser.getSyntaxTree().dfs();
     }
@@ -49,6 +72,10 @@ public class SemanticAnalyzer {
     @Override
     public String toString() {
         return symbolTable.toString();
+    }
+
+    public String toString2() {
+        return threeCodeTable.toString();
     }
 
     public void program(boolean expr) throws Exception {
@@ -260,6 +287,9 @@ public class SemanticAnalyzer {
                         position++;
                         if (expr) {
                             symbolTable.putSingleSymbol(name, syn);
+                            String left = PrintNewSymbol();
+                            String right = PrintNewId();
+                            System.out.println(right + "=" + left);
                         }
                     } else
                         throw new Exception("赋值语句没有分号");
@@ -341,6 +371,11 @@ public class SemanticAnalyzer {
                     throw new Exception("multexprprime解析出错1");
                 if (productionList.get(position).equals(NonTerminalType.MULTEXPRPRIME.getValue())) {
                     position++;
+                    String left = PrintNewSymbol();
+                    if (!StoreQueue.peek().equals(left))
+                        System.out.println(left + "=" + inh.intValue() + "*" + StoreQueue.poll());
+                    else
+                        System.out.println(left + "=" + inh.intValue() + "*" + simpleexprSyn);
                     if (inh instanceof Integer && simpleexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh * simpleexpr.syn
                         syn = multexprprime(inh.intValue() * simpleexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
                     else
@@ -359,6 +394,11 @@ public class SemanticAnalyzer {
                     throw new Exception("multexprprime解析出错2");
                 if (productionList.get(position).equals(NonTerminalType.MULTEXPRPRIME.getValue())) {
                     position++;
+                    String left = PrintNewSymbol();
+                    if (!StoreQueue.peek().equals(left))
+                        System.out.println(left + "=" + inh.intValue() + "/" + StoreQueue.poll());
+                    else
+                        System.out.println(left + "=" + inh.intValue() + "/" + simpleexprSyn);
                     if (inh instanceof Integer && simpleexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh / simpleexpr.syn
                         syn = multexprprime(inh.intValue() / simpleexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
                     else
@@ -385,6 +425,11 @@ public class SemanticAnalyzer {
                     throw new Exception("arithexprprime解析错误1");
                 if (productionList.get(position).equals(NonTerminalType.ARITHEXPRPRIME.getValue())) {
                     position++;
+                    String left = PrintNewSymbol();
+                    if (!StoreQueue.peek().equals(left))
+                        System.out.println(left + "=" + inh.intValue() + "+" + StoreQueue.poll());
+                    else
+                        System.out.println(left + "=" + inh.intValue() + "+" + multexprSyn);
                     if (inh instanceof Integer && multexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh + simpleexpr.syn
                         syn = arithexprprime(inh.intValue() + multexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
                     else
@@ -404,6 +449,11 @@ public class SemanticAnalyzer {
                     throw new Exception("arithexprprime解析错误2");
                 if (productionList.get(position).equals(NonTerminalType.ARITHEXPRPRIME.getValue())) {
                     position++;
+                    String left = PrintNewSymbol();
+                    if (!StoreQueue.peek().equals(left))
+                        System.out.println(left + "=" + inh.intValue() + "-" + StoreQueue.poll());
+                    else
+                        System.out.println(left + "=" + inh.intValue() + "-" + multexprSyn);
                     if (inh instanceof Integer && multexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh - simpleexpr.syn
                         syn = arithexprprime(inh.intValue() - multexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
                     else
