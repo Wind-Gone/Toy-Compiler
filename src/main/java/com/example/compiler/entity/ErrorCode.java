@@ -15,7 +15,9 @@ public enum ErrorCode {
     REALNUMBER_FORMAT_ERROR("1004", "不是正确的Realnumber格式"),
     MISS_SEMICOLON("2001", "遗漏分号"),
     NOT_MATCH_FOR_GRAMMER("2002", "不是合法的语法规则"),
-    MISSORADDMORE_SOMETHING("2003", "请检查是否遗漏或增添了某些符号");
+    MISSORADDMORE_SOMETHING("2003", "请检查是否遗漏或增添了某些符号"),
+    MISS_OPENCURLYBRACES("3001", "程序缺失开始的左花括号"),
+    MISS_CLOSECURLYBRACES("3002", "程序缺失结束的右花括号");
 
 
     private final String code;

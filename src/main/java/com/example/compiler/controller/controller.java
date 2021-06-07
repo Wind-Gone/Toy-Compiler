@@ -5,6 +5,7 @@ import com.example.compiler.entity.gui.GuiNode;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.LLUtil;
+import com.example.compiler.semantic.SemanticAnalyzer;
 import com.example.compiler.token.Text;
 import com.example.compiler.token.Token;
 import org.springframework.web.bind.annotation.*;
@@ -58,7 +59,13 @@ public class controller {
         Lexer lexer = new Lexer();
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
-        return "语法分析成功";
+        List<String> a = llParser.getSyntaxTree().dfs();
+        StringBuilder res = new StringBuilder();
+        for (String s : a) {
+            res.append(s);
+            res.append("\n");
+        }
+        return res.toString();
     }
 
     /**
@@ -126,5 +133,20 @@ public class controller {
         return Arrays.deepToString(finalTable);
     }
 
-
+    /**
+     * @Title : getSemanticResult
+     * @Description : Get final result
+     * @Param : None
+     * @Return : List<String> res (Return the followSet in List-Style)
+     * @Throws : None
+     */
+    @PostMapping("/semanticResult")
+    public String getSemanticResult(@RequestBody Text text) throws Exception {
+        if (text.getSource().equals("") || text.getSource() == null)
+            return "您此时的输入为空";
+        String input = text.getSource();
+        System.out.println(input);
+        SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(input);
+        return semanticAnalyzer.toString();
+    }
 }

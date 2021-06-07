@@ -1,11 +1,14 @@
 package com.example.compiler.semantic;
 
+import com.example.compiler.entity.WrongMessage;
 import com.example.compiler.entity.tree.SyntaxTree;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.NonTerminalType;
 import com.example.compiler.token.TokenType;
+import javafx.util.Pair;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -31,6 +34,7 @@ public class SemanticAnalyzer {
     private List<String> productionList;    // 语法树 ——> 语法树列表
     private ThreeCodeTable threeCodeTable;  // 三地址符号表
     private int queuePos = 0;               // 辅助队列位置
+    private final HashMap<Pair<Integer, Integer>, WrongMessage> wrongList = new HashMap<>();    //错误列表
 
     public String PrintNewBlock() {
         String s = "label" + (++this.label);
@@ -287,9 +291,8 @@ public class SemanticAnalyzer {
                         position++;
                         if (expr) {
                             symbolTable.putSingleSymbol(name, syn);
-                            String left = PrintNewSymbol();
                             String right = PrintNewId();
-                            System.out.println(right + "=" + left);
+                            System.out.println(right + "=" + StoreQueue.poll());
                         }
                     } else
                         throw new Exception("赋值语句没有分号");
