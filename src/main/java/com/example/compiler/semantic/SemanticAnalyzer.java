@@ -9,9 +9,7 @@ import com.example.compiler.token.TokenType;
 import javafx.util.Pair;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * @author Hu Zirui
@@ -25,34 +23,34 @@ public class SemanticAnalyzer {
     private SymbolTable symbolTable;        // 全局变量符号表
     private Lexer lexer;                    // 调用的词法分析器
     private int position = 0;               // 语法树列表的当前位置
-    private int label = 0;                  // 生成三地址码的代码块标号
-    private int v = 0;                      // 生成三地址码的临时变量标号
-    private int id = 0;                     // 生成三地址码的标识符标号
-    private Queue<String> StoreQueue;       //生成三地址码的辅助队列
-    private LLParser llParser;              // 调用的语法分析器
+    //    private ThreeCodeTable threeCodeTable;  // 三地址符号表
+//    private int queuePos = 0;               // 辅助队列位置
+    private final HashMap<Pair<Integer, Integer>, WrongMessage> wrongList = new HashMap<>();    //错误列表
     private SyntaxTree syntaxTree;          // 语法树
     private List<String> productionList;    // 语法树 ——> 语法树列表
-    private ThreeCodeTable threeCodeTable;  // 三地址符号表
-    private int queuePos = 0;               // 辅助队列位置
-    private final HashMap<Pair<Integer, Integer>, WrongMessage> wrongList = new HashMap<>();    //错误列表
+    //    private int label = 0;                  // 生成三地址码的代码块标号
+//    private int v = 0;                      // 生成三地址码的临时变量标号
+//    private int id = 0;                     // 生成三地址码的标识符标号
+//    private Queue<String> StoreQueue;       //生成三地址码的辅助队列
+    private LLParser llParser;              // 调用的语法分析器
 
-    public String PrintNewBlock() {
-        String s = "label" + (++this.label);
-        StoreQueue.offer(s);
-        return s;
-    }
-
-    public String PrintNewSymbol() {
-        String s = "v" + (++this.v);
-        StoreQueue.offer(s);
-        return s;
-    }
-
-    public String PrintNewId() {
-        String s = "id" + (++this.id);
-        StoreQueue.offer(s);
-        return s;
-    }
+//    public String PrintNewBlock() {
+//        String s = "label" + (++this.label);
+//        StoreQueue.offer(s);
+//        return s;
+//    }
+//
+//    public String PrintNewSymbol() {
+//        String s = "v" + (++this.v);
+//        StoreQueue.offer(s);
+//        return s;
+//    }
+//
+//    public String PrintNewId() {
+//        String s = "id" + (++this.id);
+//        StoreQueue.offer(s);
+//        return s;
+//    }
 
     public SemanticAnalyzer(String fileContent) throws Exception {
         lexer = new Lexer(fileContent);
@@ -67,8 +65,8 @@ public class SemanticAnalyzer {
 
     public void init() {
         symbolTable = new SymbolTable();
-        threeCodeTable = new ThreeCodeTable();
-        StoreQueue = new LinkedList<String>();
+//        threeCodeTable = new ThreeCodeTable();
+//        StoreQueue = new LinkedList<String>();
         syntaxTree = llParser.getSyntaxTree();
         productionList = llParser.getSyntaxTree().dfs();
     }
@@ -76,10 +74,6 @@ public class SemanticAnalyzer {
     @Override
     public String toString() {
         return symbolTable.toString();
-    }
-
-    public String toString2() {
-        return threeCodeTable.toString();
     }
 
     public void program(boolean expr) throws Exception {
@@ -243,8 +237,7 @@ public class SemanticAnalyzer {
         int temp_pos = 0;
         int temp_end = 0;
         String temp = productionList.get(position);
-        String[] tempList = temp.split(":");
-        if (tempList[1].equals(TokenType.WHILE.getValue())) {
+        if (temp.equals(TokenType.WHILE.getValue())) {
             position++;
             boolean condition;
             if (productionList.get(position).equals(TokenType.OPENBRACE.getValue())) {
@@ -291,8 +284,8 @@ public class SemanticAnalyzer {
                         position++;
                         if (expr) {
                             symbolTable.putSingleSymbol(name, syn);
-                            String right = PrintNewId();
-                            System.out.println(right + "=" + StoreQueue.poll());
+//                            String right = PrintNewId();
+//                            System.out.println(right + "=" + StoreQueue.poll());
                         }
                     } else
                         throw new Exception("赋值语句没有分号");
@@ -374,11 +367,11 @@ public class SemanticAnalyzer {
                     throw new Exception("multexprprime解析出错1");
                 if (productionList.get(position).equals(NonTerminalType.MULTEXPRPRIME.getValue())) {
                     position++;
-                    String left = PrintNewSymbol();
-                    if (!StoreQueue.peek().equals(left))
-                        System.out.println(left + "=" + inh.intValue() + "*" + StoreQueue.poll());
-                    else
-                        System.out.println(left + "=" + inh.intValue() + "*" + simpleexprSyn);
+//                    String left = PrintNewSymbol();
+//                    if (!StoreQueue.peek().equals(left))
+//                        System.out.println(left + "=" + inh.intValue() + "*" + StoreQueue.poll());
+//                    else
+//                        System.out.println(left + "=" + inh.intValue() + "*" + simpleexprSyn);
                     if (inh instanceof Integer && simpleexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh * simpleexpr.syn
                         syn = multexprprime(inh.intValue() * simpleexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
                     else
@@ -397,11 +390,11 @@ public class SemanticAnalyzer {
                     throw new Exception("multexprprime解析出错2");
                 if (productionList.get(position).equals(NonTerminalType.MULTEXPRPRIME.getValue())) {
                     position++;
-                    String left = PrintNewSymbol();
-                    if (!StoreQueue.peek().equals(left))
-                        System.out.println(left + "=" + inh.intValue() + "/" + StoreQueue.poll());
-                    else
-                        System.out.println(left + "=" + inh.intValue() + "/" + simpleexprSyn);
+//                    String left = PrintNewSymbol();
+//                    if (!StoreQueue.peek().equals(left))
+//                        System.out.println(left + "=" + inh.intValue() + "/" + StoreQueue.poll());
+//                    else
+//                        System.out.println(left + "=" + inh.intValue() + "/" + simpleexprSyn);
                     if (inh instanceof Integer && simpleexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh / simpleexpr.syn
                         syn = multexprprime(inh.intValue() / simpleexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
                     else
@@ -428,11 +421,11 @@ public class SemanticAnalyzer {
                     throw new Exception("arithexprprime解析错误1");
                 if (productionList.get(position).equals(NonTerminalType.ARITHEXPRPRIME.getValue())) {
                     position++;
-                    String left = PrintNewSymbol();
-                    if (!StoreQueue.peek().equals(left))
-                        System.out.println(left + "=" + inh.intValue() + "+" + StoreQueue.poll());
-                    else
-                        System.out.println(left + "=" + inh.intValue() + "+" + multexprSyn);
+//                    String left = PrintNewSymbol();
+//                    if (!StoreQueue.peek().equals(left))
+//                        System.out.println(left + "=" + inh.intValue() + "+" + StoreQueue.poll());
+//                    else
+//                        System.out.println(left + "=" + inh.intValue() + "+" + multexprSyn);
                     if (inh instanceof Integer && multexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh + simpleexpr.syn
                         syn = arithexprprime(inh.intValue() + multexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
                     else
@@ -452,11 +445,11 @@ public class SemanticAnalyzer {
                     throw new Exception("arithexprprime解析错误2");
                 if (productionList.get(position).equals(NonTerminalType.ARITHEXPRPRIME.getValue())) {
                     position++;
-                    String left = PrintNewSymbol();
-                    if (!StoreQueue.peek().equals(left))
-                        System.out.println(left + "=" + inh.intValue() + "-" + StoreQueue.poll());
-                    else
-                        System.out.println(left + "=" + inh.intValue() + "-" + multexprSyn);
+//                    String left = PrintNewSymbol();
+//                    if (!StoreQueue.peek().equals(left))
+//                        System.out.println(left + "=" + inh.intValue() + "-" + StoreQueue.poll());
+//                    else
+//                        System.out.println(left + "=" + inh.intValue() + "-" + multexprSyn);
                     if (inh instanceof Integer && multexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh - simpleexpr.syn
                         syn = arithexprprime(inh.intValue() - multexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
                     else

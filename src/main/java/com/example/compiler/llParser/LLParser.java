@@ -47,14 +47,13 @@ public class LLParser {
         stk_init();
         w_init(input);
         lmDerivation();
+        createParseTree();
     }
 
     private void stk_init() {
         stk = new Stack<>();
         stk.push(TokenType.DOLLAR);
         stk.push(NonTerminalType.PROGRAM);
-        treeStack = new Stack<>();
-        treeStack.push(new TreeNode(TokenType.DOLLAR.getValue()));
     }
 
     private void w_init(String input) {
@@ -115,15 +114,6 @@ public class LLParser {
             }
             X = stk.peek();
         }
-//        if (!stk.isEmpty()) {        // 按照恐慌模式的算法设计，如果这个时候栈还不为空，应该就是程序未闭合了
-//
-//        }
-//        for (Pair<Integer, Integer> pair : wrongList.keySet()) {
-//            if(pair.getValue()){
-//
-//            }
-//        }
-
         System.out.println("错误列表为" + wrongList + "\n");
 //        syntaxTree = new SyntaxTree(root);
     }
@@ -178,6 +168,35 @@ public class LLParser {
         }
     }
 
+    // 输出语法树
+    public void createParseTree() {
+        Production p = productions.get(0);      // root 为 program
+        TreeNode root = new TreeNode(p.getLeftExpression().getValue());
+        List<Object> rightExpression = p.getRightExpression();
+        treeStack.push(root);
+        int pointer = 0;
+        int i = 0;
+        while (!treeStack.isEmpty()) {
+            TreeNode node = treeStack.pop();
+            Production p1 = productions.get(i++);
+            List<Object> right = p1.getRightExpression();
+            List<TreeNode> childList = new ArrayList<>();
+            for (Object o : right) {
+                if (o instanceof TokenType && (o == TokenType.NUM || o == TokenType.IDENTIFIERS)) {
+                    childList.add(new TreeNode(o.toString() + ":" + values.get(pointer++)));
+                } else {
+                    childList.add(new TreeNode(o.toString()));
+                }
+            }
+            for (int j = right.size() - 1; j >= 0; j--) {
+                if (right.get(j) instanceof NonTerminalType) {
+                    treeStack.push(childList.get(j));
+                }
+            }
+            node.setChildren(childList);
+        }
+        syntaxTree = new SyntaxTree(root);
+    }
 
     //打印Gui用的语法树
     public GuiNode printGuiNode() {

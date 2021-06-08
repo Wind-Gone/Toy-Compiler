@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -136,7 +135,7 @@ class CompilerApplicationTests {
         String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语义开始 ------");
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(input);
-        String output = semanticAnalyzer.toString2();
+        String output = semanticAnalyzer.toString();
         System.out.println(output);
     }
 }
