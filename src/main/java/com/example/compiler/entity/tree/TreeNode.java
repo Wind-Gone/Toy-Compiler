@@ -1,7 +1,6 @@
 package com.example.compiler.entity.tree;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -13,12 +12,12 @@ import java.util.List;
  */
 @SuppressWarnings("all")
 public class TreeNode {
+
     private String id;                                  // 节点的ID号
     private int level;                                  // 节点所在层数
     private List<TreeNode> children;                    // 节点的所有孩子节点
     private String value;                               // 节点的值
     private TreeNode father;                            // 节点的父节点
-    private HashMap<String, String> attribute;          // 节点的综合属性/继承属性
 
     public String getId() {
         return id;
@@ -36,13 +35,11 @@ public class TreeNode {
         this.level = level;
     }
 
-
     public TreeNode() {
         initChildList();
     }
 
     public TreeNode(String value) {
-        attribute = new HashMap<>();
         this.level = 1;
         this.value = value;
     }
@@ -60,9 +57,6 @@ public class TreeNode {
         this.father = father;
     }
 
-    public HashMap<String, String> getAttribute() {
-        return attribute;
-    }
 
     public void initChildList() {
         if (children == null)
@@ -75,10 +69,6 @@ public class TreeNode {
         else {
             return children.isEmpty();
         }
-    }
-
-    public void setAttribute(HashMap<String, String> attribute) {
-        this.attribute = attribute;
     }
 
     public List<TreeNode> getChildren() {

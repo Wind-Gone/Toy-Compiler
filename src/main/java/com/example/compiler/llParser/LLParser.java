@@ -11,7 +11,6 @@ import com.example.compiler.token.TokenType;
 import javafx.util.Pair;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("all")
 public class LLParser {
@@ -82,23 +81,25 @@ public class LLParser {
     private void lmDerivation() {
         ip = 0;
         Object X = stk.peek();
-        while (X != TokenType.DOLLAR && !treeStack.isEmpty()) {
+        Token current = null;
+        while (X != TokenType.DOLLAR) {
             System.out.println("------stk-------------: " + stk);
             System.out.println("------token-----------: " + w.get(ip).getTokenType());
             System.out.println();
             TokenType a = w.get(ip).getTokenType();
             Token b = w.get(ip);
+            current = w.get(ip);
             if (X == a) {                      // X是终结符且匹配成功
                 stk.pop();
                 /** 如果X是nums或者id ， 把值加入values ， 打印 GUITree用 */
-                if(b.getTokenType() == TokenType.NUM || b.getTokenType() == TokenType.IDENTIFIERS){
+                if (b.getTokenType() == TokenType.NUM || b.getTokenType() == TokenType.IDENTIFIERS) {
                     values.add(b.getTokenString());
                 }
                 ip++;
             } else if (X instanceof TokenType) {                                // X是终结符且出错
-                error(X, w.get(ip));
-            } else if (parsingTable.get((NonTerminalType) X, a) == -1) {
-                error(X, w.get(ip));
+                error(X, current);
+            } else if (parsingTable.get((NonTerminalType) X, a) == -1) {            // X是非终结符且出错
+                error(X, current);
             } else {
                 Production production = grammer.get(parsingTable.get((NonTerminalType) X, a));
                 productions.add(production);
@@ -114,7 +115,17 @@ public class LLParser {
             }
             X = stk.peek();
         }
+//        if (!stk.isEmpty()) {        // 按照恐慌模式的算法设计，如果这个时候栈还不为空，应该就是程序未闭合了
+//
+//        }
+//        for (Pair<Integer, Integer> pair : wrongList.keySet()) {
+//            if(pair.getValue()){
+//
+//            }
+//        }
+
         System.out.println("错误列表为" + wrongList + "\n");
+//        syntaxTree = new SyntaxTree(root);
     }
 
 
@@ -122,29 +133,49 @@ public class LLParser {
      * 错误恢复
      */
     private void error(Object X, Token a) {
-        System.out.println("--------error--------"  + a);
-        WrongMessage wrongMessage = null;
-        if (X instanceof TokenType) {        // 如果是个终结符，就直接弹栈尝试继续分析
-            stk.pop();
-            wrongMessage = new WrongMessage(a.toString(), ErrorCode.MISSORADDMORE_SOMETHING, "语法分析阶段");
-        } else if (X instanceof NonTerminalType) {      // 如果是个非终结符
-            LLUtil llUtil = new LLUtil();
-            HashMap<Pair<NonTerminalType, TokenType>, Object> parsingTable = llUtil.getParsingTable();
-            boolean flag = false;
-            for (Map.Entry<Pair<NonTerminalType, TokenType>, Object> entry : parsingTable.entrySet()) {
-                if (entry.getKey().getKey() == X && entry.getKey().getValue() == a.getTokenType() && entry.getValue() == "synch") {
-                    flag = true;    //如果矩阵元素为 synch，则弹出栈顶非终结符
-                    System.out.println("wuhu");
-                    stk.pop();
+        System.out.println("--------error--------" + a);
+        if (a.getTokenString() == null && stk.size() == 3) {
+            w.add(w.size() - 1, new Token(TokenType.CLOSECURLYBRACE));
+            WrongMessage wrongMessage = new WrongMessage("}", ErrorCode.MISS_END_CLOSECURLYBRACES, "语法阶段");
+            wrongList.put(new Pair<>(a.getRow(), a.getColumn()), wrongMessage);
+        } else {
+
+            WrongMessage wrongMessage = null;
+            if (X instanceof TokenType) {        // 如果是个终结符，就直接弹栈尝试继续分析
+                stk.pop();
+                wrongMessage = new WrongMessage(a.toString(), ErrorCode.MISS_END_CLOSECURLYBRACES, "语法分析阶段");
+            } else if (X instanceof NonTerminalType) {      // 如果是个非终结符
+                if (((NonTerminalType) X).equals(NonTerminalType.PROGRAM)) {                // 特判处理开始符号不是‘{’的情况
+                    if (!a.getTokenString().equals("{")) {
+                        wrongMessage = new WrongMessage("{", ErrorCode.MISS_START_OPENCURLYBRACES, "语法分析阶段");  // 短语层次恢复
+                        w.add(0, new Token(TokenType.OPENCURLYBRACE));
+                    }
+                } else {
+                    LLUtil llUtil = new LLUtil();
+                    HashMap<Pair<NonTerminalType, TokenType>, Object> parsingTable = llUtil.getParsingTable();
+                    boolean flag = false;
+                    for (Map.Entry<Pair<NonTerminalType, TokenType>, Object> entry : parsingTable.entrySet()) {
+                        if (entry.getKey().getKey() == X && entry.getKey().getValue() == a.getTokenType() && entry.getValue() == "synch") {
+                            flag = true;    //如果矩阵元素为 synch，则弹出栈顶非终结符
+                            stk.pop();
+                        }
+                    }
+                    if (!flag) {
+                        ip++;
+                        System.out.println("跳过当前输入符号"); // 指针前移
+                    }
+                    if (a.getTokenType().equals(TokenType.IDENTIFIERS))
+                        wrongMessage = new WrongMessage(a.toString(), ErrorCode.EXTRA_VARIABLE_USE, "语法分析阶段");
+                    else if (a.getTokenType().equals(TokenType.CLOSEBRACE))
+                        wrongMessage = new WrongMessage(a.toString(), ErrorCode.MISS_OR_EXTRA_OPENBRACE, "语法分析阶段");
+                    else if (a.getTokenType().equals(TokenType.SEMICOLON))
+                        wrongMessage = new WrongMessage(a.toString(), ErrorCode.EXTRA_SEMICOLON, "语法分析阶段");
+                    else
+                        wrongMessage = new WrongMessage(a.toString(), ErrorCode.WRONG_GRAMMER_PARSER, "语法分析阶段");
                 }
             }
-            if (!flag) {
-                ip++;
-                System.out.println("跳过当前输入符号"); // 指针前移
-            }
-            wrongMessage = new WrongMessage(a.toString(), ErrorCode.NOT_MATCH_FOR_GRAMMER, "语法分析阶段");
+            wrongList.put(new Pair<>(a.getRow(), a.getColumn()), wrongMessage);
         }
-        wrongList.put(new Pair<>(a.getRow(), a.getColumn()), wrongMessage);
     }
 
 

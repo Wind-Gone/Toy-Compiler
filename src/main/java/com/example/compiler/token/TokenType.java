@@ -14,7 +14,6 @@ public enum TokenType {
     FRACTION("fraction"),
 
 
-
     /**
      * keywords
      */
@@ -107,6 +106,5 @@ public enum TokenType {
     public String toString() {
         return this.getValue();
     }
-
 
 }

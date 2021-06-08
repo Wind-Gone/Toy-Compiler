@@ -1,6 +1,5 @@
 package com.example.compiler.llParser;
 
-import com.example.compiler.token.Token;
 import com.example.compiler.token.TokenType;
 import javafx.util.Pair;
 
@@ -332,20 +331,9 @@ public class LLUtil {
      */
     public String[][] printParsingTableView() {
         /* 初始化终结符集合 */
-        Set<TokenType> Vt = new TreeSet<TokenType>(){{
+        Set<TokenType> Vt = new TreeSet<TokenType>() {{
             add(TokenType.DOLLAR);
         }};
-//        Grammer grammer = new Grammer();
-//        for (int i = 1; i <= 28; i++) {
-//            Production production = grammer.get(i);
-//            List<Object> right_expr = production.getRightExpression();
-//            for (Object object : right_expr) {
-//                if (object instanceof TokenType) {
-//                    if ((TokenType) object != TokenType.EPSILON)
-//                        Vt.add((TokenType) object);
-//                }
-//            }
-//        }
         res = new String[NonTerminalType.values().length + 1][Vt.size() + 1];
         /* 获取表 */
         HashMap<Pair<NonTerminalType, TokenType>, Object> table = getParsingTable();
@@ -365,8 +353,8 @@ public class LLUtil {
         for (NonTerminalType item : NonTerminalType.values()) {
             int j = 1;
             for (TokenType token : Vt) {
-                if(table.get(new Pair<>(item,token))!=null)
-                    res[i][j]=table.get(new Pair<>(item,token)).toString();
+                if (table.get(new Pair<>(item, token)) != null)
+                    res[i][j] = table.get(new Pair<>(item, token)).toString();
                 j++;
             }
             i++;
