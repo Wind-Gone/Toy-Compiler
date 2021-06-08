@@ -1,14 +1,14 @@
 package com.example.compiler;
 
-import com.example.compiler.entity.WrongMessage;
 import com.example.compiler.entity.gui.GuiNode;
+import com.example.compiler.entity.token.Token;
+import com.example.compiler.entity.token.TokenType;
+import com.example.compiler.entity.wrong.WrongMessage;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.LLUtil;
 import com.example.compiler.llParser.NonTerminalType;
 import com.example.compiler.semantic.SemanticAnalyzer;
-import com.example.compiler.token.Token;
-import com.example.compiler.token.TokenType;
 import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

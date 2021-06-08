@@ -1,13 +1,13 @@
 package com.example.compiler.llParser;
 
-import com.example.compiler.entity.ErrorCode;
-import com.example.compiler.entity.WrongMessage;
 import com.example.compiler.entity.gui.GuiNode;
+import com.example.compiler.entity.token.Token;
+import com.example.compiler.entity.token.TokenType;
 import com.example.compiler.entity.tree.SyntaxTree;
 import com.example.compiler.entity.tree.TreeNode;
+import com.example.compiler.entity.wrong.ErrorCode;
+import com.example.compiler.entity.wrong.WrongMessage;
 import com.example.compiler.lexer.Lexer;
-import com.example.compiler.token.Token;
-import com.example.compiler.token.TokenType;
 import javafx.util.Pair;
 
 import java.util.*;

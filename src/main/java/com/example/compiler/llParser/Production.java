@@ -1,7 +1,5 @@
 package com.example.compiler.llParser;
 
-import com.example.compiler.token.TokenType;
-
 import java.util.List;
 
 /**

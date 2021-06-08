@@ -1,4 +1,4 @@
-package com.example.compiler.entity;
+package com.example.compiler.entity.wrong;
 
 /**
  * @author Hu Zirui

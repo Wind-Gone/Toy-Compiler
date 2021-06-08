@@ -1,9 +1,9 @@
 package com.example.compiler.lexer;
 
-import com.example.compiler.entity.ErrorCode;
-import com.example.compiler.entity.WrongMessage;
-import com.example.compiler.token.Token;
-import com.example.compiler.token.TokenType;
+import com.example.compiler.entity.token.Token;
+import com.example.compiler.entity.token.TokenType;
+import com.example.compiler.entity.wrong.ErrorCode;
+import com.example.compiler.entity.wrong.WrongMessage;
 import javafx.util.Pair;
 
 import java.io.File;
@@ -32,6 +32,28 @@ public class Lexer {
     public IdentityHashMap<Pair<Integer, Integer>, WrongMessage> getWrongList() {
         return wrongList;
     }
+
+
+    /**
+     * 根据属性值判断token类型
+     *
+     * @param value 属性值
+     * @return token类型字符串
+     */
+    public static String getTokenType(TokenType tokenType) {
+        if (tokenType == TokenType.IF || tokenType == TokenType.WHILE || tokenType == TokenType.ELSE || tokenType == TokenType.THEN)
+            return "keywords";
+        else if (tokenType == TokenType.IDENTIFIERS)
+            return "identifiers";
+        else if (tokenType == TokenType.DIGIT || tokenType == TokenType.INTNUMBER || tokenType == TokenType.EXPONENT || tokenType == TokenType.FRACTION || tokenType == TokenType.REALNUMBER)
+            return "numbers";
+        else if (tokenType == TokenType.PLUS || tokenType == TokenType.MINUS || tokenType == TokenType.DIVIDE || tokenType == TokenType.MULTIPLY || tokenType == TokenType.EQUAL || tokenType == TokenType.EQUALEQUAL || tokenType == TokenType.LESS || tokenType == TokenType.LESSEQUAL || tokenType == TokenType.GREATER || tokenType == TokenType.GREATEREQUAL)
+            return "operators";
+        else if (tokenType == TokenType.CLOSEBRACE || tokenType == TokenType.COMMA || tokenType == TokenType.OPENBRACE || tokenType == TokenType.CLOSECURLYBRACE || tokenType == TokenType.OPENCURLYBRACE || tokenType == TokenType.SEMICOLON)
+            return "delimiters";
+        return "errors";
+    }
+
 
     public Lexer() {
         regEx = new LinkedHashMap<>();

@@ -1,11 +1,9 @@
 package com.example.compiler.llParser;
 
-import com.example.compiler.token.Token;
-import com.example.compiler.token.TokenType;
+import com.example.compiler.entity.token.TokenType;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 /**
  * Grammer ： 即所有产生式

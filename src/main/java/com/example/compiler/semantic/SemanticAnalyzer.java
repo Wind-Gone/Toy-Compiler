@@ -1,11 +1,11 @@
 package com.example.compiler.semantic;
 
-import com.example.compiler.entity.WrongMessage;
+import com.example.compiler.entity.token.TokenType;
 import com.example.compiler.entity.tree.SyntaxTree;
+import com.example.compiler.entity.wrong.WrongMessage;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.NonTerminalType;
-import com.example.compiler.token.TokenType;
 import javafx.util.Pair;
 
 import java.util.HashMap;
