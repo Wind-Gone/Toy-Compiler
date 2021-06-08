@@ -14,6 +14,7 @@ public enum TokenType {
     FRACTION("fraction"),
 
 
+
     /**
      * keywords
      */
@@ -89,7 +90,7 @@ public enum TokenType {
      * @return {@code true} if token is auxiliary, {@code false} otherwise
      */
     public boolean isAuxiliary() {
-        return this == NEWLINE || this == TAB || this == WHITESPACE || this == ENTER;
+        return this == NEWLINE || this == TAB || this == WHITESPACE || this == ENTER || this == COMMENTS;
     }
 
     private final String value;

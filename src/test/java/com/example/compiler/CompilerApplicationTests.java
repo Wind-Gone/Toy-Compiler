@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,14 +61,14 @@ class CompilerApplicationTests {
     @Test
     void czh2() {
         LLUtil llUtil = new LLUtil();
-        String[][] res = llUtil.printParsingTable();
-        for (int i = 0; i < res.length; i++) {
-            for (int j = 0; j < res.length; j++) {
-                System.out.print(res[i][j]);
-                System.out.print(" ");
+        String[][] res = llUtil.printParsingTableView();
+        for(int i=0;i<res.length;i++){
+            for(int j=0;j<res[0].length;j++){
+                System.out.printf("%13s",res[i][j]);
             }
             System.out.println();
         }
+        System.out.printf("%10s %10s","aa","bb");
     }
 
     @Test
@@ -86,7 +87,6 @@ class CompilerApplicationTests {
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
         System.out.println("******");
-        llParser.printParseTree();
     }
 
     @Test
@@ -108,7 +108,6 @@ class CompilerApplicationTests {
         String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
-        llParser.printproductionMap();
     }
 
 
@@ -123,7 +122,6 @@ class CompilerApplicationTests {
         String input = lexer.ReadFile("src/3.txt");
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
-        llParser.printParseTree();
         System.out.println("********");
 //        System.out.println(res.toString());
     }
