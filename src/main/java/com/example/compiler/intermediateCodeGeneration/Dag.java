@@ -3,8 +3,6 @@ package com.example.compiler.intermediateCodeGeneration;
 import com.example.compiler.entity.token.TokenType;
 import com.example.compiler.entity.tree.TreeNode;
 import com.example.compiler.llParser.NonTerminalType;
-
-
 import javafx.util.Pair;
 
 import java.util.*;
@@ -14,31 +12,30 @@ import java.util.regex.Pattern;
 import static com.example.compiler.llParser.NonTerminalType.ASSGSTMT;
 import static com.example.compiler.llParser.NonTerminalType.BOOLEXPR;
 
+@SuppressWarnings("all")
 public class Dag {
     private List<TreeNode> assgstment;
     private List<TreeNode> boolexpr;
 
-    public Dag(TreeNode root){
+    public Dag(TreeNode root) {
         assgstment = new ArrayList<>();
         boolexpr = new ArrayList<>();
         setAssgstment(root);
         //setBoolexpr(root);
     }
 
-    public void setAssgstment(TreeNode root){
-        NonTerminalType nonTerminalType = ASSGSTMT;
+    public void setAssgstment(TreeNode root) {
         System.out.println("--------findNonTerminalType开始------");
-        findNonTerminalType(nonTerminalType,root,assgstment);
+        findNonTerminalType(ASSGSTMT, root, assgstment);
     }
 
-    public void setBoolexpr(TreeNode root){
-        NonTerminalType nonTerminalType = BOOLEXPR;
-        findNonTerminalType(nonTerminalType,root,boolexpr);
+    public void setBoolexpr(TreeNode root) {
+        findNonTerminalType(BOOLEXPR, root, boolexpr);
 
     }
 
-    public void findNonTerminalType(NonTerminalType nonTerminalType,TreeNode root,
-                                    List<TreeNode> nonTerminalTypeList){
+    public void findNonTerminalType(NonTerminalType nonTerminalType, TreeNode root,
+                                    List<TreeNode> nonTerminalTypeList) {
         Queue<TreeNode> myQueue = new LinkedList<>();
         List<Pair<String, Integer>> res = new ArrayList<>();
         myQueue.offer(root);
@@ -46,7 +43,7 @@ public class Dag {
             TreeNode curNode = myQueue.remove();
             //System.out.println(curNode.getValue());
             res.add(new Pair<>(curNode.getValue(), curNode.getLevel()));
-            if(curNode.getValue()==nonTerminalType.toString().toLowerCase()){
+            if (curNode.getValue().equals(nonTerminalType.toString().toLowerCase())) {
                 nonTerminalTypeList.add(curNode);
                 System.out.println(curNode.getValue());
             }
@@ -66,16 +63,15 @@ public class Dag {
     }
 
 
-
-    public void assgDag(){
-        for(TreeNode assg :assgstment){
+    public void assgDag() {
+        for (TreeNode assg : assgstment) {
             System.out.println("--------转换开始------");
             assgTreeNode2Dag(assg);
             System.out.println("--------转换结束------");
         }
     }
 
-    public List<String> leafCollect(TreeNode root){
+    public List<String> leafCollect(TreeNode root) {
 
         Queue<TreeNode> myQueue = new LinkedList<>();
         List<Pair<String, Integer>> res = new ArrayList<>();
@@ -90,8 +86,8 @@ public class Dag {
                     treeNode.setFather(curNode);
                     myQueue.offer(treeNode);
                 }
-            }else{
-                if (curNode.getValue() != "EPSILON")
+            } else {
+                if (!curNode.getValue().equals("EPSILON"))
                     leaf.add(curNode.getValue());
             }
         }
@@ -99,45 +95,48 @@ public class Dag {
 
     }
 
-    public List<String> postOrderLeaf(List<String> leaf){
+    public List<String> postOrderLeaf(List<String> leaf) {
         Stack<String> temsymbol = new Stack<>();
         List<String> newLeaf = new ArrayList<>();
         int flag = 0;
-        for (int i = 0; i <leaf.size(); i++) {
-            if(leaf.get(i).equals("-")||leaf.get(i).equals("+")
-                    ||leaf.get(i).equals("=") )
-            {
-                //符号运算层数越低优先级越高
-                System.out.println("------symbol:"+leaf.get(i));
-                temsymbol.push(leaf.get(i));
-                flag = 0;
-            }
-            else if(leaf.get(i).equals("*")||leaf.get(i).equals("/"))
-            {
-                System.out.println("------symbol:"+leaf.get(i));
-                temsymbol.push(leaf.get(i));
-                flag = 1;
-
-            }
-            else if(leaf.get(i).equals(";")){}
-            else{
-                System.out.println("------ numOrID:"+leaf.get(i));
-                newLeaf.add(leaf.get(i));
-                if(flag==1){
-                    newLeaf.add(temsymbol.peek());
-                    temsymbol.pop();
+        for (String s : leaf) {
+            switch (s) {
+                case "-":
+                case "+":
+                case "=":
+                    //符号运算层数越低优先级越高
+                    System.out.println("------symbol:" + s);
+                    temsymbol.push(s);
                     flag = 0;
-                }
+                    break;
+                case "*":
+                case "/":
+                    System.out.println("------symbol:" + s);
+                    temsymbol.push(s);
+                    flag = 1;
+
+                    break;
+                case ";":
+                    break;
+                default:
+                    System.out.println("------ numOrID:" + s);
+                    newLeaf.add(s);
+                    if (flag == 1) {
+                        newLeaf.add(temsymbol.peek());
+                        temsymbol.pop();
+                        flag = 0;
+                    }
+                    break;
             }
         }
-        while(!temsymbol.empty()){
+        while (!temsymbol.empty()) {
             newLeaf.add(temsymbol.pop());
         }
         return newLeaf;
     }
 
 
-    public void assgTreeNode2Dag(TreeNode root){
+    public void assgTreeNode2Dag(TreeNode root) {
         Queue<TreeNode> myQueue = new LinkedList<>();
         List<Pair<String, Integer>> res = new ArrayList<>();
         List<String> leaf = leafCollect(root);
@@ -152,8 +151,8 @@ public class Dag {
         List<String> newLeaf = postOrderLeaf(leaf);
 
         System.out.println("-----Leaf后序输出-----");
-        for(String s : newLeaf){
-            System.out.print(s+" ");
+        for (String s : newLeaf) {
+            System.out.print(s + " ");
         }
         System.out.println();
 
@@ -166,7 +165,7 @@ public class Dag {
         String id = "([identifiers]+):(.*)";
         int i = 1;
         int flag = 0;
-        for(String core:newLeaf){
+        for (String core : newLeaf) {
             //正则匹配读取num的值或id
             Pattern numPattern = Pattern.compile(num);
             Pattern idPattern = Pattern.compile(id);
@@ -174,11 +173,11 @@ public class Dag {
             Matcher idMatcher = idPattern.matcher(core);
             //未考虑有重复的情况
             //num
-            if(numMatcher.find()){
+            if (numMatcher.find()) {
                 TokenType tokenType = TokenType.NUM;
                 int no = Integer.parseInt(numMatcher.group(2));
-                System.out.println("NUM:"+no);
-                Leaf temLeaf = new Leaf(tokenType,no);
+                System.out.println("NUM:" + no);
+                Leaf temLeaf = new Leaf(tokenType, no);
                 temLeaf.setId(i);
                 i++;
                 DagList.add(temLeaf);
@@ -186,40 +185,36 @@ public class Dag {
                 flag = 0;
             }
             //id
-            else if(idMatcher.find()){
+            else if (idMatcher.find()) {
                 TokenType tokenType = TokenType.IDENTIFIERS;
                 String entry = idMatcher.group(2);
-                System.out.println("entry:"+entry);
-                Leaf temLeaf = new Leaf(tokenType,entry);
+                System.out.println("entry:" + entry);
+                Leaf temLeaf = new Leaf(tokenType, entry);
                 temLeaf.setId(i);
                 i++;
                 DagList.add(temLeaf);
                 formula.push(temLeaf);
                 flag = 0;
-            }
-
-            else{
-                System.out.println("------symbol:"+core);
+            } else {
+                System.out.println("------symbol:" + core);
                 Object rightObject = formula.pop();
                 Object leftObject = formula.pop();
-                int left = -1,right = -1;
-                if (rightObject instanceof Leaf){
+                int left = -1, right = -1;
+                if (rightObject instanceof Leaf) {
                     Leaf rightLeaf = (Leaf) rightObject;
                     right = rightLeaf.getId();
-                }
-                else if(rightObject instanceof Node){
+                } else if (rightObject instanceof Node) {
                     Node rightNode = (Node) rightObject;
                     right = rightNode.getId();
                 }
-                if (leftObject instanceof Leaf){
+                if (leftObject instanceof Leaf) {
                     Leaf leftLeaf = (Leaf) leftObject;
-                    left= leftLeaf.getId();
-                }
-                else if(leftObject instanceof Node){
+                    left = leftLeaf.getId();
+                } else if (leftObject instanceof Node) {
                     Node leftNode = (Node) leftObject;
                     left = leftNode.getId();
                 }
-                Node node = new Node(core,left,right);
+                Node node = new Node(core, left, right);
                 node.setId(i);
                 i++;
                 DagList.add(node);
@@ -229,22 +224,17 @@ public class Dag {
         }
 
 
-        for(Object object:DagList){
-
-            if (object instanceof Leaf){
+        for (Object object : DagList) {
+            if (object instanceof Leaf) {
                 Leaf dagLeaf = (Leaf) object;
                 System.out.println(dagLeaf);
 
-            }
-            else if(object instanceof Node){
+            } else if (object instanceof Node) {
                 Node dagNode = (Node) object;
                 System.out.println(dagNode);
 
             }
         }
-
-
-
     }
 
 }

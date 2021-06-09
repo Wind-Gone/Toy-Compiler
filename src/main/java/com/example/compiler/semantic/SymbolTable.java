@@ -29,7 +29,7 @@ public class SymbolTable {
         if (variable != null)
             return variable.val;
         else
-            throw new Exception("该变量不存在,无法或许该变量");
+            throw new Exception("该变量不存在,无法获取该变量");
     }
 
     public void setVal(String name, Number val) throws Exception {
@@ -49,13 +49,13 @@ public class SymbolTable {
         return sb.toString();
     }
 
-     static class Variable {         // 符号表中的变量
-         String name;
-         Number val;
+    static class Variable {         // 符号表中的变量
+        String name;
+        Number val;
 
-         @Override
-         public String toString() {
-             return "Variable:" + name + "=" + val;
-         }
-     }
+        @Override
+        public String toString() {
+            return "Variable:" + name + "=" + val;
+        }
+    }
 }

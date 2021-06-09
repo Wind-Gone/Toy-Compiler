@@ -48,9 +48,8 @@ public class SyntaxTree {
                     myQueue.offer(treeNode);
                 }
             }
-            //!!
             else{
-                if (curNode.getValue() != "EPSILON")
+                if (!curNode.getValue().equals("EPSILON"))
                     leaf1.add(curNode.getValue());
             }
 
@@ -58,7 +57,6 @@ public class SyntaxTree {
         for (Pair<String, Integer> pair : res) {
             System.out.println("第" + pair.getValue() + "层有" + pair.getKey());
         }
-        //!!
         for (String leaf2 : leaf1) {
             System.out.println(leaf2);
         }

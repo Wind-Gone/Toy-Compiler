@@ -9,7 +9,9 @@ import com.example.compiler.llParser.NonTerminalType;
 import javafx.util.Pair;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * @author Hu Zirui
@@ -23,34 +25,35 @@ public class SemanticAnalyzer {
     private SymbolTable symbolTable;        // 全局变量符号表
     private Lexer lexer;                    // 调用的词法分析器
     private int position = 0;               // 语法树列表的当前位置
-    //    private ThreeCodeTable threeCodeTable;  // 三地址符号表
-//    private int queuePos = 0;               // 辅助队列位置
+    private final HashMap<String, String> assistMap = new HashMap<>();
+    private ThreeCodeTable threeCodeTable;  // 三地址符号表
     private final HashMap<Pair<Integer, Integer>, WrongMessage> wrongList = new HashMap<>();    //错误列表
     private SyntaxTree syntaxTree;          // 语法树
     private List<String> productionList;    // 语法树 ——> 语法树列表
-    //    private int label = 0;                  // 生成三地址码的代码块标号
-//    private int v = 0;                      // 生成三地址码的临时变量标号
-//    private int id = 0;                     // 生成三地址码的标识符标号
-//    private Queue<String> StoreQueue;       //生成三地址码的辅助队列
+    private int queuePos = 0;               // 辅助队列位置
+    private int label = 0;                  // 生成三地址码的代码块标号
+    private int v = 0;                      // 生成三地址码的临时变量标号
+    private int id = 0;                     // 生成三地址码的标识符标号
     private LLParser llParser;              // 调用的语法分析器
+    private Queue<String> StoreQueue;       //生成三地址码的辅助队列
+    private boolean if_flag = false;
+    private boolean while_flag = false;
 
-//    public String PrintNewBlock() {
-//        String s = "label" + (++this.label);
-//        StoreQueue.offer(s);
-//        return s;
-//    }
-//
-//    public String PrintNewSymbol() {
-//        String s = "v" + (++this.v);
-//        StoreQueue.offer(s);
-//        return s;
-//    }
-//
-//    public String PrintNewId() {
-//        String s = "id" + (++this.id);
-//        StoreQueue.offer(s);
-//        return s;
-//    }
+    public String PrintNewBlock() {
+        String s = "LABEL  label" + (++this.label);
+        return s;
+    }
+
+    public String PrintNewSymbol() {
+        String s = "v" + (++this.v);
+        StoreQueue.offer(s);
+        return s;
+    }
+
+    public String PrintNewId() {
+        String s = "id" + (++this.id);
+        return s;
+    }
 
     public SemanticAnalyzer(String fileContent) throws Exception {
         lexer = new Lexer(fileContent);
@@ -65,8 +68,8 @@ public class SemanticAnalyzer {
 
     public void init() {
         symbolTable = new SymbolTable();
-//        threeCodeTable = new ThreeCodeTable();
-//        StoreQueue = new LinkedList<String>();
+        threeCodeTable = new ThreeCodeTable();
+        StoreQueue = new LinkedList<String>();
         syntaxTree = llParser.getSyntaxTree();
         productionList = llParser.getSyntaxTree().dfs();
     }
@@ -82,6 +85,7 @@ public class SemanticAnalyzer {
 
     public void program(boolean expr) throws Exception {
         if (productionList.get(position) == "compoundstmt") {
+            System.out.println(PrintNewBlock());
             position++;
             compoundstmt(true);
         } else
@@ -134,6 +138,7 @@ public class SemanticAnalyzer {
     }
 
     public void ifstmt(boolean expr) throws Exception {
+        if_flag = true;
         String temp = productionList.get(position);
         if (temp.equals(TokenType.IF.getValue())) {
             position++;
@@ -145,12 +150,13 @@ public class SemanticAnalyzer {
                     if (productionList.get(position).equals(TokenType.CLOSEBRACE.getValue())) {
                         position++;
                         if (productionList.get(position).contains(TokenType.THEN.getValue())) {
+                            System.out.println(PrintNewBlock());
                             position++;
                             if (productionList.get(position).equals(NonTerminalType.STMT.getValue())) {
                                 position++;
                                 stmt(expr && boolsyn != null && boolsyn);
-//                                position++;
                                 if (productionList.get(position).contains(TokenType.ELSE.getValue())) {
+                                    System.out.println(PrintNewBlock());
                                     position++;
                                     if (productionList.get(position).equals(NonTerminalType.STMT.getValue())) {
                                         position++;
@@ -288,8 +294,11 @@ public class SemanticAnalyzer {
                         position++;
                         if (expr) {
                             symbolTable.putSingleSymbol(name, syn);
-//                            String right = PrintNewId();
-//                            System.out.println(right + "=" + StoreQueue.poll());
+                            String left = PrintNewSymbol();
+                            System.out.println(left + " := #" + syn);
+                            String right = PrintNewId();
+                            System.out.println(right + " := " + StoreQueue.poll());
+                            assistMap.put(right, name);
                         }
                     } else
                         throw new Exception("赋值语句没有分号");
@@ -321,7 +330,7 @@ public class SemanticAnalyzer {
         Number syn = null;
         if (temp.equals(NonTerminalType.SIMPLEEXPR.getValue())) {
             position++;
-            Number simpleexprSyn = simpleexpr();         // multexprprime.inh = simpleexpr.syn
+            Number simpleexprSyn = simpleexpr().getValue();         // multexprprime.inh = simpleexpr.syn
             if (productionList.get(position) == NonTerminalType.MULTEXPRPRIME.getValue()) {
                 position++;
                 syn = multexprprime(simpleexprSyn);// multexpr.syn = multexprprime.syn
@@ -330,9 +339,10 @@ public class SemanticAnalyzer {
         return syn;
     }
 
-    public Number simpleexpr() throws Exception {
+    public Pair<String, Number> simpleexpr() throws Exception {
         String temp = productionList.get(position);
         Number syn = null;
+        Pair<String, Number> res = null;
         if (temp.equals(TokenType.OPENBRACE.getValue())) {
             position++;
             if (productionList.get(position).equals(NonTerminalType.ARITHEXPR.getValue())) {
@@ -346,6 +356,7 @@ public class SemanticAnalyzer {
             String[] seperateList = temp.split(":");
             String name = seperateList[1];
             syn = symbolTable.getVal(name);
+            res = new Pair<>(name, syn);
             position++;
         } else if (temp.contains(TokenType.NUM.getValue())) {
             String[] seperateList = temp.split(":");
@@ -354,9 +365,10 @@ public class SemanticAnalyzer {
                 syn = Integer.parseInt(val);
             else
                 syn = Double.parseDouble(val);
+            res = new Pair<>("NUMFORTEST", syn);
             position++;
         }
-        return syn;
+        return res;
     }
 
     public Number multexprprime(Number inh) throws Exception {
@@ -366,7 +378,7 @@ public class SemanticAnalyzer {
             position++;
             if (productionList.get(position).equals(NonTerminalType.SIMPLEEXPR.getValue())) {
                 position++;
-                Number simpleexprSyn = simpleexpr();
+                Number simpleexprSyn = simpleexpr().getValue();
                 if (simpleexprSyn == null)
                     throw new Exception("multexprprime解析出错1");
                 if (productionList.get(position).equals(NonTerminalType.MULTEXPRPRIME.getValue())) {
@@ -389,7 +401,7 @@ public class SemanticAnalyzer {
             position++;
             if (productionList.get(position).equals(NonTerminalType.SIMPLEEXPR.getValue())) {
                 position++;
-                Number simpleexprSyn = simpleexpr();
+                Number simpleexprSyn = simpleexpr().getValue();
                 if (simpleexprSyn == null)
                     throw new Exception("multexprprime解析出错2");
                 if (productionList.get(position).equals(NonTerminalType.MULTEXPRPRIME.getValue())) {
