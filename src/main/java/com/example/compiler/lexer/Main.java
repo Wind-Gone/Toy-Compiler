@@ -2,6 +2,7 @@ package com.example.compiler.lexer;
 
 import com.example.compiler.entity.token.Token;
 import com.example.compiler.entity.token.TokenTable;
+import com.example.compiler.utils.FileUtils;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -18,7 +19,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws IOException {
         Lexer lexer = new Lexer();
-        String input = lexer.ReadFile("src/test.txt");
+        String input = FileUtils.ReadFile("src/test.txt");
         lexer.tokenize(input);
         List<Token> tokens = lexer.getFilteredTokens();
         TokenTable tokenTable = new TokenTable();
