@@ -35,22 +35,36 @@ public class SyntaxTree {
         System.out.println(root.getValue());
         Queue<TreeNode> myQueue = new LinkedList<>();
         List<Pair<String, Integer>> res = new ArrayList<>();
+        List<String> leaf1 = new ArrayList<>();//未完成的dag
         myQueue.offer(root);
         while (!myQueue.isEmpty()) {
             TreeNode curNode = myQueue.remove();
             System.out.println(curNode.getValue());
             res.add(new Pair<>(curNode.getValue(), curNode.getLevel()));
-            if (!curNode.isLeaf())
+            if (!curNode.isLeaf()) {
                 for (TreeNode treeNode : curNode.getChildren()) {
                     treeNode.setLevel(curNode.getLevel() + 1);
                     treeNode.setFather(curNode);
                     myQueue.offer(treeNode);
                 }
+            }
+            //!!
+            else{
+                if (curNode.getValue() != "EPSILON")
+                    leaf1.add(curNode.getValue());
+            }
+
         }
         for (Pair<String, Integer> pair : res) {
             System.out.println("第" + pair.getValue() + "层有" + pair.getKey());
         }
+        //!!
+        for (String leaf2 : leaf1) {
+            System.out.println(leaf2);
+        }
     }
+
+
 
     public List<String> dfs() {
         List<String> res = new ArrayList<>();
