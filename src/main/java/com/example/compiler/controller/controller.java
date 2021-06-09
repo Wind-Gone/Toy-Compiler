@@ -2,12 +2,12 @@ package com.example.compiler.controller;
 
 
 import com.example.compiler.entity.gui.GuiNode;
+import com.example.compiler.entity.token.Text;
+import com.example.compiler.entity.token.Token;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.LLUtil;
 import com.example.compiler.semantic.SemanticAnalyzer;
-import com.example.compiler.token.Text;
-import com.example.compiler.token.Token;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;

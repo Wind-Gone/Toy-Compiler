@@ -1,7 +1,6 @@
 package com.example.compiler.llParser;
 
-import com.example.compiler.token.Token;
-import com.example.compiler.token.TokenType;
+import com.example.compiler.entity.token.TokenType;
 import javafx.util.Pair;
 
 import java.util.LinkedHashMap;

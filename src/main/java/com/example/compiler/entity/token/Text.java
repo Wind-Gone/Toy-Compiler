@@ -1,4 +1,4 @@
-package com.example.compiler.token;
+package com.example.compiler.entity.token;
 
 public class Text {
     private String source;

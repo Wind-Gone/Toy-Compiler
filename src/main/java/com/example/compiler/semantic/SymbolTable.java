@@ -49,13 +49,13 @@ public class SymbolTable {
         return sb.toString();
     }
 
-    static class Variable {         // 符号表中的变量
-        String name;
-        Number val;
+     static class Variable {         // 符号表中的变量
+         String name;
+         Number val;
 
-        @Override
-        public String toString() {
-            return "Variable:" + name + "=" + val;
-        }
-    }
+         @Override
+         public String toString() {
+             return "Variable:" + name + "=" + val;
+         }
+     }
 }

@@ -1,6 +1,6 @@
 package com.example.compiler.llParser;
 
-import com.example.compiler.token.TokenType;
+import com.example.compiler.entity.token.TokenType;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -239,15 +239,6 @@ public class LLUtil {
                 if (token != TokenType.EPSILON)
                     res.put(new Pair<>(left, token), production);
             }
-//            for (String Terminal : VtSet) {
-//                Set<TokenType> leftFollowSet = FollowSet.get(left);
-//                if (!res.containsKey(new Pair<>(left, TokenType.valueOf(Terminal))))
-//                    if (leftFollowSet.contains(TokenType.valueOf(Terminal))) {
-//                        res.put(new Pair<>(left, TokenType.valueOf(Terminal)), "synch");
-//                    } else {
-//                        res.put(new Pair<>(left, TokenType.valueOf(Terminal)), null);
-//                    }
-//            }
             if (FS.contains(TokenType.EPSILON)) {
                 Set<TokenType> leftFollowSet = FollowSet.get(left);
                 for (TokenType token : leftFollowSet) {
@@ -333,5 +324,42 @@ public class LLUtil {
             i++;
         }
         return res;
+    }
+
+    /**
+     * 打印一下表（测试用）
+     */
+    public String[][] printParsingTableView() {
+        /* 初始化终结符集合 */
+        Set<TokenType> Vt = new TreeSet<TokenType>() {{
+            add(TokenType.DOLLAR);
+        }};
+        res = new String[NonTerminalType.values().length + 1][Vt.size() + 1];
+        /* 获取表 */
+        HashMap<Pair<NonTerminalType, TokenType>, Object> table = getParsingTable();
+        /* 表初始化 */
+        int i = 0;
+        for (NonTerminalType item : NonTerminalType.values()) {
+            i++;
+            res[i][0] = item.getValue();
+        }
+        i = 0;
+        for (TokenType token : Vt) {
+            i++;
+            res[0][i] = token.getValue();
+        }
+        /* 打印表 */
+        i = 1;
+        for (NonTerminalType item : NonTerminalType.values()) {
+            int j = 1;
+            for (TokenType token : Vt) {
+                if (table.get(new Pair<>(item, token)) != null)
+                    res[i][j] = table.get(new Pair<>(item, token)).toString();
+                j++;
+            }
+            i++;
+        }
+        return res;
+
     }
 }
