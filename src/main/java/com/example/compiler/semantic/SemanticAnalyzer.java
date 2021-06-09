@@ -131,7 +131,7 @@ public class SemanticAnalyzer {
 
     public void ifstmt(boolean expr) throws Exception {
         String temp = productionList.get(position);
-        if (temp.contains(TokenType.IF.getValue())) {
+        if (temp.equals(TokenType.IF.getValue())) {
             position++;
             if (productionList.get(position).equals(TokenType.OPENBRACE.getValue())) {
                 position++;

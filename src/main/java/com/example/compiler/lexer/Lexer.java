@@ -147,23 +147,20 @@ public class Lexer {
             // NUM EPSILON DOLLAR 不识别
             if (tokenType == TokenType.NUM || tokenType == TokenType.EPSILON || tokenType == TokenType.DOLLAR)
                 continue;
-//            System.out.println(tokenType);
             Pattern p = Pattern.compile(".{" + fromIndex + "}" + regEx.get(tokenType),
                     Pattern.DOTALL);
             Matcher m = p.matcher(source);
             if (m.matches()) {
                 String lexema = m.group(1);
-//                System.out.println("---------matched-----------");
                 //找到回车，注释更新行和列
                 if (tokenType == TokenType.ENTER || tokenType == TokenType.COMMENTS) {
                     row++;
                     int t = column;
-                    column = 1;
+                    column = 0;
                     return new Token(fromIndex, fromIndex + lexema.length(), row - 1, t, tokenType, lexema);
                 }
                 int t = column;
                 column += lexema.length();
-                //System.out.println(lexema+" "+String.valueOf(source.charAt(fromIndex)));
                 return new Token(fromIndex, fromIndex + lexema.length(), row, t, tokenType, lexema);
             }
         }

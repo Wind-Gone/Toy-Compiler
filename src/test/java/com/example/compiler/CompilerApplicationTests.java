@@ -132,7 +132,7 @@ class CompilerApplicationTests {
     @Test
     public void testForSemantic() throws Exception {
         Lexer lexer = new Lexer();
-        String input = lexer.ReadFile("src/3.txt");
+        String input = lexer.ReadFile("src/2.txt");
         System.out.println("--------语义开始 ------");
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(input);
         String output = semanticAnalyzer.toString();
