@@ -76,6 +76,10 @@ public class SemanticAnalyzer {
         return symbolTable.toString();
     }
 
+    public HashMap<String, SymbolTable.Variable> getSymbolTable() {
+        return symbolTable.getTableMap();
+    }
+
     public void program(boolean expr) throws Exception {
         if (productionList.get(position) == "compoundstmt") {
             position++;
