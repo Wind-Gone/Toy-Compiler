@@ -1,8 +1,6 @@
 package com.example.compiler.intermediateCodeGeneration;
 
-import com.example.compiler.entity.tree.TreeNode;
-import com.example.compiler.token.Token;
-import com.example.compiler.token.TokenType;
+import com.example.compiler.entity.token.TokenType;
 
 public class Leaf extends Object{
     private TokenType tokenType;//token类型，是id或num

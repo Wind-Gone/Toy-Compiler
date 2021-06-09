@@ -112,8 +112,7 @@ class CompilerApplicationTests {
     @Test
     void testDag() throws IOException{
         Lexer lexer = new Lexer();
-        String input = lexer.ReadFile("src/3.txt");
-
+        String input = FileUtils.ReadFile("src/3.txt");
         LLParser llParser = new LLParser(input);
         System.out.println("--------中间代码生成 ------");
         TreeNode root = llParser.getSyntaxTree().getRoot();

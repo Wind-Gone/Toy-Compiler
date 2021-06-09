@@ -1,9 +1,10 @@
 package com.example.compiler.intermediateCodeGeneration;
 
+import com.example.compiler.entity.token.TokenType;
 import com.example.compiler.entity.tree.TreeNode;
 import com.example.compiler.llParser.NonTerminalType;
-import com.example.compiler.token.Token;
-import com.example.compiler.token.TokenType;
+
+
 import javafx.util.Pair;
 
 import java.util.*;
