@@ -1,9 +1,14 @@
 package com.example.compiler;
 
 import com.example.compiler.entity.gui.GuiNode;
+
+import com.example.compiler.entity.tree.TreeNode;
+import com.example.compiler.intermediateCodeGeneration.Dag;
+
 import com.example.compiler.entity.token.Token;
 import com.example.compiler.entity.token.TokenType;
 import com.example.compiler.entity.wrong.WrongMessage;
+
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.LLUtil;
@@ -18,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 
 @SpringBootTest
@@ -100,6 +106,18 @@ class CompilerApplicationTests {
         for (String s : a) {
             System.out.println(s + " ");
         }
+        llParser.getSyntaxTree().preOrder();
+    }
+
+    @Test
+    void testDag() throws IOException{
+        Lexer lexer = new Lexer();
+        String input = FileUtils.ReadFile("src/3.txt");
+        LLParser llParser = new LLParser(input);
+        System.out.println("--------中间代码生成 ------");
+        TreeNode root = llParser.getSyntaxTree().getRoot();
+        Dag dag = new Dag(root);
+        dag.assgDag();
     }
 
     @Test
