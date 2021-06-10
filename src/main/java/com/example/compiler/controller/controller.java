@@ -149,4 +149,22 @@ public class controller {
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(input);
         return semanticAnalyzer.toString();
     }
+
+    @PostMapping("/intermediateCode")
+    public String getIntermediateCode(@RequestBody Text text) throws Exception {
+        if (text.getSource().equals("") || text.getSource() == null)
+            return "您此时的输入为空";
+        String input = text.getSource();
+        System.out.println(input);
+        SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(input);
+        System.out.println("****");
+        List<String> resList = semanticAnalyzer.getIntermediateCodeList();
+        StringBuilder res = new StringBuilder();
+        for (String s : resList) {
+            res.append(s);
+            res.append("\n");
+        }
+        return res.toString();
+    }
+
 }

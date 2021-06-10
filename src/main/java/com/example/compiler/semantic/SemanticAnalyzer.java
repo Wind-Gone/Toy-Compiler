@@ -8,10 +8,7 @@ import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.NonTerminalType;
 import javafx.util.Pair;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * @author Hu Zirui
@@ -36,10 +33,19 @@ public class SemanticAnalyzer {
     private int id = 0;                     // 生成三地址码的标识符标号
     private LLParser llParser;              // 调用的语法分析器
     private Queue<String> StoreQueue;       //生成三地址码的辅助队列
+    private List<String> intermediateCodeList = new ArrayList<>();  // 中间代码结果
 
+    public List<String> getIntermediateCodeList() {
+        return intermediateCodeList;
+    }
 
     public String PrintNewBlock() {
         String s = "LABEL  label" + (++this.label);
+        return s;
+    }
+
+    public String PrintNewBlock(int i) {
+        String s = "LABEL  label" + (this.label + i);
         return s;
     }
 
@@ -89,6 +95,7 @@ public class SemanticAnalyzer {
     public void program(boolean expr) throws Exception {
         if (productionList.get(position) == "compoundstmt") {
             System.out.println(PrintNewBlock());
+            intermediateCodeList.add(PrintNewBlock(-1));
             position++;
             compoundstmt(true);
         } else
@@ -153,12 +160,14 @@ public class SemanticAnalyzer {
                         position++;
                         if (productionList.get(position).contains(TokenType.THEN.getValue())) {
                             System.out.println(PrintNewBlock());
+                            intermediateCodeList.add(PrintNewBlock(-1));
                             position++;
                             if (productionList.get(position).equals(NonTerminalType.STMT.getValue())) {
                                 position++;
                                 stmt(expr && boolsyn != null && boolsyn);
                                 if (productionList.get(position).contains(TokenType.ELSE.getValue())) {
                                     System.out.println(PrintNewBlock());
+                                    intermediateCodeList.add(PrintNewBlock(-1));
                                     position++;
                                     if (productionList.get(position).equals(NonTerminalType.STMT.getValue())) {
                                         position++;
@@ -213,11 +222,13 @@ public class SemanticAnalyzer {
      */
     private Boolean arithexpr(Pair<String, Number> inh, String op) throws Exception {
         Pair<String, Number> syn = arithexpr();              // 先计算出boolop右侧的值
-        if (assistMap.get(syn.getKey()) == null)
+        if (assistMap.get(syn.getKey()) == null) {
+            intermediateCodeList.add("if " + assistMap.get(inh.getKey()) + " " + op + " " + (syn.getKey()) + " goto L" + (this.label + 1));
             System.out.println("if " + assistMap.get(inh.getKey()) + " " + op + " " + (syn.getKey()) + " goto L" + (this.label + 1));
-        else
+        } else {
+            intermediateCodeList.add("if " + assistMap.get(inh.getKey()) + " " + op + " " + assistMap.get(syn.getKey()) + " goto L" + (this.label + 1));
             System.out.println("if " + assistMap.get(inh.getKey()) + " " + op + " " + assistMap.get(syn.getKey()) + " goto L" + (this.label + 1));
-
+        }
         switch (op) {                          // 根据不同的运算符类型执行不同的bool操作
             case "<":
                 if (inh.getValue() instanceof Integer && syn.getValue() instanceof Integer)    // 自动类型转换，只有左值和右值均为int类型时，才按照int类型比较
@@ -257,6 +268,7 @@ public class SemanticAnalyzer {
         String temp = productionList.get(position);
         if (temp.equals(TokenType.WHILE.getValue())) {
             System.out.println(PrintNewBlock());
+            intermediateCodeList.add(PrintNewBlock(-1));
             position++;
             boolean condition;
             if (productionList.get(position).equals(TokenType.OPENBRACE.getValue())) {
@@ -305,15 +317,16 @@ public class SemanticAnalyzer {
                             symbolTable.putSingleSymbol(name, syn.getValue());
                         }
                         String right;
-//                            System.out.println(name + " " + assistMap.containsKey(name));
                         if (assistMap.containsKey(name)) right = assistMap.get(name);
                         else right = PrintNewId();
                         if (symbolTable.getVal(syn.getKey()).intValue() != Integer.MAX_VALUE) {         // 如果是形如 a = i这样的赋值
+                            intermediateCodeList.add(right + " := " + assistMap.get(syn.getKey()));
                             System.out.println(right + " := " + assistMap.get(syn.getKey()));
                         } else {
                             // 如果是形如 a = 5这样的赋值
                             this.v--;
                             System.out.println(right + " := " + PrintNewSymbol());
+                            intermediateCodeList.add(right + " := " + PrintNewSymbol());
                             this.v++;
                         }
                         assistMap.put(name, right);
@@ -383,6 +396,7 @@ public class SemanticAnalyzer {
                 syn1 = Double.parseDouble(val);
             String left = PrintNewSymbol();
             syn = new Pair<>(left, syn1);
+            intermediateCodeList.add(left + " := #" + syn1);
             System.out.println(left + " := #" + syn1);
             this.v++;
             position++;
@@ -428,6 +442,7 @@ public class SemanticAnalyzer {
                         System.out.println(left + " := " + arg1 + " * " + arg2);
                         syn = multexprprime(new Pair<>(left, inh.getValue().doubleValue() * simpleexprSyn.getValue().doubleValue()));
                     }
+                    intermediateCodeList.add(left + " := " + arg1 + " * " + arg2);
                     this.v++;
                 } else
                     throw new Exception("ARITHEXPRPRIME报错1");
@@ -469,6 +484,7 @@ public class SemanticAnalyzer {
                         System.out.println(left + " := " + arg1 + " / " + arg2);
                         syn = multexprprime(new Pair<>(left, inh.getValue().doubleValue() / simpleexprSyn.getValue().doubleValue()));
                     }
+                    intermediateCodeList.add(left + " := " + arg1 + " / " + arg2);
                     this.v++;
                 } else
                     throw new Exception("ARITHEXPRPRIME报错2");
@@ -514,11 +530,13 @@ public class SemanticAnalyzer {
                     if (inh.getValue() instanceof Integer && multexprSyn.getValue() instanceof Integer)             // arithexprprime1.inh = multexprprime.inh + simpleexpr.syn
                     {
                         System.out.println(left + " := " + arg1 + " + " + arg2);
+
                         syn = arithexprprime(new Pair<>(left, inh.getValue().intValue() + multexprSyn.getValue().intValue()));    // multexprprime.syn = arithexprprime1.syn
                     } else {
                         System.out.println(left + " := " + arg1 + " + " + arg2);
                         syn = arithexprprime(new Pair<>(left, inh.getValue().doubleValue() + multexprSyn.getValue().doubleValue()));
                     }
+                    intermediateCodeList.add(left + " := " + arg1 + " + " + arg2);
                     this.v++;
                 } else
                     throw new Exception("SIMPLEEXPR报错3");
@@ -562,6 +580,7 @@ public class SemanticAnalyzer {
                         System.out.println(left + " := " + arg1 + "-" + arg2);
                         syn = arithexprprime(new Pair<>(left, inh.getValue().doubleValue() - multexprSyn.getValue().doubleValue()));
                     }
+                    intermediateCodeList.add(left + " := " + arg1 + " - " + arg2);
                 } else
                     throw new Exception("SIMPLEEXPR报错4");
             } else
