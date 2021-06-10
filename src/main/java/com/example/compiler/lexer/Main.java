@@ -19,7 +19,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws IOException {
         Lexer lexer = new Lexer();
-        String input = FileUtils.ReadFile("src/test.txt");
+        String input = FileUtils.ReadFile("src/2.txt");
         lexer.tokenize(input);
         List<Token> tokens = lexer.getFilteredTokens();
         TokenTable tokenTable = new TokenTable();
@@ -30,8 +30,8 @@ public class Main {
             else
                 System.out.println(token);
         }
-        sb.append(tokenTable.toString());
-        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("src/testResult.txt"));
+        sb.append(tokenTable);
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("src/testResult2.txt"));
         bufferedWriter.write(sb.toString());
         bufferedWriter.close();
     }

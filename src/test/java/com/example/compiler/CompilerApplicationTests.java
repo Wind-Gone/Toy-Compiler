@@ -1,14 +1,11 @@
 package com.example.compiler;
 
 import com.example.compiler.entity.gui.GuiNode;
-
-import com.example.compiler.entity.tree.TreeNode;
-import com.example.compiler.intermediateCodeGeneration.Dag;
-
 import com.example.compiler.entity.token.Token;
 import com.example.compiler.entity.token.TokenType;
+import com.example.compiler.entity.tree.TreeNode;
 import com.example.compiler.entity.wrong.WrongMessage;
-
+import com.example.compiler.intermediateCodeGeneration.Dag;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.LLUtil;
@@ -23,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 
 @SpringBootTest
@@ -32,7 +28,7 @@ class CompilerApplicationTests {
     @Test
     void contextLoads() throws IOException {
         Lexer lexer = new Lexer();
-        String input = FileUtils.ReadFile("src/3.txt");
+        String input = FileUtils.ReadFile("src/2.txt");
         lexer.tokenize(input);
         List<Token> tokens = lexer.getFilteredTokens();
         StringBuilder res = new StringBuilder();
@@ -68,13 +64,13 @@ class CompilerApplicationTests {
     void czh2() {
         LLUtil llUtil = new LLUtil();
         String[][] res = llUtil.printParsingTableView();
-        for(int i=0;i<res.length;i++){
-            for(int j=0;j<res[0].length;j++){
-                System.out.printf("%13s",res[i][j]);
+        for (int i = 0; i < res.length; i++) {
+            for (int j = 0; j < res[0].length; j++) {
+                System.out.printf("%13s", res[i][j]);
             }
             System.out.println();
         }
-        System.out.printf("%10s %10s","aa","bb");
+        System.out.printf("%10s %10s", "aa", "bb");
     }
 
     @Test
@@ -106,11 +102,11 @@ class CompilerApplicationTests {
         for (String s : a) {
             System.out.println(s + " ");
         }
-        llParser.getSyntaxTree().preOrder();
+//        llParser.getSyntaxTree().preOrder();
     }
 
     @Test
-    void testDag() throws IOException{
+    void testDag() throws IOException {
         Lexer lexer = new Lexer();
         String input = FileUtils.ReadFile("src/3.txt");
         LLParser llParser = new LLParser(input);

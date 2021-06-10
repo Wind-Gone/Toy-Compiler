@@ -1,3 +1,12 @@
-{ if(hu)then
-i = 9;
- }
+{
+i=10;
+n=1;
+j=100;
+sum=0;
+mult=1;
+if (n>1) then n=n-1; else {n=n+1;}
+if (n<2) then n=n+2; else {n=n-2;}
+if (i<=10) then sum=sum-i; else {mult=mult+i/2;}
+if (i==j) then sum=sum-j; else {mult=mult-j/2;}
+if (j>=50) then sum=sum+j; else {mult=mult*(j+1);sum=sum+i;}
+}

@@ -32,12 +32,11 @@ public class SemanticAnalyzer {
     private List<String> productionList;    // 语法树 ——> 语法树列表
     private int queuePos = 0;               // 辅助队列位置
     private int label = 0;                  // 生成三地址码的代码块标号
-    private int v = 0;                      // 生成三地址码的临时变量标号
+    private int v = 1;                      // 生成三地址码的临时变量标号
     private int id = 0;                     // 生成三地址码的标识符标号
     private LLParser llParser;              // 调用的语法分析器
     private Queue<String> StoreQueue;       //生成三地址码的辅助队列
-    private boolean if_flag = false;
-    private boolean while_flag = false;
+
 
     public String PrintNewBlock() {
         String s = "LABEL  label" + (++this.label);
@@ -45,8 +44,12 @@ public class SemanticAnalyzer {
     }
 
     public String PrintNewSymbol() {
-        String s = "v" + (++this.v);
-        StoreQueue.offer(s);
+        String s = "v" + (this.v);
+        return s;
+    }
+
+    public String PrintNewSymbol2(int i) {
+        String s = "v" + (this.v) + i;
         return s;
     }
 
@@ -138,7 +141,6 @@ public class SemanticAnalyzer {
     }
 
     public void ifstmt(boolean expr) throws Exception {
-        if_flag = true;
         String temp = productionList.get(position);
         if (temp.equals(TokenType.IF.getValue())) {
             position++;
@@ -177,13 +179,14 @@ public class SemanticAnalyzer {
         Boolean syn = null;
         if (temp.equals(NonTerminalType.ARITHEXPR.getValue())) {
             position++;
-            Number arithexprSyn = arithexpr();                                                      // arithexpr1.inh = arithexpr.syn
+            Pair<String, Number> arithexprSyn = arithexpr();                                                      // arithexpr1.inh = arithexpr.syn
             if (productionList.get(position).equals(NonTerminalType.BOOLOP.getValue())) {
                 position++;
                 String op = boolop();                                                                   // arithexpr1.op = boolop.op
                 if (productionList.get(position).equals(NonTerminalType.ARITHEXPR.getValue())) {
                     position++;
                     syn = arithexpr(arithexprSyn, op);
+
                 } else throw new Exception("boolexpr ARITHEXPR报错");
             } else
                 throw new Exception("boolexpr BOOLOP报错");                                                  // boolexpr.syn = arithexpr1.syn
@@ -208,34 +211,39 @@ public class SemanticAnalyzer {
      * @param op  boolop的运算符类型
      * @return boolexpr的值，true/false
      */
-    private Boolean arithexpr(Number inh, String op) throws Exception {
-        Number syn = arithexpr();              // 先计算出boolop右侧的值
+    private Boolean arithexpr(Pair<String, Number> inh, String op) throws Exception {
+        Pair<String, Number> syn = arithexpr();              // 先计算出boolop右侧的值
+        if (assistMap.get(syn.getKey()) == null)
+            System.out.println("if " + assistMap.get(inh.getKey()) + " " + op + " " + (syn.getKey()) + " goto L" + (this.label + 1));
+        else
+            System.out.println("if " + assistMap.get(inh.getKey()) + " " + op + " " + assistMap.get(syn.getKey()) + " goto L" + (this.label + 1));
+
         switch (op) {                          // 根据不同的运算符类型执行不同的bool操作
             case "<":
-                if (inh instanceof Integer && syn instanceof Integer)    // 自动类型转换，只有左值和右值均为int类型时，才按照int类型比较
-                    return inh.intValue() < syn.intValue();
+                if (inh.getValue() instanceof Integer && syn.getValue() instanceof Integer)    // 自动类型转换，只有左值和右值均为int类型时，才按照int类型比较
+                    return inh.getValue().intValue() < syn.getValue().intValue();
                 else
-                    return inh.doubleValue() < syn.doubleValue();
+                    return inh.getValue().doubleValue() < syn.getValue().doubleValue();
             case "<=":
-                if (inh instanceof Integer && syn instanceof Integer)
-                    return inh.intValue() <= syn.intValue();
+                if (inh.getValue() instanceof Integer && syn.getValue() instanceof Integer)
+                    return inh.getValue().intValue() <= syn.getValue().intValue();
                 else
-                    return inh.doubleValue() <= syn.doubleValue();
+                    return inh.getValue().doubleValue() <= syn.getValue().doubleValue();
             case ">":
-                if (inh instanceof Integer && syn instanceof Integer)
-                    return inh.intValue() > syn.intValue();
+                if (inh.getValue() instanceof Integer && syn.getValue() instanceof Integer)
+                    return inh.getValue().intValue() > syn.getValue().intValue();
                 else
-                    return inh.doubleValue() > syn.doubleValue();
+                    return inh.getValue().doubleValue() > syn.getValue().doubleValue();
             case ">=":
-                if (inh instanceof Integer && syn instanceof Integer)
-                    return inh.intValue() >= syn.intValue();
+                if (inh.getValue() instanceof Integer && syn.getValue() instanceof Integer)
+                    return inh.getValue().intValue() >= syn.getValue().intValue();
                 else
-                    return inh.doubleValue() >= syn.doubleValue();
+                    return inh.getValue().doubleValue() >= syn.getValue().doubleValue();
             case "==":
-                if (inh instanceof Integer && syn instanceof Integer)
-                    return inh.intValue() == syn.intValue();
+                if (inh.getValue() instanceof Integer && syn.getValue() instanceof Integer)
+                    return inh.getValue().intValue() == syn.getValue().intValue();
                 else
-                    return inh.doubleValue() == syn.doubleValue();
+                    return inh.getValue().doubleValue() == syn.getValue().doubleValue();
             default:
                 break;
         }
@@ -248,6 +256,7 @@ public class SemanticAnalyzer {
         int temp_end = 0;
         String temp = productionList.get(position);
         if (temp.equals(TokenType.WHILE.getValue())) {
+            System.out.println(PrintNewBlock());
             position++;
             boolean condition;
             if (productionList.get(position).equals(TokenType.OPENBRACE.getValue())) {
@@ -289,17 +298,25 @@ public class SemanticAnalyzer {
                 position++;
                 if (productionList.get(position).equals(NonTerminalType.ARITHEXPR.getValue())) {
                     position++;
-                    Number syn = arithexpr();
+                    Pair<String, Number> syn = arithexpr();
                     if (productionList.get(position).equals(TokenType.SEMICOLON.getValue())) {
                         position++;
                         if (expr) {
-                            symbolTable.putSingleSymbol(name, syn);
-                            String left = PrintNewSymbol();
-                            System.out.println(left + " := #" + syn);
-                            String right = PrintNewId();
-                            System.out.println(right + " := " + StoreQueue.poll());
-                            assistMap.put(right, name);
+                            symbolTable.putSingleSymbol(name, syn.getValue());
                         }
+                        String right;
+//                            System.out.println(name + " " + assistMap.containsKey(name));
+                        if (assistMap.containsKey(name)) right = assistMap.get(name);
+                        else right = PrintNewId();
+                        if (symbolTable.getVal(syn.getKey()).intValue() != Integer.MAX_VALUE) {         // 如果是形如 a = i这样的赋值
+                            System.out.println(right + " := " + assistMap.get(syn.getKey()));
+                        } else {
+                            // 如果是形如 a = 5这样的赋值
+                            this.v--;
+                            System.out.println(right + " := " + PrintNewSymbol());
+                            this.v++;
+                        }
+                        assistMap.put(name, right);
                     } else
                         throw new Exception("赋值语句没有分号");
                 } else
@@ -310,12 +327,12 @@ public class SemanticAnalyzer {
             throw new Exception("assgstmt 报错");
     }
 
-    public Number arithexpr() throws Exception {
+    public Pair<String, Number> arithexpr() throws Exception {
         String temp = productionList.get(position);
-        Number syn = null;
+        Pair<String, Number> syn = null;
         if (temp.equals(NonTerminalType.MULTEXPR.getValue())) {
             position++;
-            Number multexprSyn = multexpr();
+            Pair<String, Number> multexprSyn = multexpr();
             if (productionList.get(position).equals(NonTerminalType.ARITHEXPRPRIME.getValue())) {
                 position++;
                 syn = arithexprprime(multexprSyn);
@@ -325,12 +342,12 @@ public class SemanticAnalyzer {
         return syn;
     }
 
-    public Number multexpr() throws Exception {
+    public Pair<String, Number> multexpr() throws Exception {
         String temp = productionList.get(position);
-        Number syn = null;
+        Pair<String, Number> syn = null;
         if (temp.equals(NonTerminalType.SIMPLEEXPR.getValue())) {
             position++;
-            Number simpleexprSyn = simpleexpr().getValue();         // multexprprime.inh = simpleexpr.syn
+            Pair<String, Number> simpleexprSyn = simpleexpr();         // multexprprime.inh = simpleexpr.syn
             if (productionList.get(position) == NonTerminalType.MULTEXPRPRIME.getValue()) {
                 position++;
                 syn = multexprprime(simpleexprSyn);// multexpr.syn = multexprprime.syn
@@ -341,8 +358,8 @@ public class SemanticAnalyzer {
 
     public Pair<String, Number> simpleexpr() throws Exception {
         String temp = productionList.get(position);
-        Number syn = null;
-        Pair<String, Number> res = null;
+        Pair<String, Number> syn = null;
+        Number syn1 = null;
         if (temp.equals(TokenType.OPENBRACE.getValue())) {
             position++;
             if (productionList.get(position).equals(NonTerminalType.ARITHEXPR.getValue())) {
@@ -355,43 +372,63 @@ public class SemanticAnalyzer {
         } else if (temp.contains(TokenType.IDENTIFIERS.getValue())) {
             String[] seperateList = temp.split(":");
             String name = seperateList[1];
-            syn = symbolTable.getVal(name);
-            res = new Pair<>(name, syn);
+            syn = new Pair<>(name, symbolTable.getVal(name));
             position++;
         } else if (temp.contains(TokenType.NUM.getValue())) {
             String[] seperateList = temp.split(":");
             String val = seperateList[1];
             if (val.indexOf('.') == -1)  //查不到字符'.'，返回-1。另外注意是单引号。
-                syn = Integer.parseInt(val);
+                syn1 = Integer.parseInt(val);
             else
-                syn = Double.parseDouble(val);
-            res = new Pair<>("NUMFORTEST", syn);
+                syn1 = Double.parseDouble(val);
+            String left = PrintNewSymbol();
+            syn = new Pair<>(left, syn1);
+            System.out.println(left + " := #" + syn1);
+            this.v++;
             position++;
         }
-        return res;
+        return syn;
     }
 
-    public Number multexprprime(Number inh) throws Exception {
+    public Pair<String, Number> multexprprime(Pair<String, Number> inh) throws Exception {
         String temp = productionList.get(position);
-        Number syn = inh;
+        Pair<String, Number> syn = inh;
         if (temp.equals(TokenType.MULTIPLY.getValue())) {
+            StoreQueue.offer(TokenType.MULTIPLY.getValue());        //入队‘*’
             position++;
             if (productionList.get(position).equals(NonTerminalType.SIMPLEEXPR.getValue())) {
                 position++;
-                Number simpleexprSyn = simpleexpr().getValue();
+                Pair<String, Number> simpleexprSyn = simpleexpr();
                 if (simpleexprSyn == null)
                     throw new Exception("multexprprime解析出错1");
                 if (productionList.get(position).equals(NonTerminalType.MULTEXPRPRIME.getValue())) {
                     position++;
-//                    String left = PrintNewSymbol();
-//                    if (!StoreQueue.peek().equals(left))
-//                        System.out.println(left + "=" + inh.intValue() + "*" + StoreQueue.poll());
-//                    else
-//                        System.out.println(left + "=" + inh.intValue() + "*" + simpleexprSyn);
-                    if (inh instanceof Integer && simpleexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh * simpleexpr.syn
-                        syn = multexprprime(inh.intValue() * simpleexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
-                    else
-                        syn = multexprprime(inh.doubleValue() * simpleexprSyn.doubleValue());
+                    String left = PrintNewSymbol();// multexprprime.syn = arithexprprime1.syn
+                    String arg1, arg2 = null;
+                    if (symbolTable.getVal(inh.getKey()).equals(Integer.MAX_VALUE) && symbolTable.getVal(simpleexprSyn.getKey()).equals(Integer.MAX_VALUE)) {
+                        arg1 = inh.getKey() + "";
+                        arg2 = simpleexprSyn.getKey() + "";
+                    } else {
+                        if (symbolTable.getVal(inh.getKey()).equals(Integer.MAX_VALUE)) {
+                            arg1 = inh.getKey() + "";
+                        } else {
+                            arg1 = assistMap.get(inh.getKey());
+                        }
+                        if (symbolTable.getVal(simpleexprSyn.getKey()).equals(Integer.MAX_VALUE)) {
+                            arg2 = simpleexprSyn.getKey() + "";
+                        } else {
+                            arg2 = assistMap.get(simpleexprSyn.getKey());
+                        }
+                    }
+                    if (inh.getValue() instanceof Integer && simpleexprSyn.getValue() instanceof Integer)             // arithexprprime1.inh = multexprprime.inh * simpleexpr.syn
+                    {
+                        System.out.println(left + " := " + arg1 + " * " + arg2);
+                        syn = multexprprime(new Pair<>(left, inh.getValue().intValue() * simpleexprSyn.getValue().intValue()));
+                    } else {
+                        System.out.println(left + " := " + arg1 + " * " + arg2);
+                        syn = multexprprime(new Pair<>(left, inh.getValue().doubleValue() * simpleexprSyn.getValue().doubleValue()));
+                    }
+                    this.v++;
                 } else
                     throw new Exception("ARITHEXPRPRIME报错1");
 
@@ -399,22 +436,40 @@ public class SemanticAnalyzer {
                 throw new Exception("SIMPLEEXPR报错1");
         } else if (temp.equals(TokenType.DIVIDE.getValue())) {
             position++;
+            StoreQueue.offer(TokenType.DIVIDE.getValue());        //入队‘/’
             if (productionList.get(position).equals(NonTerminalType.SIMPLEEXPR.getValue())) {
                 position++;
-                Number simpleexprSyn = simpleexpr().getValue();
+                Pair<String, Number> simpleexprSyn = simpleexpr();
                 if (simpleexprSyn == null)
                     throw new Exception("multexprprime解析出错2");
                 if (productionList.get(position).equals(NonTerminalType.MULTEXPRPRIME.getValue())) {
                     position++;
-//                    String left = PrintNewSymbol();
-//                    if (!StoreQueue.peek().equals(left))
-//                        System.out.println(left + "=" + inh.intValue() + "/" + StoreQueue.poll());
-//                    else
-//                        System.out.println(left + "=" + inh.intValue() + "/" + simpleexprSyn);
-                    if (inh instanceof Integer && simpleexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh / simpleexpr.syn
-                        syn = multexprprime(inh.intValue() / simpleexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
-                    else
-                        syn = multexprprime(inh.doubleValue() / simpleexprSyn.doubleValue());
+                    String left = PrintNewSymbol();// multexprprime.syn = arithexprprime1.syn
+                    String arg1, arg2 = null;
+                    if (symbolTable.getVal(inh.getKey()).equals(Integer.MAX_VALUE) && symbolTable.getVal(simpleexprSyn.getKey()).equals(Integer.MAX_VALUE)) {
+                        arg1 = inh.getKey() + "";
+                        arg2 = simpleexprSyn.getKey() + "";
+                    } else {
+                        if (symbolTable.getVal(inh.getKey()).equals(Integer.MAX_VALUE)) {
+                            arg1 = inh.getKey() + "";
+                        } else {
+                            arg1 = assistMap.get(inh.getKey());
+                        }
+                        if (symbolTable.getVal(simpleexprSyn.getKey()).equals(Integer.MAX_VALUE)) {
+                            arg2 = simpleexprSyn.getKey() + "";
+                        } else {
+                            arg2 = assistMap.get(simpleexprSyn.getKey());
+                        }
+                    }
+                    if (inh.getValue() instanceof Integer && simpleexprSyn.getValue() instanceof Integer)             // arithexprprime1.inh = multexprprime.inh * simpleexpr.syn
+                    {
+                        System.out.println(left + " := " + arg1 + " / " + arg2);
+                        syn = multexprprime(new Pair<>(left, inh.getValue().intValue() / simpleexprSyn.getValue().intValue()));
+                    } else {
+                        System.out.println(left + " := " + arg1 + " / " + arg2);
+                        syn = multexprprime(new Pair<>(left, inh.getValue().doubleValue() / simpleexprSyn.getValue().doubleValue()));
+                    }
+                    this.v++;
                 } else
                     throw new Exception("ARITHEXPRPRIME报错2");
             } else
@@ -425,27 +480,46 @@ public class SemanticAnalyzer {
         return syn;
     }
 
-    public Number arithexprprime(Number inh) throws Exception {
+    public Pair<String, Number> arithexprprime(Pair<String, Number> inh) throws Exception {
         String temp = productionList.get(position);
-        Number syn = inh;
+        Pair<String, Number> syn = inh;
         if (temp.equals(TokenType.PLUS.getValue())) {
             position++;
+            StoreQueue.offer(TokenType.PLUS.getValue());        //入队‘+’
             if (productionList.get(position).equals(NonTerminalType.MULTEXPR.getValue())) {
                 position++;
-                Number multexprSyn = multexpr();
+                Pair<String, Number> multexprSyn = multexpr();
                 if (multexprSyn == null)
                     throw new Exception("arithexprprime解析错误1");
                 if (productionList.get(position).equals(NonTerminalType.ARITHEXPRPRIME.getValue())) {
                     position++;
-//                    String left = PrintNewSymbol();
-//                    if (!StoreQueue.peek().equals(left))
-//                        System.out.println(left + "=" + inh.intValue() + "+" + StoreQueue.poll());
-//                    else
-//                        System.out.println(left + "=" + inh.intValue() + "+" + multexprSyn);
-                    if (inh instanceof Integer && multexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh + simpleexpr.syn
-                        syn = arithexprprime(inh.intValue() + multexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
-                    else
-                        syn = arithexprprime(inh.doubleValue() + multexprSyn.doubleValue());
+                    String left = PrintNewSymbol();// multexprprime.syn = arithexprprime1.syn
+                    String arg1, arg2 = null;
+//                    System.out.println(inh.getKey() + " " + multexprSyn.getKey());
+                    if (symbolTable.getVal(inh.getKey()).equals(Integer.MAX_VALUE) && symbolTable.getVal(multexprSyn.getKey()).equals(Integer.MAX_VALUE)) {
+                        arg1 = inh.getKey() + "";
+                        arg2 = multexprSyn.getKey() + "";
+                    } else {
+                        if (symbolTable.getVal(inh.getKey()).equals(Integer.MAX_VALUE)) {
+                            arg1 = inh.getKey() + "";
+                        } else {
+                            arg1 = assistMap.get(inh.getKey());
+                        }
+                        if (symbolTable.getVal(multexprSyn.getKey()).equals(Integer.MAX_VALUE)) {
+                            arg2 = multexprSyn.getKey() + "";
+                        } else {
+                            arg2 = assistMap.get(multexprSyn.getKey());
+                        }
+                    }
+                    if (inh.getValue() instanceof Integer && multexprSyn.getValue() instanceof Integer)             // arithexprprime1.inh = multexprprime.inh + simpleexpr.syn
+                    {
+                        System.out.println(left + " := " + arg1 + " + " + arg2);
+                        syn = arithexprprime(new Pair<>(left, inh.getValue().intValue() + multexprSyn.getValue().intValue()));    // multexprprime.syn = arithexprprime1.syn
+                    } else {
+                        System.out.println(left + " := " + arg1 + " + " + arg2);
+                        syn = arithexprprime(new Pair<>(left, inh.getValue().doubleValue() + multexprSyn.getValue().doubleValue()));
+                    }
+                    this.v++;
                 } else
                     throw new Exception("SIMPLEEXPR报错3");
 
@@ -454,22 +528,40 @@ public class SemanticAnalyzer {
 
         } else if (temp.equals(TokenType.MINUS.getValue())) {
             position++;
+            StoreQueue.offer(TokenType.MINUS.getValue());        //入队‘-’
             if (productionList.get(position).equals(NonTerminalType.MULTEXPR.getValue())) {
                 position++;
-                Number multexprSyn = multexpr();
+                Pair<String, Number> multexprSyn = multexpr();
                 if (multexprSyn == null)
                     throw new Exception("arithexprprime解析错误2");
                 if (productionList.get(position).equals(NonTerminalType.ARITHEXPRPRIME.getValue())) {
                     position++;
-//                    String left = PrintNewSymbol();
-//                    if (!StoreQueue.peek().equals(left))
-//                        System.out.println(left + "=" + inh.intValue() + "-" + StoreQueue.poll());
-//                    else
-//                        System.out.println(left + "=" + inh.intValue() + "-" + multexprSyn);
-                    if (inh instanceof Integer && multexprSyn instanceof Integer)             // arithexprprime1.inh = multexprprime.inh - simpleexpr.syn
-                        syn = arithexprprime(inh.intValue() - multexprSyn.intValue());    // multexprprime.syn = arithexprprime1.syn
-                    else
-                        syn = arithexprprime(inh.doubleValue() - multexprSyn.doubleValue());
+                    String left = PrintNewSymbol();// multexprprime.syn = arithexprprime1.syn
+                    String arg1, arg2 = null;
+                    if (symbolTable.getVal(inh.getKey()).equals(Integer.MAX_VALUE) && symbolTable.getVal(multexprSyn.getKey()).equals(Integer.MAX_VALUE)) {
+                        arg1 = inh.getKey() + "";
+                        arg2 = multexprSyn.getKey() + "";
+                    } else {
+                        if (symbolTable.getVal(inh.getKey()).equals(Integer.MAX_VALUE)) {
+                            arg1 = inh.getKey() + "";
+                        } else {
+                            arg1 = assistMap.get(inh.getKey());
+                        }
+                        if (symbolTable.getVal(multexprSyn.getKey()).equals(Integer.MAX_VALUE)) {
+                            arg2 = multexprSyn.getKey() + "";
+                        } else {
+                            arg2 = assistMap.get(multexprSyn.getKey());
+                        }
+                    }
+                    this.v++;
+                    if (inh.getValue() instanceof Integer && multexprSyn.getValue() instanceof Integer)             // arithexprprime1.inh = multexprprime.inh + simpleexpr.syn
+                    {
+                        System.out.println(left + " := " + arg1 + "-" + arg2);
+                        syn = arithexprprime(new Pair<>(left, inh.getValue().intValue() - multexprSyn.getValue().intValue()));    // multexprprime.syn = arithexprprime1.syn
+                    } else {
+                        System.out.println(left + " := " + arg1 + "-" + arg2);
+                        syn = arithexprprime(new Pair<>(left, inh.getValue().doubleValue() - multexprSyn.getValue().doubleValue()));
+                    }
                 } else
                     throw new Exception("SIMPLEEXPR报错4");
             } else

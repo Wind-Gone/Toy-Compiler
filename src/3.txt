@@ -1,8 +1,8 @@
 {
-i=10;
+
 j=100;
 n=i;
 sum=0;
 mult=1;
-if (j>=50) then sum=sum+j; else {mult=mult*(j+1);sum=sum+i;}
+sum=2+i+6;
 }

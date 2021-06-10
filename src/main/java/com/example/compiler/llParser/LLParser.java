@@ -83,6 +83,8 @@ public class LLParser {
         Token current = null;
         while (X != TokenType.DOLLAR) {
             System.out.println("------stk-------------: " + stk);
+            if (ip >= w.size())
+                break;
             System.out.println("------token-----------: " + w.get(ip).getTokenType());
             System.out.println();
             TokenType a = w.get(ip).getTokenType();
@@ -178,6 +180,8 @@ public class LLParser {
         int i = 0;
         while (!treeStack.isEmpty()) {
             TreeNode node = treeStack.pop();
+            if (i >= productions.size())
+                break;
             Production p1 = productions.get(i++);
             List<Object> right = p1.getRightExpression();
             List<TreeNode> childList = new ArrayList<>();

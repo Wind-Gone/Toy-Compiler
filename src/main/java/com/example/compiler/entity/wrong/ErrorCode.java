@@ -8,7 +8,6 @@ package com.example.compiler.entity.wrong;
  * @createTime 2021年05月18日 15:14:00
  */
 public enum ErrorCode {
-    // TODO ADD MORE POSSIBLE ERRORCODE
     INT_GREATER_LIMIT("1001", "Intnumber数值最大不超过2^31"),
     NOT_MATCH("1002", "输入的程序存在无法识别的程序模块"),
     EXPONENT_GREATER_LIMIT("1003", "Exponent类型值数字位不能超过128"),
@@ -23,7 +22,9 @@ public enum ErrorCode {
     MISS_OR_EXTRA_CLOSEBRACE("2006", "请查看程序是否缺失了右括号或出现了多余的左括号"),
     EXTRA_SEMICOLON("2007", "程序段可能多了额外的分号"),
     WRONG_TYPE_COMPARE("2008", "非法的操作符比较"),
-    WRONG_GRAMMER_PARSER("2009", "非法的语法匹配");
+    WRONG_GRAMMER_PARSER("2009", "非法的语法匹配"),
+
+    NO_EXIST_VARIABLE("3001", "该变量未定义，请检查是否存在未定义先使用的情况");
 
 
     private final String code;

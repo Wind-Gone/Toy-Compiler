@@ -60,4 +60,20 @@ public class TestForSemantic {
         Assert.assertTrue(output.contains("sum:100"));
     }
 
+    @ParameterizedTest(name = "测试变量未定义先使用的异常")
+    @ValueSource(strings = "{\n" +
+            "i=10;\n" +
+            "n=1;\n" +
+            "sum=0;\n" +
+            "mult=1;\n" +
+            "if (j>=50) then sum=sum+j; else {mult=mult*(j+1);sum=sum+i;}\n" +
+            "}\n")
+    public void testVariableError(String input) throws Exception {
+        semanticAnalyzer = new SemanticAnalyzer(input);
+        String output = semanticAnalyzer.toString();
+//        Assert.assertThrows("该变量不存在,无法更新其值");
+        Assert.assertTrue(output.contains(String.valueOf(Integer.MAX_VALUE)));      // INT_MAX指示变量不存在情况的特殊值
+    }
+
+
 }
