@@ -21,6 +21,16 @@ public class TokenTable {
         tableMap.put(++number, variable);
     }
 
+    public Variable get(int id) {
+        return tableMap.get(id);
+    }
+
+    public void setNewVal(int id, String val) {
+        Variable variable = tableMap.get(id);
+        variable.name = val;
+        tableMap.put(id, variable);
+    }
+
     @Override
     public String toString() {
         String header = "Id TokenType TokenName RowNumber ColNumber\n";

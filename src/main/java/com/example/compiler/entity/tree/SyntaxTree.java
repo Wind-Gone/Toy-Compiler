@@ -27,11 +27,11 @@ public class SyntaxTree {
     }
 
     public void preOrder() {
-        preOrderPrint(root);
+        preOrderPrint();
     }
 
 
-    public void preOrderPrint(TreeNode root) {
+    public void preOrderPrint() {
         System.out.println(root.getValue());
         Queue<TreeNode> myQueue = new LinkedList<>();
         List<Pair<String, Integer>> res = new ArrayList<>();
