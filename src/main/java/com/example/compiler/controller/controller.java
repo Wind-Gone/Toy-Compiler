@@ -2,7 +2,7 @@ package com.example.compiler.controller;
 
 
 import com.example.compiler.entity.gui.GuiNode;
-import com.example.compiler.entity.token.Text;
+import com.example.compiler.entity.gui.Text;
 import com.example.compiler.entity.token.Token;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;

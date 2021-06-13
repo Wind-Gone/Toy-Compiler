@@ -17,14 +17,16 @@ public enum ErrorCode {
     MISS_SEMICOLON("2001", "程序段可能遗漏分号"),
     MISS_START_OPENCURLYBRACES("2002", "程序缺失开始的左花括号"),
     MISS_END_CLOSECURLYBRACES("2003", "程序缺失结束的右花括号"),
-    EXTRA_VARIABLE_USE("2004", "出现了额外的标识符，请查看是否滥用了变量"),
+    EXTRA_VARIABLE_USE("2004", "出现了额外的标识符，请确认此处是否应该存在该变量"),
     MISS_OR_EXTRA_OPENBRACE("2005", "请查看程序是否缺失了左括号或出现了多余的右括号"),
     MISS_OR_EXTRA_CLOSEBRACE("2006", "请查看程序是否缺失了右括号或出现了多余的左括号"),
     EXTRA_SEMICOLON("2007", "程序段可能多了额外的分号"),
     WRONG_TYPE_COMPARE("2008", "非法的操作符比较"),
     WRONG_GRAMMER_PARSER("2009", "非法的语法匹配"),
 
-    NO_EXIST_VARIABLE("3001", "该变量未定义，请检查是否存在未定义先使用的情况");
+    NO_EXIST_VARIABLE("3001", "该变量未定义，请检查是否存在未定义先使用的情况"),
+    DIFFERENT_TYPES_WARNINGS1("3002", "不同的数据类型不能赋值"),
+    DIFFERENT_TYPES_WARNINGS2("3003", "不同的数据类型不能进行比较");
 
 
     private final String code;

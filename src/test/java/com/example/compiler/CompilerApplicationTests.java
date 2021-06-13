@@ -102,7 +102,6 @@ class CompilerApplicationTests {
         for (String s : a) {
             System.out.println(s + " ");
         }
-//        llParser.getSyntaxTree().preOrder();
     }
 
     @Test
