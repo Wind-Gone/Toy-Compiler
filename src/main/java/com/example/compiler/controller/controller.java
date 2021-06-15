@@ -56,7 +56,6 @@ public class controller {
             return "您此时的输入为空";
         String input = text.getSource();
         System.out.println(input);
-        Lexer lexer = new Lexer();
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
         List<String> a = llParser.getSyntaxTree().dfs();
@@ -82,7 +81,6 @@ public class controller {
             return new GuiNode("-1", "输入为空");
         String input = text.getSource();
         System.out.println(input);
-        Lexer lexer = new Lexer();
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
         System.out.println("-----------guinode---------");

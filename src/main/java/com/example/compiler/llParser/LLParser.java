@@ -116,7 +116,14 @@ public class LLParser {
             }
             X = stk.peek();
         }
-        System.out.println("错误列表为" + wrongList + "\n");
+        for (Map.Entry<Pair<Integer, Integer>, WrongMessage> entry : wrongList.entrySet()) {
+            Pair<Integer, Integer> resultPair = entry.getKey();
+            int row = resultPair.getKey();
+            int col = resultPair.getValue();
+            System.out.println("行：" + row + "， 列：" + col + "，此处的字符串\"" + entry.getValue().getTokenContent() + "\"附近或许存在错误，提示：" +
+                    entry.getValue().getErrorCode().getMessage());
+        }
+//        System.out.println("错误列表为" + wrongList + "\n");
 //        syntaxTree = new SyntaxTree(root);
     }
 
