@@ -131,7 +131,6 @@ public class LLParser {
             WrongMessage wrongMessage = new WrongMessage("}", ErrorCode.MISS_END_CLOSECURLYBRACES, "语法阶段");
             wrongList.put(new Pair<>(a.getRow(), a.getColumn()), wrongMessage);
         } else {
-
             WrongMessage wrongMessage = null;
             if (X instanceof TokenType) {        // 如果是个终结符，就直接弹栈尝试继续分析
                 stk.pop();

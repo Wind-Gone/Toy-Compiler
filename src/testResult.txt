@@ -1,0 +1,12 @@
+Id TokenType TokenName RowNumber ColNumber
+1 delimiters { { 1 1
+2 keywords if if 1 3
+3 delimiters ( ( 1 5
+4 identifiers identifiers hu 1 6
+5 delimiters ) ) 1 8
+6 keywords then then 1 9
+7 identifiers identifiers i 2 1
+8 operators = = 2 3
+9 numbers digit 9 2 5
+10 delimiters ; ; 2 6
+11 delimiters } } 3 2

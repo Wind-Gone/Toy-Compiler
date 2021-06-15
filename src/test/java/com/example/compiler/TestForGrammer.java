@@ -1,8 +1,6 @@
 package com.example.compiler;
 
-import com.example.compiler.entity.gui.GuiNode;
 import com.example.compiler.lexer.Lexer;
-import com.example.compiler.llParser.Grammer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.utils.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,11 +24,11 @@ import java.util.List;
 public class TestForGrammer {
     private Lexer lexer;            // 词法分析器
     private LLParser llParser;      //语法分析器
-    private String content = "";        //文件内容
 
     @BeforeAll
     public void readFile() throws IOException {
-        content = FileUtils.ReadFile("src/testForLLParser.txt");
+        //文件内容
+        String content = FileUtils.ReadFile("src/testForLLParser.txt");
     }
 
     @ParameterizedTest(name = "测试检查样例")
