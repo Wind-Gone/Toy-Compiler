@@ -69,6 +69,7 @@ public class controller {
                 res.append(s);
                 res.append("\n");
             }
+            return res.toString();
         } else {
             res.append("日志格式[行=列=错误信息]").append("\n");
             for (Map.Entry<Pair<Integer, Integer>, WrongMessage> entry : lexer.getWrongList().entrySet()) {
@@ -78,9 +79,10 @@ public class controller {
                 System.out.println("行：" + row + "， 列：" + col + "，此处的字符串\"" + entry.getValue().getTokenContent() + "\"  附近或许存在错误，提示：" +
                         entry.getValue().getErrorCode().getMessage());
                 res.append("行：").append(row).append("， 列：").append(col).append("，此处的字符串\"").append(entry.getValue().getTokenContent()).append("\"  附近或许存在错误，提示：").append(entry.getValue().getErrorCode().getMessage());
+                res.append("\n");
             }
+            return res.toString();
         }
-        return res.toString();
     }
 
     /**

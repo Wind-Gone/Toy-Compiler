@@ -123,6 +123,7 @@ public class LLParser {
             int row = resultPair.getKey();
             int col = resultPair.getValue();
             res.append("行：").append(row).append("， 列：").append(col).append("，此处的字符串\"").append(entry.getValue().getTokenContent()).append("\"  附近或许存在错误，提示：").append(entry.getValue().getErrorCode().getMessage());
+            res.append("\n");
         }
         System.out.println(res.toString());
 //        System.out.println("错误列表为" + wrongList + "\n");
