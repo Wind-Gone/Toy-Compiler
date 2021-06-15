@@ -4,14 +4,17 @@ package com.example.compiler.controller;
 import com.example.compiler.entity.gui.GuiNode;
 import com.example.compiler.entity.gui.Text;
 import com.example.compiler.entity.token.Token;
+import com.example.compiler.entity.wrong.WrongMessage;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
 import com.example.compiler.llParser.LLUtil;
 import com.example.compiler.semantic.SemanticAnalyzer;
+import javafx.util.Pair;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -56,13 +59,26 @@ public class controller {
             return "您此时的输入为空";
         String input = text.getSource();
         System.out.println(input);
+        Lexer lexer = new Lexer();
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
-        List<String> a = llParser.getSyntaxTree().dfs();
         StringBuilder res = new StringBuilder();
-        for (String s : a) {
-            res.append(s);
-            res.append("\n");
+        if (lexer.getWrongList().size() == 0) {
+            List<String> a = llParser.getSyntaxTree().dfs();
+            for (String s : a) {
+                res.append(s);
+                res.append("\n");
+            }
+        } else {
+            res.append("日志格式[行=列=错误信息]").append("\n");
+            for (Map.Entry<Pair<Integer, Integer>, WrongMessage> entry : lexer.getWrongList().entrySet()) {
+                Pair<Integer, Integer> resultPair = entry.getKey();
+                int row = resultPair.getKey();
+                int col = resultPair.getValue();
+                System.out.println("行：" + row + "， 列：" + col + "，此处的字符串\"" + entry.getValue().getTokenContent() + "\"  附近或许存在错误，提示：" +
+                        entry.getValue().getErrorCode().getMessage());
+                res.append("行：").append(row).append("， 列：").append(col).append("，此处的字符串\"").append(entry.getValue().getTokenContent()).append("\"  附近或许存在错误，提示：").append(entry.getValue().getErrorCode().getMessage());
+            }
         }
         return res.toString();
     }
