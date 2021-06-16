@@ -4,6 +4,7 @@ package com.example.compiler.controller;
 import com.example.compiler.entity.gui.GuiNode;
 import com.example.compiler.entity.gui.Text;
 import com.example.compiler.entity.token.Token;
+import com.example.compiler.entity.wrong.LogLevel;
 import com.example.compiler.entity.wrong.WrongMessage;
 import com.example.compiler.lexer.Lexer;
 import com.example.compiler.llParser.LLParser;
@@ -43,6 +44,13 @@ public class controller {
         }
         System.out.println(res);
         return res.toString();
+    }
+
+    @PostMapping("/LogLevels")
+    public List<LogLevel> GetWrongMessage(@RequestBody Text text) {
+        String input = text.getSource();
+        LLParser llParser = new LLParser(input);
+        return llParser.getLogLevels();
     }
 
     /**

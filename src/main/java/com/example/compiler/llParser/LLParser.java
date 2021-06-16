@@ -6,6 +6,7 @@ import com.example.compiler.entity.token.TokenType;
 import com.example.compiler.entity.tree.SyntaxTree;
 import com.example.compiler.entity.tree.TreeNode;
 import com.example.compiler.entity.wrong.ErrorCode;
+import com.example.compiler.entity.wrong.LogLevel;
 import com.example.compiler.entity.wrong.WrongMessage;
 import com.example.compiler.lexer.Lexer;
 import javafx.util.Pair;
@@ -75,6 +76,14 @@ public class LLParser {
             w.add(token);
         }
         w.add(new Token(TokenType.DOLLAR));
+    }
+
+    public List<LogLevel> getLogLevels() {
+        List<LogLevel> res = new ArrayList<>();
+        for (Map.Entry<Pair<Integer, Integer>, WrongMessage> entry : wrongList.entrySet()) {
+            res.add(new LogLevel(entry.getKey().getKey() - 1, entry.getKey().getValue() - 1, entry.getKey().getValue() - 1 + entry.getValue().getTokenContent().length()));
+        }
+        return res;
     }
 
 
