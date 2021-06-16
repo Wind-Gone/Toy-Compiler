@@ -31,6 +31,10 @@ public class LLParser {
         return syntaxTree;
     }
 
+    public HashMap<Pair<Integer, Integer>, WrongMessage> getWrongList() {
+        return wrongList;
+    }
+
     public void setSyntaxTree(SyntaxTree syntaxTree) {
         this.syntaxTree = syntaxTree;
     }
@@ -169,8 +173,20 @@ public class LLParser {
                         wrongMessage = new WrongMessage(a.toString(), ErrorCode.EXTRA_VARIABLE_USE, "语法分析阶段");
                     else if (a.getTokenType().equals(TokenType.CLOSEBRACE))
                         wrongMessage = new WrongMessage(a.toString(), ErrorCode.MISS_OR_EXTRA_OPENBRACE, "语法分析阶段");
+                    else if (a.getTokenType().equals(TokenType.CLOSECURLYBRACE))
+                        wrongMessage = new WrongMessage(a.toString(), ErrorCode.MISS_OR_EXTRA_OPENCURLYBRACE, "语法分析阶段");
+                    else if (a.getTokenType().equals(TokenType.OPENCURLYBRACE))
+                        wrongMessage = new WrongMessage(a.toString(), ErrorCode.MISS_OR_EXTRA_CLOSECURLYBRACE, "语法分析阶段");
                     else if (a.getTokenType().equals(TokenType.SEMICOLON))
                         wrongMessage = new WrongMessage(a.toString(), ErrorCode.EXTRA_SEMICOLON, "语法分析阶段");
+                    else if (a.getTokenType().equals(TokenType.OPENBRACE))
+                        wrongMessage = new WrongMessage(a.toString(), ErrorCode.MISS_OR_EXTRA_CLOSEBRACE, "语法分析阶段");
+                    else if (a.getTokenType().equals(TokenType.MINUS) || a.getTokenType().equals(TokenType.MULTIPLY) || a.getTokenType().equals(TokenType.PLUS) || a.getTokenType().equals(TokenType.DIVIDE))
+                        wrongMessage = new WrongMessage(a.toString(), ErrorCode.NOT_REASONABLE_SYMBOL, "语法分析阶段");
+                    else if (a.getTokenType().equals(TokenType.ELSE))
+                        wrongMessage = new WrongMessage(a.toString(), ErrorCode.NO_MATCH_IFELSE_WRONG, "语法分析阶段");
+                    else if (a.getTokenType().equals(TokenType.EQUAL))
+                        wrongMessage = new WrongMessage(a.toString(), ErrorCode.EXTRA_EQUAL, "语法分析阶段");
                     else
                         wrongMessage = new WrongMessage(a.toString(), ErrorCode.WRONG_GRAMMER_PARSER, "语法分析阶段");
                 }

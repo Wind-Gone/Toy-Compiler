@@ -37,18 +37,56 @@ public class TestForLexer {
         content = FileUtils.ReadFile("src/testForLexer.txt");
     }
 
-    @ParameterizedTest(name = "测试词法分析的正确样例")
+    @ParameterizedTest(name = "测试词法分析的正确样例1")
     @ValueSource(strings = "{ if(hu)then i = 9; }\n")
-    public void testCorrectProgram(String input) {
+    public void testCorrectProgram1(String input) {
         int TokenNumber = 11;
         lexer = new Lexer();
         lexer.tokenize(input);
         List<Token> tokens = lexer.getFilteredTokens();
         wrongList = lexer.getWrongList();
         Assert.assertEquals(wrongList.toString(), "{}");              // 正确运行，错误列表应该为空
-        System.out.println(tokens.size());
         Assert.assertEquals(TokenNumber, tokens.size());                   // 正确运行，分词大小相等
     }
+
+    @ParameterizedTest(name = "测试词法分析的正确样例2")
+    @ValueSource(strings = "{ i =  10;\n" +
+            "j = 100;\n" +
+            "n=1;\n" +
+            "sum=0;\n" +
+            "mult=1;\n" +
+            "while (i>0) {n=n+1;i=i-1;}\n" +
+            "if (j>=50) then sum=sum+j; else {mult=mult*(j+1);sum=sum+i;}\n" +
+            "if (i<=10) then sum=sum-i; else {mult=mult+i/2;}\n" +
+            "if (i ==j) then sum=sum-j; else {mult=mult-j/2;}\n" +
+            "if (n>1) then n=n-1; else {n=n+1;}\n" +
+            "if (n<2) then n=n+2; else {n=n-2;} }\n")
+    public void testCorrectProgram2(String input) {
+        int TokenNumber = 166;
+        lexer = new Lexer();
+        lexer.tokenize(input);
+        List<Token> tokens = lexer.getFilteredTokens();
+        wrongList = lexer.getWrongList();
+        Assert.assertEquals(wrongList.toString(), "{}");              // 正确运行，错误列表应该为空
+        Assert.assertEquals(TokenNumber, tokens.size());                   // 正确运行，分词大小相等
+    }
+
+
+    @ParameterizedTest(name = "测试词法分析的正确样例3")
+    @ValueSource(strings = "a=1;\n" +
+            "sum=0;\n" +
+            "mult=1;\n" +
+            "while (i>0) {a=a+1;sum=sum+a;}")
+    public void testCorrectProgram3(String input) {
+        int TokenNumber = 32;
+        lexer = new Lexer();
+        lexer.tokenize(input);
+        List<Token> tokens = lexer.getFilteredTokens();
+        wrongList = lexer.getWrongList();
+        Assert.assertEquals(wrongList.toString(), "{}");              // 正确运行，错误列表应该为空
+        Assert.assertEquals(TokenNumber, tokens.size());                   // 正确运行，分词大小相等
+    }
+
 
     @ParameterizedTest(name = "测试词法分析Intnumber值大于2^31的异常情况")
     @ValueSource(strings = "{a = 1111111111111111;}")
@@ -62,7 +100,7 @@ public class TestForLexer {
     }
 
     @ParameterizedTest(name = "测试词法分析指数值大于128的异常情况")
-    @ValueSource(strings = "{a = E129")
+    @ValueSource(strings = "{a = E129;}")
     public void testExponentGreaterThanMax(String input) {
         lexer = new Lexer();
         lexer.tokenize(input);
@@ -72,7 +110,7 @@ public class TestForLexer {
     }
 
     @ParameterizedTest(name = "测试词法分析RealNumber不规范的异常情况")
-    @ValueSource(strings = "{a = 1E/129")
+    @ValueSource(strings = "{a = 1E/129;}")
     public void testDigitNotStandard(String input) {
         lexer = new Lexer();
         lexer.tokenize(input);

@@ -63,7 +63,7 @@ public class controller {
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
         StringBuilder res = new StringBuilder();
-        if (lexer.getWrongList().size() == 0) {
+        if (llParser.getWrongList().size() == 0) {
             List<String> a = llParser.getSyntaxTree().dfs();
             for (String s : a) {
                 res.append(s);
@@ -72,7 +72,7 @@ public class controller {
             return res.toString();
         } else {
             res.append("日志格式[行=列=错误信息]").append("\n");
-            for (Map.Entry<Pair<Integer, Integer>, WrongMessage> entry : lexer.getWrongList().entrySet()) {
+            for (Map.Entry<Pair<Integer, Integer>, WrongMessage> entry : llParser.getWrongList().entrySet()) {
                 Pair<Integer, Integer> resultPair = entry.getKey();
                 int row = resultPair.getKey();
                 int col = resultPair.getValue();

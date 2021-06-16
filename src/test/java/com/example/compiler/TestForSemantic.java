@@ -35,7 +35,7 @@ public class TestForSemantic {
         content = FileUtils.ReadFile("src/testForSemantic.txt");
     }
 
-    @ParameterizedTest(name = "测试词法分析的正确样例")
+    @ParameterizedTest(name = "测试语义分析的正确样例1:教师用例")
     @ValueSource(strings = "{\n" +
             "i=10;\n" +
             "j=100;\n" +
@@ -58,6 +58,35 @@ public class TestForSemantic {
         Assert.assertTrue(output.contains("j:100"));
         Assert.assertTrue(output.contains("n:8"));
         Assert.assertTrue(output.contains("sum:100"));
+    }
+
+    @ParameterizedTest(name = "测试语义分析的正确样例2: 0-4求和")
+    @ValueSource(strings = "{\n" +
+            "i = 0;\n" +
+            "sum=0;\n" +
+            "while (i<5) {sum=sum+i;i=i+1;}\n" +
+            "}")
+    public void testCorrectProgram2(String input) throws Exception {
+        semanticAnalyzer = new SemanticAnalyzer(input);
+        String output = semanticAnalyzer.toString();
+        System.out.println(output);
+        Assert.assertTrue(output.contains("i:5"));
+        Assert.assertTrue(output.contains("sum:10"));
+    }
+
+
+    @ParameterizedTest(name = "测试语义分析的正确样例3: 6的阶乘")
+    @ValueSource(strings = "{\n" +
+            "i = 1;\n" +
+            "sum=1;\n" +
+            "while (i<7) {sum=sum*i;i=i+1;}\n" +
+            "}")
+    public void testCorrectProgram3(String input) throws Exception {
+        semanticAnalyzer = new SemanticAnalyzer(input);
+        String output = semanticAnalyzer.toString();
+        System.out.println(output);
+        Assert.assertTrue(output.contains("i:7"));
+        Assert.assertTrue(output.contains("sum:720"));
     }
 
     @ParameterizedTest(name = "测试变量未定义先使用的异常")
