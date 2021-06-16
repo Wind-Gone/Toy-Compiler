@@ -23,37 +23,37 @@
   >
   > **2.** **词法分析结果**
   >
-  > ![img](Readme.assets/clip_image004.png)
+  > ![image-20210616133836116](Readme.assets/image-20210616133836116.png)
   >
   > **3.** **LL(1) FIRST 集**
   >
-  > ![img](Readme.assets/clip_image006.png)
+  > ![image-20210616133715097](Readme.assets/image-20210616133715097.png)
   >
   > **4.** **LL(1)Follow 集**
   >
-  > ![img](Readme.assets/clip_image008.png)
+  > ![image-20210616133722237](Readme.assets/image-20210616133722237.png)
   >
   > **5.** **LL (1)解析表**
   >
-  > ![img](Readme.assets/clip_image010.png)
+  > ![image-20210616133728309](Readme.assets/image-20210616133728309.png)
   >
   > **6.** **LL(1)** **生成的语法树**
   >
   > ![img](Readme.assets/clip_image012.png)
   >
-  >  **![img](Readme.assets/clip_image014.jpg)**
+  > **![img](Readme.assets/clip_image014.jpg)**
   >
   > **7.** **错误提示（错误高亮** **和** **错误日志显示）**
   >
-  > ![img](Readme.assets/clip_image016.png)
+  > ![6](Readme.assets/6.png)
   >
   > **8.** **中间代码生成**
   >
-  > ![img](Readme.assets/clip_image018.jpg)
+  > ![image-20210616133940577](Readme.assets/image-20210616133940577.png)
   >
   > **9.** **语义分析解释结果**
   >
-  > ![img](Readme.assets/clip_image020.jpg)
+  > ![image-20210616133956184](Readme.assets/image-20210616133956184.png)
   >
   > **10. 自定义代码风格切换**
   >
