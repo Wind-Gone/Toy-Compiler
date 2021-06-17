@@ -19,7 +19,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws IOException {
         Lexer lexer = new Lexer();
-        String input = FileUtils.ReadFile("src/2.txt");
+        String input = FileUtils.ReadFile("src/test.txt");
         lexer.tokenize(input);
         List<Token> tokens = lexer.getFilteredTokens();
         TokenTable tokenTable = new TokenTable();

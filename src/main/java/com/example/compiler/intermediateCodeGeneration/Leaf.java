@@ -2,23 +2,26 @@ package com.example.compiler.intermediateCodeGeneration;
 
 import com.example.compiler.entity.token.TokenType;
 
-public class Leaf extends Object{
+@Deprecated
+public class Leaf extends Object {
     private TokenType tokenType;//token类型，是id或num
     private int id;//自身pi
     private int firstEqualId;//实际与pi相等
     private int no;//num值
     private String entry;//变量名称
     private boolean isNum;
+
     //num类型
-    public Leaf(TokenType tokenType,int no){
+    public Leaf(TokenType tokenType, int no) {
         this.isNum = true;
         this.tokenType = tokenType;
         this.id = -1;
         this.no = no;
 
     }
+
     //id类型
-    public Leaf(TokenType tokenType,String entry){
+    public Leaf(TokenType tokenType, String entry) {
         this.isNum = false;
         this.tokenType = tokenType;
         this.id = -1;
@@ -26,14 +29,17 @@ public class Leaf extends Object{
         this.entry = entry;
 
     }
-    public void setId(int id){
-        this.id = id;
-    }
-    public void setFirstEqualId(int firstEqualId){
+
+    public void setFirstEqualId(int firstEqualId) {
         this.firstEqualId = firstEqualId;
     }
-    public int getId(){
+
+    public int getId() {
         return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String toString() {
