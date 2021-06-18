@@ -1,4 +1,4 @@
-Id TokenType TokenName RowNumber ColNumber
+Id TokenType SpecificType TokenName RowNumber ColNumber
 1 delimiters { { 1 1
 2 identifiers identifiers i 2 1
 3 operators = = 2 2

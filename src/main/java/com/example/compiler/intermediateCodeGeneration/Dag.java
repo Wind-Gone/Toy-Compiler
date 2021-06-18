@@ -13,6 +13,7 @@ import static com.example.compiler.llParser.NonTerminalType.ASSGSTMT;
 import static com.example.compiler.llParser.NonTerminalType.BOOLEXPR;
 
 @SuppressWarnings("all")
+@Deprecated
 public class Dag {
     private List<TreeNode> assgstment;
     private List<TreeNode> boolexpr;

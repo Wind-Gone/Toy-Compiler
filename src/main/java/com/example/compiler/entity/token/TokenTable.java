@@ -33,7 +33,7 @@ public class TokenTable {
 
     @Override
     public String toString() {
-        String header = "Id TokenType TokenName RowNumber ColNumber\n";
+        String header = "Id TokenType SpecificType TokenName RowNumber ColNumber\n";
         StringBuilder sb = new StringBuilder();
         sb.append(header);
         for (Map.Entry<Integer, Variable> variable : tableMap.entrySet()) {

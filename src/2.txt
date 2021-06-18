@@ -1,5 +1,10 @@
 {
-i = 1;
+i=10;
+j=100;
+n=1;
 sum=0;
-while (i<7) {sum=sum*i;i=i+1;}
+mult=1;
+if (j>=50) then sum=sum+j; else {mult=mult*(j+1);sum=sum+i;}
+if (i<=10) then sum=sum-i; else {mult=mult+i/2;}
+if (i==j) then sum=sum-j; else {mult=mult-j/2;}
 }
