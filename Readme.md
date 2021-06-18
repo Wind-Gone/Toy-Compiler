@@ -136,6 +136,4 @@
 > :man_with_gua_pi_mao:@[caizhenghai](https://github.com/caizhenghai)
 >
 > :girl:@[Ling-WYJ](https://github.com/Ling-WYJ)
->
->  :man_with_turban:@[Wind-Gone](https://github.com/Wind-Gone)
 
