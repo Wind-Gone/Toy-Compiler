@@ -29,7 +29,6 @@ public class SemanticAnalyzer {
     private final HashMap<Pair<Integer, Integer>, WrongMessage> wrongList = new HashMap<>();    //错误列表
     private SyntaxTree syntaxTree;          // 语法树
     private List<String> productionList;    // 语法树 ——> 语法树列表
-    private int queuePos = 0;               // 辅助队列位置
     private int label = 0;                  // 生成三地址码的代码块标号
     private int v = 1;                      // 生成三地址码的临时变量标号
     private int id = 0;                     // 生成三地址码的标识符标号
@@ -96,8 +95,6 @@ public class SemanticAnalyzer {
 
     public void program(boolean expr) throws Exception {
         if (productionList.get(position) == "compoundstmt") {
-            System.out.println(PrintNewBlock());
-            intermediateCodeList.add(PrintNewBlock(-1));
             position++;
             compoundstmt(true);
         }
@@ -192,10 +189,10 @@ public class SemanticAnalyzer {
         Boolean syn = null;
         if (temp.equals(NonTerminalType.ARITHEXPR.getValue())) {
             position++;
-            Pair<String, Number> arithexprSyn = arithexpr();                                                      // arithexpr1.inh = arithexpr.syn
+            Pair<String, Number> arithexprSyn = arithexpr();
             if (productionList.get(position).equals(NonTerminalType.BOOLOP.getValue())) {
                 position++;
-                String op = boolop();                                                                   // arithexpr1.op = boolop.op
+                String op = boolop();
                 if (productionList.get(position).equals(NonTerminalType.ARITHEXPR.getValue())) {
                     position++;
                     syn = arithexpr(arithexprSyn, op);
@@ -211,7 +208,7 @@ public class SemanticAnalyzer {
         // match4Ex2Grammar the first set
         if (temp.contains(TokenType.LESS.getValue()) || temp.contains(TokenType.LESSEQUAL.getValue()) || temp.contains(TokenType.GREATER.getValue()) || temp.contains(TokenType.GREATEREQUAL.getValue()) || temp.contains(TokenType.EQUALEQUAL.getValue())) {
             String[] tempList = temp.split(":");
-            syn = tempList[0]; // boolop.op = token.val
+            syn = tempList[0];
             position++;
         }
         return syn;
@@ -226,11 +223,15 @@ public class SemanticAnalyzer {
         Pair<String, Number> syn = arithexpr();              // 先计算出boolop右侧的值
         if (!while_loop) {
             if (assistMap.get(syn.getKey()) == null) {
-                intermediateCodeList.add("if " + assistMap.get(inh.getKey()) + " " + op + " " + (syn.getKey()) + " goto L" + (this.label + 1));
-                System.out.println("if " + assistMap.get(inh.getKey()) + " " + op + " " + (syn.getKey()) + " goto L" + (this.label + 1));
+                intermediateCodeList.add("IF " + assistMap.get(inh.getKey()) + " " + op + " " + (syn.getKey()) + " GOTO label" + (this.label + 1));
+                intermediateCodeList.add("GOTO label" + (this.label + 1));
+                System.out.println("IF " + assistMap.get(inh.getKey()) + " " + op + " " + (syn.getKey()) + " GOTO label" + (this.label + 1));
+                System.out.println("GOTO label" + (this.label + 2));
             } else {
-                intermediateCodeList.add("if " + assistMap.get(inh.getKey()) + " " + op + " " + assistMap.get(syn.getKey()) + " goto L" + (this.label + 1));
-                System.out.println("if " + assistMap.get(inh.getKey()) + " " + op + " " + assistMap.get(syn.getKey()) + " goto L" + (this.label + 1));
+                intermediateCodeList.add("IF " + assistMap.get(inh.getKey()) + " " + op + " " + assistMap.get(syn.getKey()) + " GOTO label" + (this.label + 1));
+                intermediateCodeList.add("GOTO label" + (this.label + 1));
+                System.out.println("IF " + assistMap.get(inh.getKey()) + " " + op + " " + assistMap.get(syn.getKey()) + " GOTO label" + (this.label + 1));
+                System.out.println("GOTO label" + (this.label + 2));
             }
         }
         switch (op) {                          // 根据不同的运算符类型执行不同的bool操作
@@ -272,7 +273,6 @@ public class SemanticAnalyzer {
         String temp = productionList.get(position);
         if (temp.equals(TokenType.WHILE.getValue())) {
             System.out.println(PrintNewBlock());
-            intermediateCodeList.add(PrintNewBlock(-1));
             position++;
             boolean condition;
             if (productionList.get(position).equals(TokenType.OPENBRACE.getValue())) {
@@ -293,6 +293,7 @@ public class SemanticAnalyzer {
                             }
                             if (productionList.get(position).equals(NonTerminalType.STMT.getValue())) {
                                 position++;
+                                if (!while_loop) System.out.println(PrintNewBlock());
                                 stmt(condition);
                                 temp_end = position;
                                 while_loop = true;
@@ -300,6 +301,8 @@ public class SemanticAnalyzer {
                         }
                     }
                     while_loop = false;
+                    System.out.println("GOTO label" + (this.label - 1));
+                    System.out.println(PrintNewBlock());
                 }
             }
         }
@@ -361,10 +364,10 @@ public class SemanticAnalyzer {
         Pair<String, Number> syn = null;
         if (temp.equals(NonTerminalType.SIMPLEEXPR.getValue())) {
             position++;
-            Pair<String, Number> simpleexprSyn = simpleexpr();         // multexprprime.inh = simpleexpr.syn
+            Pair<String, Number> simpleexprSyn = simpleexpr();
             if (productionList.get(position) == NonTerminalType.MULTEXPRPRIME.getValue()) {
                 position++;
-                syn = multexprprime(simpleexprSyn);// multexpr.syn = multexprprime.syn
+                syn = multexprprime(simpleexprSyn);
             }
         }
         return syn;
@@ -436,8 +439,7 @@ public class SemanticAnalyzer {
                             arg2 = assistMap.get(simpleexprSyn.getKey());
                         }
                     }
-                    if (inh.getValue() instanceof Integer && simpleexprSyn.getValue() instanceof Integer)             // arithexprprime1.inh = multexprprime.inh * simpleexpr.syn
-                    {
+                    if (inh.getValue() instanceof Integer && simpleexprSyn.getValue() instanceof Integer) {
                         syn = multexprprime(new Pair<>(left, inh.getValue().intValue() * simpleexprSyn.getValue().intValue()));
                     } else {
                         syn = multexprprime(new Pair<>(left, inh.getValue().doubleValue() * simpleexprSyn.getValue().doubleValue()));
@@ -473,8 +475,7 @@ public class SemanticAnalyzer {
                             arg2 = assistMap.get(simpleexprSyn.getKey());
                         }
                     }
-                    if (inh.getValue() instanceof Integer && simpleexprSyn.getValue() instanceof Integer)             // arithexprprime1.inh = multexprprime.inh * simpleexpr.syn
-                    {
+                    if (inh.getValue() instanceof Integer && simpleexprSyn.getValue() instanceof Integer) {
                         syn = multexprprime(new Pair<>(left, inh.getValue().intValue() / simpleexprSyn.getValue().intValue()));
                     } else {
                         syn = multexprprime(new Pair<>(left, inh.getValue().doubleValue() / simpleexprSyn.getValue().doubleValue()));
@@ -519,9 +520,8 @@ public class SemanticAnalyzer {
                             arg2 = assistMap.get(multexprSyn.getKey());
                         }
                     }
-                    if (inh.getValue() instanceof Integer && multexprSyn.getValue() instanceof Integer)             // arithexprprime1.inh = multexprprime.inh + simpleexpr.syn
-                    {
-                        syn = arithexprprime(new Pair<>(left, inh.getValue().intValue() + multexprSyn.getValue().intValue()));    // multexprprime.syn = arithexprprime1.syn
+                    if (inh.getValue() instanceof Integer && multexprSyn.getValue() instanceof Integer) {
+                        syn = arithexprprime(new Pair<>(left, inh.getValue().intValue() + multexprSyn.getValue().intValue()));
                     } else {
                         syn = arithexprprime(new Pair<>(left, inh.getValue().doubleValue() + multexprSyn.getValue().doubleValue()));
                     }
@@ -557,9 +557,8 @@ public class SemanticAnalyzer {
                             arg2 = assistMap.get(multexprSyn.getKey());
                         }
                     }
-                    if (inh.getValue() instanceof Integer && multexprSyn.getValue() instanceof Integer)             // arithexprprime1.inh = multexprprime.inh + simpleexpr.syn
-                    {
-                        syn = arithexprprime(new Pair<>(left, inh.getValue().intValue() - multexprSyn.getValue().intValue()));    // multexprprime.syn = arithexprprime1.syn
+                    if (inh.getValue() instanceof Integer && multexprSyn.getValue() instanceof Integer) {
+                        syn = arithexprprime(new Pair<>(left, inh.getValue().intValue() - multexprSyn.getValue().intValue()));
                     } else {
                         syn = arithexprprime(new Pair<>(left, inh.getValue().doubleValue() - multexprSyn.getValue().doubleValue()));
                     }
